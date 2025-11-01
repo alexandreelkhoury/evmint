@@ -573,6 +573,7 @@ export function useUniswapV2Liquidity() {
       const isTestnet = chainId === baseSepolia.id
       const baseUrl = isTestnet ? 'https://sepolia.basescan.org' : 'https://basescan.org'
       console.log(`🔗 Transaction submitted! View on explorer: ${baseUrl}/tx/${currentTxHash}`)
+      loggers.liquidity.info('Transaction hash received:', {
         hash: currentTxHash,
         currentStep,
         isTokenProcess: !!tokenToProcess,
