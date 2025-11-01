@@ -1,35 +1,60 @@
-# Base Token Creator - SEO Robots Configuration
+# Base Token Creator - Optimized for Maximum SEO Revenue 🚀
 User-agent: *
 Allow: /
 
-# Priority pages for indexing
-Allow: /
-Allow: /create
-Allow: /guide
-Allow: /tokens
-Allow: /liquidity
+# HIGH-VALUE PAGES - Index these first for revenue
+Allow: /create          # Main revenue page - token creation
+Allow: /tokens          # User engagement - portfolio management  
+Allow: /liquidity       # Revenue expansion - liquidity services
+Allow: /guides          # SEO content - educational traffic
+Allow: /faq             # Support content - reduces bounce rate
 
-# Block unnecessary resources
+# Block development files and unnecessary resources
 Disallow: /src/
 Disallow: /node_modules/
+Disallow: /dist/
 Disallow: /*.json$
 Disallow: /*.config.*$
+Disallow: /*.map$
+Disallow: /api/internal/
 
-# Sitemap location
+# Sitemap for maximum crawl efficiency
 Sitemap: https://base-token-creator.com/sitemap.xml
 
-# Crawl delay for respectful crawling
-Crawl-delay: 1
+# Optimized crawl settings for revenue pages
+Crawl-delay: 0.5
 
-# Specific bot instructions
+# Premium bot treatment for major search engines
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
-User-agent: Bingbot
+User-agent: Bingbot  
+Allow: /
+Crawl-delay: 0
+
+User-agent: DuckDuckBot
 Allow: /
 
+# Social media bots for viral sharing
 User-agent: facebookexternalhit
 Allow: /
 
 User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# Crypto-specific crawlers
+User-agent: CoinGeckoBot
+Allow: /
+
+User-agent: CoinMarketCapBot
 Allow: /

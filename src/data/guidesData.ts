@@ -12,7 +12,7 @@ export const guides = [
       },
       {
         title: '⚡ Deploy Your Token (5 seconds)',
-        text: '1. Go to our Create Token page\n2. Fill in your token details\n3. Connect your wallet (you need less than $1 in ETH for gas)\n4. Click "Deploy Token"\n5. Wait 5 seconds for confirmation\n\n✅ Your token is now live on Base blockchain!'
+        text: '1. Go to our Create Token page\n2. Fill in your token details\n3. Connect your wallet (you need less than $1 in ETH for gas)\n4. Click "Deploy Token"\n5. Wait 5 seconds for confirmation\n\n✅ Your token is now live on Base blockchain!\n🎉 Contract will be automatically verified on BaseScan!'
       },
       {
         title: '🎉 Share Your Token',
@@ -70,7 +70,7 @@ export const guides = [
     content: [
       {
         title: 'Smart Contract Security',
-        text: 'Always verify your contract source code on BaseScan. Use well-tested contract templates and avoid custom modifications unless audited.'
+        text: '✅ Your contracts are automatically verified on BaseScan after deployment! This provides transparency and allows users to review the source code. Use well-tested contract templates and avoid custom modifications unless audited.'
       },
       {
         title: 'Private Key Safety',
@@ -94,24 +94,20 @@ export const guides = [
     gradient: 'from-pink-500 to-violet-500',
     content: [
       {
-        title: '📋 Step 1: Verify Your Contract on BaseScan',
-        text: '1. Go to BaseScan verification page (basescan.org for mainnet, sepolia.basescan.org for testnet)\n2. Enter your token contract address\n3. Select "Solidity (Single file)"\n4. Choose compiler version: 0.8.20\n5. Copy-paste your contract code\n6. Set optimization to "Yes" with 200 runs\n7. Submit for verification'
+        title: '🖼️ Step 1: Add Token Logo to BaseScan',
+        text: '✅ Your contract is already verified automatically!\n\n1. Go to your verified token page on BaseScan\n2. Click "Update Token Information" button\n3. Fill out the form with:\n   • Token Name & Symbol\n   • Token Logo (PNG/JPG, 200x200px recommended)\n   • Official Website & Email\n   • Description & Social Media Links'
       },
       {
-        title: '🖼️ Step 2: Add Token Logo to BaseScan',
-        text: '1. Go to your verified token page on BaseScan\n2. Click "Update Token Information" button\n3. Fill out the form with:\n   • Token Name & Symbol\n   • Token Logo (PNG/JPG, 200x200px recommended)\n   • Official Website & Email\n   • Description & Social Media Links'
-      },
-      {
-        title: '📱 Step 3: Add to MetaMask & Wallets',
+        title: '📱 Step 2: Add to MetaMask & Wallets',
         text: '1. Copy your token contract address\n2. In MetaMask: Assets > Import tokens > Custom token\n3. Paste contract address (auto-fills name/symbol/decimals)\n4. Add custom icon URL if desired\n5. Token will appear in wallet for all users'
       },
       {
-        title: '🔗 Step 4: Add to Token Lists',
+        title: '🔗 Step 3: Add to Token Lists',
         text: '1. Create PR to Base token list: https://github.com/base-org/token-list\n2. Submit to community token lists\n3. Include metadata JSON with logo IPFS hash\n4. This enables automatic wallet integration'
       },
       {
-        title: '💡 Step 5: CoinMarketCap & CoinGecko Listing',
-        text: 'Requirements:\n• CoinMarketCap: https://coinmarketcap.com/request/\n• CoinGecko: https://www.coingecko.com/en/coins/new\n• Verified contract on BaseScan\n• Active trading (DEX liquidity required)\n• Complete project information\n• Logo and social media presence'
+        title: '💡 Step 4: CoinMarketCap & CoinGecko Listing',
+        text: 'Requirements:\n• CoinMarketCap: https://coinmarketcap.com/request/\n• CoinGecko: https://www.coingecko.com/en/coins/new\n• ✅ Verified contract on BaseScan (automatic!)\n• Active trading (DEX liquidity required)\n• Complete project information\n• Logo and social media presence'
       },
       {
         title: '📄 Logo Specifications',

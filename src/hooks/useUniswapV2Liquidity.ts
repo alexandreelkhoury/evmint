@@ -1,20 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt, useReadContract, usePublicClient } from 'wagmi'
-import { base, baseSepolia } from 'viem/chains'
 import { parseUnits, parseEther, formatUnits } from 'viem'
-
-// Official Uniswap V2 contracts on Base Mainnet
-export const UNISWAP_V2_FACTORY_BASE = '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6'
-export const UNISWAP_V2_ROUTER_BASE = '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24'
-
-// WETH address on Base network
-export const WETH_BASE = '0x4200000000000000000000000000000000000006'
-
-// NOTE: Official Uniswap V2 is NOT deployed on Base Sepolia testnet
-// These contracts do not exist on Base Sepolia - V2 only works on Base mainnet
-export const UNISWAP_V2_FACTORY_BASE_SEPOLIA = null // Not deployed
-export const UNISWAP_V2_ROUTER_BASE_SEPOLIA = null // Not deployed  
-export const WETH_BASE_SEPOLIA = '0x4200000000000000000000000000000000000006'
+import { getDexContracts, getWethAddress, getChainById, hasUniswapV2 } from '../config/chains'
 
 // Uniswap V2 Router ABI
 const ROUTER_ABI = [
@@ -259,21 +246,54 @@ export function useUniswapV2Liquidity() {
   // CONTRACT CONFIGURATION
   // ================================
   const getContracts = () => {
-    const isTestnet = chainId === baseSepolia.id
-    
-    // Official Uniswap V2 is only deployed on Base mainnet, not on Base Sepolia testnet
-    if (isTestnet) {
-      return {
-        factory: null, // Not deployed on Base Sepolia
-        router: null,  // Not deployed on Base Sepolia
-        weth: WETH_BASE_SEPOLIA
+    const dexContracts = getDexContracts(chainId)
+    const weth = getWethAddress(chainId)
+    const chainConfig = getChainById(chainId)
+
+    // Try to get Uniswap V2 contracts first (most common)
+    // If not available, try other DEX protocols
+    let factory = null
+    let router = null
+
+    if (dexContracts) {
+      // Try Uniswap V2 first
+      if (dexContracts.uniswapV2Factory && dexContracts.uniswapV2Router) {
+        factory = dexContracts.uniswapV2Factory
+        router = dexContracts.uniswapV2Router
+      }
+      // Fallback to PancakeSwap (BSC)
+      else if (dexContracts.pancakeswapFactory && dexContracts.pancakeswapRouter) {
+        factory = dexContracts.pancakeswapFactory
+        router = dexContracts.pancakeswapRouter
+      }
+      // Fallback to QuickSwap (Polygon)
+      else if (dexContracts.quickswapFactory && dexContracts.quickswapRouter) {
+        factory = dexContracts.quickswapFactory
+        router = dexContracts.quickswapRouter
+      }
+      // Fallback to Trader Joe (Avalanche)
+      else if (dexContracts.traderJoeFactory && dexContracts.traderJoeRouter) {
+        factory = dexContracts.traderJoeFactory
+        router = dexContracts.traderJoeRouter
+      }
+      // Fallback to SpookySwap (Fantom)
+      else if (dexContracts.spookyswapFactory && dexContracts.spookyswapRouter) {
+        factory = dexContracts.spookyswapFactory
+        router = dexContracts.spookyswapRouter
+      }
+      // Fallback to SushiSwap (multiple chains)
+      else if (dexContracts.sushiswapFactory && dexContracts.sushiswapRouter) {
+        factory = dexContracts.sushiswapFactory
+        router = dexContracts.sushiswapRouter
       }
     }
-    
+
     return {
-      factory: UNISWAP_V2_FACTORY_BASE,
-      router: UNISWAP_V2_ROUTER_BASE,
-      weth: WETH_BASE
+      factory,
+      router,
+      weth,
+      chainName: chainConfig?.name || 'Unknown Network',
+      hasV2Support: !!factory && !!router,
     }
   }
 
@@ -568,15 +588,6 @@ export function useUniswapV2Liquidity() {
   // Monitor transaction status with detailed logging
   useEffect(() => {
     if (currentTxHash) {
-      console.log('🔍 Transaction Status Update:', {
-        hash: currentTxHash,
-        isConfirming,
-        isConfirmed,
-        hasReceipt: !!receipt,
-        confirmError: confirmError?.message,
-        currentStep,
-        timestamp: new Date().toISOString()
-      })
     }
     
     if (isConfirming && currentTxHash) {
@@ -709,38 +720,6 @@ const getErrorMessage = (error: any, errorType: string): string => {
 
   // Handle successful transactions
   useEffect(() => {
-    console.log('📊 DETAILED Transaction Status Check:', {
-      isConfirmed,
-      hasReceipt: !!receipt,
-      currentStep,
-      hash: currentTxHash,
-      isPending: isWritePending,
-      isConfirming,
-      writeError: !!writeError,
-      confirmError: !!confirmError,
-      isTokenProcess: !!tokenToProcess,
-      isPoolRemoval: !!poolToRemove,
-      poolAddress,
-      tokenProcessDetails: tokenToProcess ? {
-        address: tokenToProcess.address,
-        symbol: tokenToProcess.symbol || 'UNKNOWN',
-        tokenAmount: tokenToProcess.tokenAmount,
-        ethAmount: tokenToProcess.ethAmount
-      } : null,
-      receiptMatchesCurrentHash: receipt?.transactionHash === currentTxHash,
-      fullReceiptObject: receipt ? {
-        status: receipt.status,
-        transactionHash: receipt.transactionHash,
-        blockNumber: receipt.blockNumber?.toString(),
-        gasUsed: receipt.gasUsed?.toString(),
-        logs: receipt.logs?.map(log => ({
-          address: log.address,
-          topics: log.topics,
-          data: log.data
-        }))
-      } : null,
-      timestamp: new Date().toISOString()
-    })
 
     // CRITICAL FIX: Only process receipt if it matches current transaction hash
     if (isConfirmed && receipt && receipt.transactionHash === currentTxHash) {
@@ -780,12 +759,18 @@ const getErrorMessage = (error: any, errorType: string): string => {
         // This prevents the receipt handler from thinking add liquidity is done
         setCurrentTxHash(undefined)
         setCurrentStep('add')
-        refetchAllowance()
         
         // Use async pattern to properly handle the second transaction
         setTimeout(async () => {
           try {
             console.log('🚀 Starting add liquidity step after approval...')
+            
+            // Refresh allowance and wait a moment for blockchain state to update
+            await refetchAllowance()
+            
+            // Add a small additional delay to ensure the approval is fully processed
+            await new Promise(resolve => setTimeout(resolve, 500))
+            
             await handleAddLiquidityStep(tokenToProcess)
           } catch (error) {
             console.error('❌ Failed to add liquidity after approval:', error)
@@ -793,7 +778,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
             setCurrentStep(null)
             setTokenToProcess(null)
           }
-        }, 1000) // Small delay to ensure state updates
+        }, 1500) // Increased delay to ensure approval is fully processed
       } else if (currentStep === 'add' && tokenToProcess) {
         console.log('🏗️ Creating success pool object for liquidity addition...', {
           tokenToProcess,
@@ -1023,14 +1008,181 @@ const getErrorMessage = (error: any, errorType: string): string => {
     // Set deadline to 20 minutes from now
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)
 
+    // CRITICAL: Check current allowance before attempting add liquidity
+    console.log('🔍 PRE-LIQUIDITY ALLOWANCE CHECK')
+    
+    // FORCE a fresh read from blockchain instead of using cached allowance
+    let actualOnChainAllowance: bigint
+    try {
+      actualOnChainAllowance = await publicClient!.readContract({
+        address: tokenInfo.address as `0x${string}`,
+        abi: [{
+          "inputs": [
+            {"internalType": "address", "name": "owner", "type": "address"},
+            {"internalType": "address", "name": "spender", "type": "address"}
+          ],
+          "name": "allowance",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        }],
+        functionName: 'allowance',
+        args: [userAddress as `0x${string}`, getContracts().router as `0x${string}`]
+      }) as bigint
+    } catch (error) {
+      console.error('❌ Failed to read on-chain allowance:', error)
+      throw new Error('Failed to verify token allowance. Please try again.')
+    }
+
+    const cachedAllowance = (allowance as bigint) || 0n
+    const routerAddress = getContracts().router
+    
     console.log('🦄 Adding liquidity to Uniswap V2...', {
       token: tokenInfo.address,
       tokenAmount: tokenInfo.tokenAmount,
       ethAmount: tokenInfo.ethAmount,
-      router: getContracts().router
+      tokenAmountWei: tokenAmountWei.toString(),
+      ethAmountWei: ethAmountWei.toString(),
+      amountTokenMin: amountTokenMin.toString(),
+      amountETHMin: amountETHMin.toString(),
+      deadline: deadline.toString(),
+      recipient: userAddress,
+      router: routerAddress,
+      cachedAllowance: cachedAllowance.toString(),
+      actualOnChainAllowance: actualOnChainAllowance.toString(),
+      allowanceMatch: cachedAllowance === actualOnChainAllowance,
+      allowanceIsSufficient: actualOnChainAllowance >= tokenAmountWei
     })
 
-    // wagmi handles errors automatically via mutation callback
+    if (actualOnChainAllowance < tokenAmountWei) {
+      throw new Error(`❌ CRITICAL: On-chain allowance is insufficient! 
+        Cached: ${cachedAllowance.toString()}
+        Actual: ${actualOnChainAllowance.toString()}
+        Needed: ${tokenAmountWei.toString()}
+        This will cause TransferHelper to fail.`)
+    }
+
+    // CRITICAL: Check your actual token balance!
+    let actualTokenBalance: bigint
+    try {
+      actualTokenBalance = await publicClient!.readContract({
+        address: tokenInfo.address as `0x${string}`,
+        abi: [{
+          "inputs": [{"internalType": "address", "name": "account", "type": "address"}],
+          "name": "balanceOf",
+          "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+          "stateMutability": "view",
+          "type": "function"
+        }],
+        functionName: 'balanceOf',
+        args: [userAddress as `0x${string}`]
+      }) as bigint
+    } catch (error) {
+      console.error('❌ Failed to read token balance:', error)
+      throw new Error('Failed to verify token balance. Please try again.')
+    }
+
+    console.log('💰 TOKEN BALANCE CHECK:', {
+      tokenBalance: actualTokenBalance.toString(),
+      amountNeeded: tokenAmountWei.toString(),
+      hasEnoughTokens: actualTokenBalance >= tokenAmountWei,
+      balanceInHumanForm: (Number(actualTokenBalance) / 1e18).toLocaleString()
+    })
+
+    if (actualTokenBalance < tokenAmountWei) {
+      throw new Error(`❌ CRITICAL: You don't have enough tokens! 
+        Your balance: ${actualTokenBalance.toString()} (${(Number(actualTokenBalance) / 1e18).toLocaleString()})
+        Trying to use: ${tokenAmountWei.toString()} (${(Number(tokenAmountWei) / 1e18).toLocaleString()})
+        This will cause TransferHelper to fail.`)
+    }
+
+    // CRITICAL: Test if the token can be transferred at all
+    console.log('🧪 TESTING DIRECT TOKEN TRANSFER CAPABILITY...')
+    try {
+      // Test a very small transfer to the router to see if it works
+      const testAmount = 1000000000000000000n // 1 token
+      const transferSimulation = await publicClient!.simulateContract({
+        address: tokenInfo.address as `0x${string}`,
+        abi: [{
+          "inputs": [
+            {"internalType": "address", "name": "to", "type": "address"},
+            {"internalType": "uint256", "name": "amount", "type": "uint256"}
+          ],
+          "name": "transfer",
+          "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }],
+        functionName: 'transfer',
+        args: [getContracts().router as `0x${string}`, testAmount],
+        account: userAddress as `0x${string}`
+      })
+      
+      console.log('✅ Direct transfer simulation successful - token can be transferred')
+    } catch (transferError: any) {
+      console.error('❌ DIRECT TRANSFER TEST FAILED:', {
+        error: transferError,
+        reason: transferError.reason || transferError.shortMessage,
+        message: transferError.message
+      })
+      
+      throw new Error(`❌ CRITICAL: Your token contract cannot transfer tokens! 
+        Error: ${transferError.reason || transferError.shortMessage}
+        This suggests there's an issue with your token contract implementation.
+        Even direct transfers are failing, so the problem is with the token itself, not Uniswap.`)
+    }
+
+    // CRITICAL: Simulate the transaction first to get detailed error info
+    console.log('🔍 SIMULATING TRANSACTION BEFORE SENDING...')
+    try {
+      const simulationResult = await publicClient!.simulateContract({
+        address: getContracts().router as `0x${string}`,
+        abi: ROUTER_ABI,
+        functionName: 'addLiquidityETH',
+        args: [
+          tokenInfo.address as `0x${string}`,
+          tokenAmountWei,
+          amountTokenMin,
+          amountETHMin,
+          userAddress as `0x${string}`,
+          deadline
+        ],
+        value: ethAmountWei,
+        account: userAddress as `0x${string}`
+      })
+      
+      console.log('✅ SIMULATION SUCCESSFUL:', {
+        result: simulationResult.result,
+        request: simulationResult.request
+      })
+    } catch (simulationError: any) {
+      console.error('❌ SIMULATION FAILED - DETAILED ERROR:', {
+        error: simulationError,
+        message: simulationError.message,
+        cause: simulationError.cause,
+        details: simulationError.details,
+        data: simulationError.data,
+        shortMessage: simulationError.shortMessage,
+        version: simulationError.version
+      })
+      
+      // Try to extract more detailed error information
+      if (simulationError.cause) {
+        console.error('❌ SIMULATION ERROR CAUSE:', simulationError.cause)
+      }
+      
+      // Check if it's a revert with reason
+      if (simulationError.data) {
+        console.error('❌ SIMULATION ERROR DATA:', simulationError.data)
+      }
+      
+      throw new Error(`❌ Transaction simulation failed: ${simulationError.shortMessage || simulationError.message}. 
+        This tells us exactly why the transaction would fail before sending it.
+        Check console for detailed error analysis.`)
+    }
+
+    // If simulation passes, proceed with actual transaction
+    console.log('✅ Simulation passed, sending actual transaction...')
     const hash = await writeContractAsync({
       address: getContracts().router as `0x${string}`,
       abi: ROUTER_ABI,
@@ -1064,14 +1216,12 @@ const getErrorMessage = (error: any, errorType: string): string => {
       throw new Error('Please connect your wallet first')
     }
 
-    if (chainId !== base.id && chainId !== baseSepolia.id) {
-      throw new Error('Please switch to Base mainnet or Base Sepolia testnet')
-    }
-
-    // Check if Uniswap V2 is available on current network
+    // Check if DEX is available on current network
     const contracts = getContracts()
     if (!contracts.factory || !contracts.router) {
-      throw new Error('⚠️ Uniswap V2 is not deployed on Base Sepolia testnet. Please switch to Base mainnet to use V2 liquidity features.')
+      const chainConfig = getChainById(chainId)
+      const chainName = chainConfig?.name || 'this network'
+      throw new Error(`⚠️ No DEX support available on ${chainName}. Please switch to a network with liquidity support (Ethereum, Base, Arbitrum, Polygon, BSC, etc.) to add liquidity.`)
     }
 
     if (!tokenAddress || !tokenAmount || !ethAmount) {
@@ -1392,14 +1542,12 @@ const getErrorMessage = (error: any, errorType: string): string => {
       throw new Error('Please connect your wallet first')
     }
 
-    if (chainId !== base.id && chainId !== baseSepolia.id) {
-      throw new Error('Please switch to Base mainnet or Base Sepolia testnet')
-    }
-
-    // Check if Uniswap V2 is available on current network
+    // Check if DEX is available on current network
     const contracts = getContracts()
     if (!contracts.factory || !contracts.router) {
-      throw new Error('⚠️ Uniswap V2 is not deployed on Base Sepolia testnet. Please switch to Base mainnet to use V2 liquidity features.')
+      const chainConfig = getChainById(chainId)
+      const chainName = chainConfig?.name || 'this network'
+      throw new Error(`⚠️ No DEX support available on ${chainName}. Please switch to a network with liquidity support (Ethereum, Base, Arbitrum, Polygon, BSC, etc.) to add liquidity.`)
     }
 
     setError(null)
@@ -1679,8 +1827,9 @@ const getErrorMessage = (error: any, errorType: string): string => {
   }
 
   const contracts = getContracts()
-  const isV2Available = !!(contracts.factory && contracts.router)
-  
+  const isV2Available = contracts.hasV2Support || false
+  const chainConfig = getChainById(chainId)
+
   // Manual reset function for emergency use
   const resetLoadingStates = () => {
     setCurrentStep(null)
@@ -1704,8 +1853,8 @@ const getErrorMessage = (error: any, errorType: string): string => {
     refetchPools,
     error,
     isConnected,
-    isCorrectChain: chainId === base.id || chainId === baseSepolia.id,
-    isV2Available, // New: indicates if V2 contracts are available on current network
+    isCorrectChain: chainConfig?.features.tokenDeployment || false, // Use chain config to check if chain is supported
+    isV2Available, // New: indicates if DEX contracts are available on current network
     chainId,
     transactionHash: currentTxHash,
     currentStep,

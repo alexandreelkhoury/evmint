@@ -4,42 +4,90 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   
-  <!-- Homepage - Highest Priority -->
+  <!-- 🚀 REVENUE PAGES - Maximum Priority for Business Growth -->
+  
+  <!-- Homepage - Gateway to Revenue -->
   <url>
     <loc>https://base-token-creator.com/</loc>
-    <lastmod>2024-12-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   
-  <!-- Create Token Page - High Priority -->
+  <!-- Create Token - PRIMARY REVENUE PAGE -->
   <url>
     <loc>https://base-token-creator.com/create</loc>
-    <lastmod>2024-12-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
   </url>
   
-  <!-- Guide & FAQ Page - High Priority for SEO -->
+  <!-- 📚 CONTENT PAGES - SEO Traffic Magnets -->
+  
+  <!-- Guides - Educational Content for SEO -->
   <url>
-    <loc>https://base-token-creator.com/guide</loc>
-    <lastmod>2024-12-10</lastmod>
+    <loc>https://base-token-creator.com/guides</loc>
+    <lastmod>2025-01-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   
-  <!-- Token Management Page -->
+  <!-- FAQ - Support & Long-tail Keywords -->
+  <url>
+    <loc>https://base-token-creator.com/faq</loc>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  
+  <!-- 💎 USER ENGAGEMENT PAGES -->
+  
+  <!-- Token Portfolio - User Retention -->
   <url>
     <loc>https://base-token-creator.com/tokens</loc>
-    <lastmod>2024-12-10</lastmod>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Liquidity Management - Advanced Features -->
+  <url>
+    <loc>https://base-token-creator.com/liquidity</loc>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  
+  <!-- 🔗 LANDING PAGES - Targeted Keywords -->
+  
+  <!-- Base Token Creator - Brand Keywords -->
+  <url>
+    <loc>https://base-token-creator.com/base-token-creator</loc>
+    <lastmod>2025-01-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
-  <!-- Liquidity Management Page -->
+  <!-- ERC20 Token Generator - High-Volume Keywords -->
   <url>
-    <loc>https://base-token-creator.com/liquidity</loc>
-    <lastmod>2024-12-10</lastmod>
+    <loc>https://base-token-creator.com/erc20-token-generator</loc>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Meme Coin Creator - Trending Keywords -->
+  <url>
+    <loc>https://base-token-creator.com/meme-coin-creator</loc>
+    <lastmod>2025-01-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Cryptocurrency Creator - Broad Keywords -->
+  <url>
+    <loc>https://base-token-creator.com/cryptocurrency-creator</loc>
+    <lastmod>2025-01-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

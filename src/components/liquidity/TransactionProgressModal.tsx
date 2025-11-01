@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { colors, typography } from '../../styles/designSystem'
+import { colors } from '../../styles/designSystem'
 
 interface Token {
   address: string
@@ -62,13 +62,6 @@ export default function TransactionProgressModal({
     // Without transactionHash, it means nothing has been submitted yet
     const hasCompletedAllSteps = !isProcessing && !currentStep && !!transactionHash
     
-    console.log('🔍 Step Status Check:', {
-      step,
-      hasCompletedAllSteps,
-      isProcessing,
-      currentStep,
-      hasTransactionHash: !!transactionHash
-    })
     
     if (hasCompletedAllSteps) {
       return 'completed'

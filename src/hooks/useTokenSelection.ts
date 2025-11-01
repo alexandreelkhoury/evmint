@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { usePublicClient, useAccount, useChainId } from 'wagmi'
-import { LPToken } from './useUniswapV2Liquidity'
+import type { LPToken } from './useUniswapV2Liquidity'
 
 // ERC20 ABI for token details
 const ERC20_ABI = [
@@ -176,7 +176,6 @@ export function useTokenSelection() {
         }))
         
         setUserLPTokens(formattedLPTokens)
-        console.log('✅ Loaded user LP tokens:', formattedLPTokens)
       }
     } catch (error) {
       console.error('Error loading LP tokens:', error)
@@ -192,7 +191,6 @@ export function useTokenSelection() {
 
     setIsLoadingCustomToken(true)
     try {
-      console.log('🔍 Fetching token details for:', tokenAddress)
       
       // Fetch token details from contract
       const [name, symbol, decimals] = await Promise.all([

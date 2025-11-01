@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
-import { trackPageView } from '../utils/analytics'
+import { trackPageView, trackLiquidityError, trackWalletError } from '../utils/analytics'
 import { usePrivy } from '@privy-io/react-auth'
 import { useAccount, useBalance, useChainId } from 'wagmi'
 import WalletButton from '../components/WalletButton'
@@ -131,8 +131,13 @@ export default function LiquidityPage() {
     try {
       await addCustomToken(tokenAddressInput)
       setTokenAddressInput('')
-    } catch (error) {
-      console.error('Failed to add token:', error)
+    } catch (error: any) {
+      console.error('❌ BASE TOKEN LAUNCHER - Failed to add token:', error)
+      trackLiquidityError(analytics, error, {
+        operationType: 'add_custom_token',
+        tokenAddress: tokenAddressInput,
+        network: 'base'
+      });
       // Error handling could show a toast here if needed
     }
   }, [tokenAddressInput, addCustomToken])
@@ -244,8 +249,17 @@ export default function LiquidityPage() {
         ethAmount
       )
       console.log('🚀 Liquidity addition transaction initiated')
-    } catch (error) {
-      console.error('Liquidity addition error:', error)
+    } catch (error: any) {
+      console.error('❌ BASE TOKEN LAUNCHER - Liquidity addition error:', error)
+      
+      // Track detailed liquidity error
+      trackLiquidityError(analytics, error, {
+        operationType: 'add_liquidity',
+        tokenAddress: tokenA?.address,
+        tokenAmount: amountA,
+        ethAmount: amountB,
+        network: 'base'
+      });
     }
   }, [tokenA, tokenB, amountA, amountB, validateInputs, resetLoadingStates, addLiquidity])
 
@@ -279,8 +293,17 @@ export default function LiquidityPage() {
       
       // FIX: Don't reset LP token selection immediately - wait for transaction completion
       // The reset will happen in the success handler instead
-    } catch (error) {
-      console.error('Liquidity removal error:', error)
+    } catch (error: any) {
+      console.error('❌ BASE TOKEN LAUNCHER - Liquidity removal error:', error)
+      
+      // Track detailed liquidity removal error
+      trackLiquidityError(analytics, error, {
+        operationType: 'remove_liquidity',
+        tokenAddress: selectedLpToken?.address,
+        lpTokenAmount: lpTokenAmount,
+        network: 'base'
+      });
+      
       addToast({
         title: 'Liquidity Removal Error',
         message: error instanceof Error ? error.message : 'Unknown error occurred',

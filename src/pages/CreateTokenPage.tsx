@@ -6,14 +6,16 @@ import { Link } from 'react-router-dom'
 import { base, baseSepolia } from 'viem/chains'
 import WalletButton from '../components/WalletButton'
 import SEO from '../components/SEO'
-import { trackTokenResult, trackTokenCreation } from '../utils/analytics'
+import { trackTokenResult, trackTokenCreation, trackTokenCreationError, trackWalletError } from '../utils/analytics'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenForm } from '../hooks/useTokenForm'
 import { layout, typography, colors } from '../styles/designSystem'
+import { useGlobalToasts } from '../App'
 
 export default function CreateTokenPage() {
   const analytics = useFirebaseAnalytics()
   const { ready, authenticated } = usePrivy()
+  const toasts = useGlobalToasts()
   const { 
     createToken, 
     isCreating, 
@@ -34,8 +36,15 @@ export default function CreateTokenPage() {
     return 'Base'
   }
   
-  // Use shared token form hook for validation and state management
-  const { formData, formErrors, handleInputChange, validateForm } = useTokenForm()
+  // Use enhanced token form hook with validation 
+  const { 
+    formData, 
+    formErrors, 
+    handleInputChange, 
+    validateForm, 
+    getSanitizedFormData,
+    getFieldValidation
+  } = useTokenForm()
   const [showSuccess, setShowSuccess] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,14 +55,34 @@ export default function CreateTokenPage() {
     }
     
     if (!authenticated || !isConnected) {
+      console.log('❌ BASE TOKEN LAUNCHER - WALLET NOT CONNECTED');
+      toasts.warning(
+        'Please connect your wallet first to create tokens on Base blockchain',
+        '🔗 Wallet Required'
+      );
+      trackWalletError(analytics, 'Wallet not connected - user attempted token creation', 'create_token_attempt');
       return
     }
 
     try {
-      await createToken(formData)
+      // Use sanitized form data for token creation
+      const sanitizedData = getSanitizedFormData()
+      console.log('🔍 BASE TOKEN LAUNCHER - Creating token with data:', sanitizedData);
+      await createToken(sanitizedData)
       setShowSuccess(true)
-    } catch (error) {
-      console.error('Token creation failed:', error)
+    } catch (error: any) {
+      console.error('❌ BASE TOKEN LAUNCHER - Token creation failed:', error)
+      
+      // Track detailed token creation error
+      trackTokenCreationError(analytics, error, {
+        name: formData.name,
+        symbol: formData.symbol,
+        supply: formData.totalSupply,
+        decimals: formData.decimals,
+        network: getNetworkName()
+      });
+      
+      // Error is already handled by the hook and will be displayed
     }
   }
 
@@ -88,10 +117,39 @@ export default function CreateTokenPage() {
 
   const createTokenStructuredData = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Create Base Token - ERC20 Token Generator",
+    "@type": "WebApplication",
+    "name": "Base Token Creator - ERC20 Token Generator",
     "description": "Create and deploy ERC20 tokens on Base blockchain in 5 seconds. No coding required, less than $1 gas fees only.",
-    "url": "https://base-token-creator.com/create"
+    "url": "https://base-token-creator.com/create",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0.02",
+      "priceCurrency": "ETH",
+      "description": "Token deployment fee on Base blockchain"
+    },
+    "provider": {
+      "@type": "Organization",
+      "name": "Base Token Creator",
+      "url": "https://base-token-creator.com"
+    },
+    "potentialAction": {
+      "@type": "CreateAction",
+      "target": "https://base-token-creator.com/create",
+      "result": {
+        "@type": "DigitalDocument",
+        "name": "ERC20 Token Contract"
+      }
+    },
+    "featureList": [
+      "No coding required",
+      "5-second deployment",
+      "Under $1 gas fees",
+      "Auto-verification on BaseScan",
+      "Uniswap liquidity support",
+      "Base blockchain deployment"
+    ]
   }
 
   if (!ready) {
@@ -118,9 +176,9 @@ export default function CreateTokenPage() {
       </div>
 
       <SEO
-        title="Create Base Token - Deploy ERC20 Tokens in 5 Seconds | No Coding Required"
-        description="Create and deploy ERC20 tokens on Base blockchain in 5 seconds. No coding experience needed! Gas fees less than $1. Connect wallet and launch your token instantly."
-        keywords="create base token, deploy erc20 token base, base token generator, no code token creation, base blockchain deployment, erc20 token maker"
+        title="🚀 Create Token on Base - Deploy ERC20 in 5 Seconds | <$1 Gas Fees"
+        description="⚡ Launch your ERC20 token on Base blockchain instantly! No coding needed. Deploy for under $1, auto-verify on BaseScan, add Uniswap liquidity. Join 10,000+ successful projects. Start your meme coin empire today!"
+        keywords="create token base, erc20 token creator, base blockchain token, meme coin creator, no code token maker, cheap crypto deployment, uniswap token launch, base layer 2 tokens, defi token generator, cryptocurrency creator, token launcher base, basescan verification"
         canonical="/create"
         structuredData={createTokenStructuredData}
       />
@@ -207,6 +265,7 @@ export default function CreateTokenPage() {
                   Fill in the details for your new ERC20 token
                 </p>
                 
+                
                 {/* See Your Created Tokens Link */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -266,7 +325,7 @@ export default function CreateTokenPage() {
                       required
                     />
                   </div>
-                  {formErrors.name && (
+                  {getFieldValidation('name').hasError && (
                     <p className={`mt-2 text-sm ${typography.error}`}>{formErrors.name}</p>
                   )}
                   <p className="mt-2 text-sm text-gray-500">Choose a clear, descriptive name for your token</p>
@@ -297,7 +356,7 @@ export default function CreateTokenPage() {
                       required
                     />
                   </div>
-                  {formErrors.symbol && (
+                  {getFieldValidation('symbol').hasError && (
                     <p className={`mt-2 text-sm ${typography.error}`}>{formErrors.symbol}</p>
                   )}
                   <p className="mt-2 text-sm text-gray-500">3-10 characters, uppercase letters and numbers only</p>
@@ -327,7 +386,7 @@ export default function CreateTokenPage() {
                       className={`${colors.input} pl-12 py-4 text-lg rounded-2xl w-full`}
                     />
                   </div>
-                  {formErrors.decimals && (
+                  {getFieldValidation('decimals').hasError && (
                     <p className={`mt-2 text-sm ${typography.error}`}>{formErrors.decimals}</p>
                   )}
                   <p className="mt-2 text-sm text-gray-500">Number of decimal places (typically 18)</p>
@@ -357,7 +416,7 @@ export default function CreateTokenPage() {
                       required
                     />
                   </div>
-                  {formErrors.totalSupply && (
+                  {getFieldValidation('totalSupply').hasError && (
                     <p className={`mt-2 text-sm ${typography.error}`}>{formErrors.totalSupply}</p>
                   )}
                   <p className="mt-2 text-sm text-gray-500">Total number of tokens to create</p>
@@ -433,11 +492,15 @@ export default function CreateTokenPage() {
                 ) : (
                   <motion.button
                     type="submit"
-                    disabled={isCreating || Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])}
+                    disabled={
+                      isCreating || 
+                      Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])
+                    }
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`w-full py-6 text-xl font-semibold rounded-2xl transition-all duration-300 ${
-                      isCreating || Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])
+                      isCreating || 
+                      Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])
                         ? colors.primaryButtonDisabled
                         : colors.primaryButton
                     }`}
@@ -453,9 +516,11 @@ export default function CreateTokenPage() {
                       <div className="flex flex-col items-center justify-center space-y-1">
                         <div className="flex items-center space-x-2">
                           <span>🚀</span>
-                          <span>Create Token ({feeAmount} ETH + Gas)</span>
+                          <span>Create Token</span>
                         </div>
-                        <span className="text-sm text-blue-200 opacity-80">One transaction • Auto-verified on Basescan</span>
+                        <span className="text-sm text-blue-200 opacity-80">
+                          One transaction • Auto-verified on Basescan
+                        </span>
                       </div>
                     )}
                   </motion.button>

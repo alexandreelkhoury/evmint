@@ -50,6 +50,7 @@ function AppContent() {
             <Route path="/liquidity" element={<LiquidityPage />} />
             <Route path="/guide" element={<GuidePage />} />
             <Route path="/guides" element={<GuidesPage />} />
+            <Route path="/guides/:guideId" element={<GuidePage />} />
             <Route path="/faq" element={<FAQPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfServicePage />} />

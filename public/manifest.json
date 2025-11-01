@@ -1,0 +1,77 @@
+{
+  "name": "Base Token Creator - #1 Cryptocurrency & Meme Coin Generator",
+  "short_name": "Base Token Creator",
+  "description": "Create ERC20 tokens & meme coins on Base blockchain instantly! No coding, <$1 fees, 10,000+ successful launches.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#1f2937",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["finance", "business", "productivity", "developer"],
+  "icons": [
+    {
+      "src": "/LOGO.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/LOGO2.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Base Token Creator Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Token",
+      "short_name": "Create",
+      "description": "Launch a new ERC20 token instantly",
+      "url": "/create",
+      "icons": [
+        {
+          "src": "/LOGO.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "My Tokens",
+      "short_name": "Portfolio",
+      "description": "View your created tokens",
+      "url": "/tokens",
+      "icons": [
+        {
+          "src": "/LOGO.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Add Liquidity",
+      "short_name": "Liquidity", 
+      "description": "Add liquidity to Uniswap",
+      "url": "/liquidity",
+      "icons": [
+        {
+          "src": "/LOGO.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "lang": "en-US",
+  "dir": "ltr"
+}

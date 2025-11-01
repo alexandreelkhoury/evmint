@@ -1,16 +1,45 @@
-import { base, baseSepolia } from 'viem/chains'
-import { createConfig, http } from 'wagmi'
+import { http } from 'wagmi'
+import { createConfig } from '@privy-io/wagmi'
+import {
+  ALL_CHAINS,
+  baseConfig,
+  getRpcUrl,
+  type ChainConfig,
+} from './chains'
 
-// Wagmi config for Base network with Infura RPC endpoints from environment variables
+/**
+ * CRITICAL: Privy requires that wagmi chains EXACTLY match Privy's supportedChains
+ * We use @privy-io/wagmi's createConfig to ensure proper integration
+ */
+
+/**
+ * Build transports for all supported chains
+ * Uses environment variables when available, falls back to public RPCs
+ */
+const buildTransports = () => {
+  const transports: Record<number, ReturnType<typeof http>> = {}
+
+  ALL_CHAINS.forEach((chain: ChainConfig) => {
+    const rpcUrl = getRpcUrl(chain.id)
+    transports[chain.id] = http(rpcUrl || undefined)
+  })
+
+  return transports
+}
+
+/**
+ * Wagmi configuration using Privy's custom createConfig
+ * This ensures Privy can drive wagmi's connector state and keep them in sync
+ */
 export const wagmiConfig = createConfig({
-  chains: [base, baseSepolia],
-  transports: {
-    [base.id]: http(import.meta.env.VITE_BASE_MAINNET_RPC),
-    [baseSepolia.id]: http(import.meta.env.VITE_BASE_SEPOLIA_RPC),
-  },
+  chains: ALL_CHAINS as any, // Type assertion needed for Privy's createConfig
+  transports: buildTransports(),
 })
 
-// Privy configuration
+/**
+ * Privy configuration
+ * IMPORTANT: supportedChains must match wagmi chains array
+ */
 export const privyConfig = {
   appId: import.meta.env.VITE_PRIVY_APP_ID || 'cmeigbb8q00u5ky0bv70pell5',
   config: {
@@ -19,10 +48,17 @@ export const privyConfig = {
       accentColor: '#3B82F6',
     },
     embeddedWallets: {
-      createOnLogin: 'all-users',
+      createOnLogin: 'off',
     },
     loginMethods: ['email', 'wallet', 'google'],
-    defaultChain: base,
-    supportedChains: [base, baseSepolia],
+    // Default to Base mainnet as primary chain
+    defaultChain: baseConfig,
+    // CRITICAL: This must exactly match wagmi's chains array
+    supportedChains: ALL_CHAINS,
   },
 }
+
+/**
+ * Export chain list for components that need it
+ */
+export { ALL_CHAINS } from './chains'

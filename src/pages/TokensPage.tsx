@@ -196,14 +196,6 @@ export default function TokensPage() {
     trackPageView(analytics, 'tokens')
   }, [analytics])
 
-  // Debug logging
-  console.log('🔍 TokensPage render:', {
-    userTokensLength: userTokens.length,
-    isInitialLoading,
-    isRefreshing,
-    authenticated,
-    ready
-  })
 
   if (!ready) {
     return (
@@ -551,7 +543,6 @@ export default function TokensPage() {
               <motion.button
                 onClick={() => {
                   if (!isRefreshing) {
-                    console.log('Refreshing user tokens...');
                     refetchUserTokens();
                   }
                 }}
