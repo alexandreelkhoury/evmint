@@ -54,7 +54,7 @@ export default function CreateTokenPage() {
     
     if (!authenticated || !isConnected) {
       toasts.warning(
-        'Please connect your wallet first to create tokens on Base blockchain',
+        `Please connect your wallet first to create tokens on ${chainName}`,
         '🔗 Wallet Required'
       );
       trackWalletError(analytics, 'Wallet not connected - user attempted token creation', 'create_token_attempt');
@@ -92,7 +92,7 @@ export default function CreateTokenPage() {
             name: formData.name,
             symbol: formData.symbol,
             supply: formData.totalSupply,
-            network: chainId === base.id ? 'Base Mainnet' : 'Base Sepolia'
+            network: chainName
           })
 
           // Track successful token creation
@@ -113,8 +113,8 @@ export default function CreateTokenPage() {
   const createTokenStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Base Token Creator - ERC20 Token Generator",
-    "description": "Create and deploy ERC20 tokens on Base blockchain in 5 seconds. No coding required, less than $1 gas fees only.",
+    "name": "Multi-Chain Token Creator - ERC20 Token Generator",
+    "description": "Create and deploy ERC20 tokens on any EVM blockchain in seconds. No coding required, ultra-low gas fees on Layer 2 networks.",
     "url": "https://base-token-creator.com/create",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Web Browser",
@@ -122,11 +122,11 @@ export default function CreateTokenPage() {
       "@type": "Offer",
       "price": "0.02",
       "priceCurrency": "ETH",
-      "description": "Token deployment fee on Base blockchain"
+      "description": "Token deployment fee on EVM blockchains"
     },
     "provider": {
       "@type": "Organization",
-      "name": "Base Token Creator",
+      "name": "Multi-Chain Token Creator",
       "url": "https://base-token-creator.com"
     },
     "potentialAction": {
@@ -139,11 +139,11 @@ export default function CreateTokenPage() {
     },
     "featureList": [
       "No coding required",
-      "5-second deployment",
-      "Under $1 gas fees",
-      "Auto-verification on BaseScan",
-      "Uniswap liquidity support",
-      "Base blockchain deployment"
+      "Instant deployment",
+      "Ultra-low gas fees on L2",
+      "Auto-verification on block explorers",
+      "Multi-DEX liquidity support",
+      "15+ EVM blockchain support"
     ]
   }
 
@@ -171,9 +171,9 @@ export default function CreateTokenPage() {
       </div>
 
       <SEO
-        title="🚀 Create Token on Base - Deploy ERC20 in 5 Seconds | <$1 Gas Fees"
-        description="⚡ Launch your ERC20 token on Base blockchain instantly! No coding needed. Deploy for under $1, auto-verify on BaseScan, add Uniswap liquidity. Join 10,000+ successful projects. Start your meme coin empire today!"
-        keywords="create token base, erc20 token creator, base blockchain token, meme coin creator, no code token maker, cheap crypto deployment, uniswap token launch, base layer 2 tokens, defi token generator, cryptocurrency creator, token launcher base, basescan verification"
+        title="🚀 Create Token on Any EVM Chain - Multi-Chain ERC20 Deployment | Ultra-Low Fees"
+        description="⚡ Launch your ERC20 token on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding needed. Ultra-low gas fees on L2, auto-verify on block explorers, multi-DEX liquidity support. Start your token today!"
+        keywords="create token, erc20 token creator, multi-chain token, meme coin creator, no code token maker, ethereum token, base token, arbitrum token, polygon token, cheap crypto deployment, uniswap token launch, layer 2 tokens, defi token generator, cryptocurrency creator, multi-chain launcher"
         canonical="/create"
         structuredData={createTokenStructuredData}
       />
@@ -206,16 +206,16 @@ export default function CreateTokenPage() {
               Create Your Token
             </span>
             <br />
-            <span className={typography.pageTitleWhite}>on Base Network</span>
+            <span className={typography.pageTitleWhite}>on Any EVM Chain</span>
           </motion.h1>
           
-          <motion.p 
+          <motion.p
             className={`${typography.subtitle} max-w-4xl mx-auto text-xl sm:text-2xl`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            Deploy your own ERC20 token on Base blockchain in 5 seconds. No coding experience required! Gas fees less than $1.
+            Deploy your own ERC20 token on any EVM blockchain in seconds. No coding experience required! Ultra-low gas fees on Layer 2 networks.
           </motion.p>
 
           {/* Stats bar */}
@@ -226,13 +226,13 @@ export default function CreateTokenPage() {
             className="flex justify-center items-center space-x-8 mt-12"
           >
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">&lt;$1</div>
-              <div className="text-sm text-gray-400">Gas Fees</div>
+              <div className="text-2xl font-bold text-blue-400">15+ Chains</div>
+              <div className="text-sm text-gray-400">Supported</div>
             </div>
             <div className="w-px h-8 bg-gray-700"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">3 Min</div>
-              <div className="text-sm text-gray-400">Deploy Time</div>
+              <div className="text-2xl font-bold text-purple-400">Instant</div>
+              <div className="text-sm text-gray-400">Deployment</div>
             </div>
             <div className="w-px h-8 bg-gray-700"></div>
             <div className="text-center">
@@ -453,7 +453,7 @@ export default function CreateTokenPage() {
                     <div className="flex-1 min-w-0">
                       <h3 className={`${typography.cardTitle} text-base sm:text-lg mb-2`}>Token Creation Fee</h3>
                       <p className={`${typography.bodyText} text-gray-300 mb-3 text-sm sm:text-base`}>
-                        Creating a token requires a one-time fee of <span className="text-blue-400 font-semibold">{feeAmount} ETH</span> plus network gas fees.
+                        Creating a token requires a one-time fee of <span className="text-blue-400 font-semibold">{feeAmount} {getNativeTokenName()}</span> plus network gas fees.
                       </p>
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm text-gray-400">
                         <div className="flex items-center space-x-2">
@@ -485,7 +485,7 @@ export default function CreateTokenPage() {
                       </div>
                       <h3 className={`${typography.cardTitle} text-white mb-3`}>Connect Your Wallet</h3>
                       <p className={`${typography.bodyText} text-blue-200 mb-6`}>
-                        Connect your wallet to deploy tokens on Base blockchain and start creating your own cryptocurrency.
+                        Connect your wallet to deploy tokens on any EVM blockchain and start creating your own cryptocurrency.
                       </p>
                       <WalletButton />
                     </div>
@@ -499,7 +499,7 @@ export default function CreateTokenPage() {
                     </div>
                     <h3 className={`${typography.cardTitle} text-white mb-3`}>Switch Network</h3>
                     <p className={`${typography.bodyText} text-orange-200`}>
-                      Please switch to Base mainnet or Base Sepolia testnet to create tokens. Your wallet needs to be on the correct network.
+                      Please switch to a supported EVM network to create tokens. Use the chain selector in the header to browse available networks.
                     </p>
                   </div>
                 ) : (
@@ -532,7 +532,7 @@ export default function CreateTokenPage() {
                           <span>Create Token</span>
                         </div>
                         <span className="text-sm text-blue-200 opacity-80">
-                          One transaction • Auto-verified on Basescan
+                          One transaction • Auto-verified on block explorer
                         </span>
                       </div>
                     )}
@@ -554,7 +554,7 @@ export default function CreateTokenPage() {
                       </div>
                       <h3 className={`${typography.cardTitle} text-white mb-3`}>Token Created Successfully!</h3>
                       <p className={`${typography.bodyText} text-green-200 mb-4`}>
-                        Your token has been deployed to Base blockchain.
+                        Your token has been deployed to {chainName}.
                       </p>
                       <div className="bg-black/20 rounded-xl p-4 mb-6">
                         <p className="text-xs font-mono break-all text-gray-300">
