@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import WalletButton from './WalletButton'
+import ChainSelectorButton from './ChainSelectorButton'
 
 const navigation = [
   { name: 'Home', href: '/', title: 'Base Token Creator - Create ERC20 Tokens on Base Blockchain', icon: '🏠' },
@@ -77,8 +78,11 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Right side - Wallet + Mobile menu */}
+          {/* Right side - Chain Selector + Wallet + Mobile menu */}
           <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+            <div className="flex-shrink-0">
+              <ChainSelectorButton />
+            </div>
             <div className="flex-shrink-0">
               <WalletButton />
             </div>

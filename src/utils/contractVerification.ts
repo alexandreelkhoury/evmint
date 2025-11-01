@@ -1,11 +1,23 @@
-import { base, baseSepolia } from 'viem/chains'
 import { encodeAbiParameters } from 'viem'
+import { getChainById, isChainSupported } from '../config/chains'
 
-// Etherscan V2 API endpoint for multichain verification
-const ETHERSCAN_V2_API_URL = 'https://api.etherscan.io/v2/api'
+/**
+ * Get block explorer API key for a specific chain
+ */
+function getApiKey(chainId: number): string | null {
+  const chain = getChainById(chainId)
+  if (!chain || !chain.explorer.apiKeyEnvVar) return null
 
-// Get Basescan API key from environment variables
-const BASESCAN_API_KEY = import.meta.env.VITE_BASESCAN_API_KEY
+  return import.meta.env[chain.explorer.apiKeyEnvVar] || null
+}
+
+/**
+ * Get block explorer API URL for a specific chain
+ */
+function getApiUrl(chainId: number): string | null {
+  const chain = getChainById(chainId)
+  return chain?.explorer.apiUrl || null
+}
 
 interface VerificationParams {
   contractAddress: string
@@ -30,16 +42,42 @@ export async function verifyContract(params: VerificationParams): Promise<Verifi
   const { contractAddress, sourceCode, contractName, compilerVersion, constructorArguments, chainId } = params
 
   // Validate supported networks
-  if (chainId !== base.id && chainId !== baseSepolia.id) {
+  if (!isChainSupported(chainId)) {
     return { success: false, isVerified: false, message: 'Unsupported network for verification' }
   }
 
-  if (!BASESCAN_API_KEY) {
-    return { success: false, isVerified: false, message: 'Basescan API key not configured' }
+  const apiKey = getApiKey(chainId)
+  if (!apiKey) {
+    const chainName = getChainById(chainId)?.name || 'this network'
+    return {
+      success: false,
+      isVerified: false,
+      message: `Block explorer API key not configured for ${chainName}. Please add the API key to your environment variables.`
+    }
+  }
+
+  const apiUrl = getApiUrl(chainId)
+  if (!apiUrl) {
+    return { success: false, isVerified: false, message: 'Block explorer API not available for this network' }
   }
 
   try {
-    const url = `${ETHERSCAN_V2_API_URL}?chainid=${chainId}&module=contract&action=verifysourcecode&apikey=${BASESCAN_API_KEY}`
+    // Some explorers use Etherscan V2 API (multichain), others use their own endpoints
+    const chain = getChainById(chainId)
+    let url: string
+
+    // Etherscan V2 supports multiple chains with chainid parameter
+    if (apiUrl.includes('etherscan.io')) {
+      url = `https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=verifysourcecode&apikey=${apiKey}`
+    }
+    // Basescan also uses V2 API
+    else if (apiUrl.includes('basescan.org')) {
+      url = `https://api.basescan.org/v2/api?chainid=${chainId}&module=contract&action=verifysourcecode&apikey=${apiKey}`
+    }
+    // Other explorers use their own API endpoints
+    else {
+      url = `${apiUrl}?module=contract&action=verifysourcecode&apikey=${apiKey}`
+    }
     
     const formData = new FormData()
     formData.append('contractaddress', contractAddress)
@@ -96,18 +134,32 @@ export async function checkVerificationStatus(guid: string, chainId: number): Pr
   message: string
   status: 'pending' | 'success' | 'failed'
 }> {
-  if (!BASESCAN_API_KEY) {
+  const apiKey = getApiKey(chainId)
+  if (!apiKey) {
     return { success: false, message: 'API configuration missing', status: 'failed' }
   }
 
-  if (chainId !== base.id && chainId !== baseSepolia.id) {
+  if (!isChainSupported(chainId)) {
     return { success: false, message: 'Unsupported network', status: 'failed' }
   }
 
+  const apiUrl = getApiUrl(chainId)
+  if (!apiUrl) {
+    return { success: false, message: 'Block explorer API not available', status: 'failed' }
+  }
+
   try {
-    const response = await fetch(
-      `${ETHERSCAN_V2_API_URL}?chainid=${chainId}&module=contract&action=checkverifystatus&guid=${guid}&apikey=${BASESCAN_API_KEY}`
-    )
+    // Build API URL based on explorer type
+    let url: string
+    if (apiUrl.includes('etherscan.io')) {
+      url = `https://api.etherscan.io/v2/api?chainid=${chainId}&module=contract&action=checkverifystatus&guid=${guid}&apikey=${apiKey}`
+    } else if (apiUrl.includes('basescan.org')) {
+      url = `https://api.basescan.org/v2/api?chainid=${chainId}&module=contract&action=checkverifystatus&guid=${guid}&apikey=${apiKey}`
+    } else {
+      url = `${apiUrl}?module=contract&action=checkverifystatus&guid=${guid}&apikey=${apiKey}`
+    }
+
+    const response = await fetch(url)
 
     const result = await response.json()
 
