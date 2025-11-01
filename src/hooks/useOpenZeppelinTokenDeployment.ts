@@ -7,7 +7,7 @@ import {
   verifyContractWithEtherscan,
   encodeConstructorArguments,
   type VerificationResult
-} from '../utils/contractVerification'
+} from '../features/verification'
 import {
   validateTokenData,
   sanitizeString,
