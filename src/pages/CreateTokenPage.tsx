@@ -3,24 +3,26 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { usePrivy } from '@privy-io/react-auth'
 import { Link } from 'react-router-dom'
-import { base, baseSepolia } from 'viem/chains'
 import WalletButton from '../components/WalletButton'
 import SEO from '../components/SEO'
+import ChainBadge from '../components/ChainBadge'
+import { useChainConfig } from '../hooks/useChainConfig'
 import { trackTokenResult, trackTokenCreation, trackTokenCreationError, trackWalletError } from '../utils/analytics'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenForm } from '../hooks/useTokenForm'
 import { layout, typography, colors } from '../styles/designSystem'
 import { useGlobalToasts } from '../App'
+import { loggers } from '../utils/logger'
 
 export default function CreateTokenPage() {
   const analytics = useFirebaseAnalytics()
   const { ready, authenticated } = usePrivy()
   const toasts = useGlobalToasts()
-  const { 
-    createToken, 
-    isCreating, 
-    isSuccess, 
-    createdTokenAddress, 
+  const {
+    createToken,
+    isCreating,
+    isSuccess,
+    createdTokenAddress,
     error,
     isConnected,
     isCorrectChain,
@@ -29,12 +31,8 @@ export default function CreateTokenPage() {
     feeAmount
   } = useOpenZeppelinTokenDeployment()
 
-  // Helper function to get network name
-  const getNetworkName = () => {
-    if (chainId === base.id) return 'Base Mainnet'
-    if (chainId === baseSepolia.id) return 'Base Testnet'
-    return 'Base'
-  }
+  // Get chain information
+  const { name: chainName, isSupported, getNativeTokenName, hasDex } = useChainConfig()
   
   // Use enhanced token form hook with validation 
   const { 
@@ -55,7 +53,6 @@ export default function CreateTokenPage() {
     }
     
     if (!authenticated || !isConnected) {
-      console.log('❌ BASE TOKEN LAUNCHER - WALLET NOT CONNECTED');
       toasts.warning(
         'Please connect your wallet first to create tokens on Base blockchain',
         '🔗 Wallet Required'
@@ -67,11 +64,10 @@ export default function CreateTokenPage() {
     try {
       // Use sanitized form data for token creation
       const sanitizedData = getSanitizedFormData()
-      console.log('🔍 BASE TOKEN LAUNCHER - Creating token with data:', sanitizedData);
       await createToken(sanitizedData)
       setShowSuccess(true)
     } catch (error: any) {
-      console.error('❌ BASE TOKEN LAUNCHER - Token creation failed:', error)
+      loggers.ui.error('❌ BASE TOKEN LAUNCHER - Token creation failed:', error)
       
       // Track detailed token creation error
       trackTokenCreationError(analytics, error, {
@@ -105,9 +101,8 @@ export default function CreateTokenPage() {
             tokenAddress: createdTokenAddress
           })
           
-          console.log('Token created successfully - Firebase save disabled')
         } catch (error) {
-          console.error('Failed to save token to Firebase:', error)
+          loggers.ui.error('Failed to save token to Firebase:', error)
         }
       }
 
@@ -264,8 +259,26 @@ export default function CreateTokenPage() {
                 <p className={`${typography.bodyText} text-gray-400 mb-4`}>
                   Fill in the details for your new ERC20 token
                 </p>
-                
-                
+
+                {/* Chain Indicator */}
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <span className="text-sm text-gray-400">Deploying on:</span>
+                  <ChainBadge chainId={chainId} size="md" />
+                  {hasDex && (
+                    <span className="text-xs px-2 py-1 bg-green-500/10 text-green-400 rounded border border-green-500/20">
+                      ✓ DEX Available
+                    </span>
+                  )}
+                </div>
+
+                {!isSupported && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+                    <p className="text-sm text-red-300">
+                      ⚠️ Unsupported network. Please switch to a supported chain to deploy tokens.
+                    </p>
+                  </div>
+                )}
+
                 {/* See Your Created Tokens Link */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}

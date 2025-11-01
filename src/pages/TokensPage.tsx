@@ -13,6 +13,7 @@ import { CardSkeleton } from '../components/LoadingSkeleton'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenDetails } from '../hooks/useTokenDetails'
 import { animations, typography, colors } from '../styles/designSystem'
+import { getChainById } from '../config/chains'
 
 interface TokenCardProps {
   tokenData: {
@@ -47,7 +48,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
       // Reset after 2 seconds
       setTimeout(() => setIsCopied(false), 2000)
     } catch (error) {
-      console.error('Failed to copy address:', error)
+      loggers.ui.error('Failed to copy address:', error)
     }
   }
 
@@ -171,8 +172,9 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
         </Link>
         <button
           onClick={() => {
-            const baseUrl = chainId === base.id ? 'https://basescan.org' : 'https://sepolia.basescan.org'
-            window.open(`${baseUrl}/token/${tokenData.address}`, '_blank')
+            const chainConfig = getChainById(chainId)
+            const explorerUrl = chainConfig?.explorer.url || 'https://basescan.org'
+            window.open(`${explorerUrl}/token/${tokenData.address}`, '_blank')
           }}
           className={`flex-1 px-4 py-2 ${colors.primaryButton} text-sm rounded-lg flex items-center justify-center space-x-2`}
         >
@@ -208,9 +210,9 @@ export default function TokensPage() {
         </div>
 
         <SEO
-          title="My Base Tokens - Manage Your ERC20 Tokens | Base Token Creator"
-          description="View and manage all your created ERC20 tokens on Base blockchain. Track token performance, manage liquidity, and monitor your crypto projects."
-          keywords="base tokens management, my base tokens, erc20 token dashboard, base blockchain portfolio, token management interface"
+          title="My ERC20 Tokens - Manage Multi-Chain Token Portfolio"
+          description="View and manage all your created ERC20 tokens across multiple EVM blockchains. Track token performance, manage liquidity, and monitor your crypto projects on Base, Ethereum, Arbitrum, and more."
+          keywords="multi-chain tokens management, erc20 token dashboard, blockchain portfolio, token management interface, base ethereum arbitrum polygon"
           canonical="/tokens"
         />
         
@@ -245,13 +247,13 @@ export default function TokensPage() {
               <span className="text-white">Dashboard</span>
             </motion.h1>
             
-            <motion.p 
+            <motion.p
               className="text-gray-300 max-w-4xl mx-auto text-xl sm:text-2xl mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Monitor and manage your ERC20 tokens created on Base blockchain
+              Monitor and manage your ERC20 tokens across multiple EVM blockchains
             </motion.p>
 
             {/* Loading message */}
@@ -286,9 +288,9 @@ export default function TokensPage() {
         </div>
 
         <SEO
-          title="My Base Tokens - Manage Your ERC20 Tokens | Base Token Creator"
-          description="View and manage all your created ERC20 tokens on Base blockchain. Track token performance, manage liquidity, and monitor your crypto projects."
-          keywords="base tokens management, my base tokens, erc20 token dashboard, base blockchain portfolio, token management interface"
+          title="My ERC20 Tokens - Manage Multi-Chain Token Portfolio"
+          description="View and manage all your created ERC20 tokens across multiple EVM blockchains. Track token performance, manage liquidity, and monitor your crypto projects on Base, Ethereum, Arbitrum, and more."
+          keywords="multi-chain tokens management, erc20 token dashboard, blockchain portfolio, token management interface, base ethereum arbitrum polygon"
           canonical="/tokens"
         />
         
@@ -323,13 +325,13 @@ export default function TokensPage() {
               <span className="text-white">Dashboard</span>
             </motion.h1>
             
-            <motion.p 
+            <motion.p
               className="text-gray-300 max-w-4xl mx-auto text-xl sm:text-2xl mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Monitor and manage your ERC20 tokens created on Base blockchain
+              Monitor and manage your ERC20 tokens across multiple EVM blockchains
             </motion.p>
 
             {/* Connect wallet message */}
@@ -362,7 +364,7 @@ export default function TokensPage() {
               </motion.div>
               <h3 className={`${typography.cardTitle} text-white mb-4`}>Connect Your Wallet</h3>
               <p className={`${typography.bodyText} text-blue-200 mb-6 max-w-2xl mx-auto`}>
-                Connect your wallet to view and manage your created tokens on Base blockchain.
+                Connect your wallet to view and manage your created tokens across multiple EVM blockchains.
                 Track their performance, manage liquidity, and monitor your crypto portfolio.
               </p>
               <WalletButton />
@@ -474,7 +476,9 @@ export default function TokensPage() {
             </div>
             <div className="w-px h-8 bg-gray-700"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">Base</div>
+              <div className="text-2xl font-bold text-blue-400">
+                {getChainById(chainId)?.name.split(' ')[0] || 'EVM'}
+              </div>
               <div className="text-sm text-gray-400">Network</div>
             </div>
             <div className="w-px h-8 bg-gray-700"></div>
@@ -488,7 +492,7 @@ export default function TokensPage() {
       {!isCorrectChain && (
         <div className="mb-8 p-4 bg-orange-900/20 rounded-lg border border-orange-500/20">
           <p className="text-sm text-orange-200 text-center">
-            ⚠️ Please switch to Base mainnet or Base Sepolia testnet to view your tokens.
+            ⚠️ Please switch to a supported EVM network to view your tokens.
           </p>
         </div>
       )}
@@ -521,7 +525,7 @@ export default function TokensPage() {
             </motion.div>
             <h3 className={typography.cardTitle}>No Tokens Found</h3>
             <p className="text-gray-400 mb-6">
-              You haven't created any tokens yet. Ready to launch your first token on {chainId === base.id ? 'Base' : 'Base Sepolia'}?
+              You haven't created any tokens yet. Ready to launch your first token on {getChainById(chainId)?.name || 'this network'}?
             </p>
             <motion.div {...animations.buttonHover}>
               <Link

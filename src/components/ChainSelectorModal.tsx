@@ -1,10 +1,13 @@
+import { loggers } from '../utils/logger'
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwitchChain, useChainId } from 'wagmi'
 import { ALL_CHAINS, MAINNET_CHAINS, TESTNET_CHAINS, type ChainConfig } from '../config/chains'
 import { useChainConfig } from '../hooks/useChainConfig'
-import { ChainBadge } from './ChainBadge'
-import { logEvent } from '../utils/analytics'
+import ChainBadge from './ChainBadge'
+import ChainIcon from './ChainIcon'
+import { useFirebaseAnalytics } from './FirebaseProvider'
+import { logEvent as firebaseLogEvent } from 'firebase/analytics'
 
 interface ChainSelectorModalProps {
   isOpen: boolean
@@ -27,6 +30,7 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
   const currentChainId = useChainId()
   const { switchChain, isPending } = useSwitchChain()
   const { name: currentChainName } = useChainConfig()
+  const analytics = useFirebaseAnalytics()
 
   const [searchQuery, setSearchQuery] = useState('')
   const [filterTab, setFilterTab] = useState<'all' | 'mainnet' | 'testnet'>('all')
@@ -67,13 +71,15 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
       setSwitchingTo(chain.id)
 
       // Log analytics
-      logEvent('chain_switched', {
-        from_chain: currentChainName,
-        from_chain_id: currentChainId,
-        to_chain: chain.name,
-        to_chain_id: chain.id,
-        method: 'modal_selector',
-      })
+      if (analytics) {
+        firebaseLogEvent(analytics, 'chain_switched', {
+          from_chain: currentChainName,
+          from_chain_id: currentChainId,
+          to_chain: chain.name,
+          to_chain_id: chain.id,
+          method: 'modal_selector',
+        })
+      }
 
       await switchChain({ chainId: chain.id })
 
@@ -83,7 +89,7 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
         setSwitchingTo(null)
       }, 300)
     } catch (error) {
-      console.error('Failed to switch chain:', error)
+      loggers.network.error('Failed to switch chain:', error)
       setSwitchingTo(null)
       // Don't close modal on error so user can try again
     }
@@ -92,14 +98,14 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
           {/* Modal */}
@@ -107,13 +113,9 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
-            onClick={onClose}
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
           >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-            >
               {/* Header */}
               <div className="p-6 border-b border-gray-700">
                 <div className="flex items-center justify-between mb-4">
@@ -208,9 +210,8 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
                   Current Network: <ChainBadge chainId={currentChainId} size="sm" className="ml-2" />
                 </p>
               </div>
-            </div>
-          </motion.div>
-        </>
+            </motion.div>
+        </div>
       )}
     </AnimatePresence>
   )
@@ -284,7 +285,7 @@ function ChainCard({
 
       {/* Chain Info */}
       <div className="flex items-start gap-3">
-        <span className="text-3xl">{chain.icon}</span>
+        <ChainIcon chainId={chain.id} size={48} />
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-white text-base truncate">{chain.name}</h3>
           <div className="flex items-center gap-2 mt-1">

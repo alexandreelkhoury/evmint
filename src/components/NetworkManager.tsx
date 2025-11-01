@@ -1,3 +1,4 @@
+import { loggers } from '../utils/logger'
 import { useEffect, useState } from 'react'
 import { useAccount, useChainId, useSwitchChain } from 'wagmi'
 import { motion } from 'framer-motion'
@@ -41,7 +42,7 @@ export default function NetworkManager() {
         duration: 3000
       })
     } catch (error) {
-      console.error('Failed to switch network:', error)
+      loggers.network.error('Failed to switch network:', error)
       addToast({
         title: 'Network Switch Failed',
         message: 'Please manually switch to a supported network in your wallet',

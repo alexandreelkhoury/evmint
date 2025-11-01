@@ -1,18 +1,20 @@
+import { loggers } from '../utils/logger'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePrivy, useWallets } from '@privy-io/react-auth'
-import { useAccount, useSwitchChain } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { base, baseSepolia } from 'viem/chains'
 import { useState, useRef, useEffect } from 'react'
-import { colors, typography } from '../styles/designSystem'
+import { colors } from '../styles/designSystem'
 import { useGlobalToasts } from '../App'
+import NetworkSelectorModal from './NetworkSelectorModal'
 
 export default function WalletButton() {
   const { ready, authenticated, user, login, logout } = usePrivy()
   const { wallets } = useWallets()
   const { chain, isConnected, address } = useAccount()
-  const { switchChain } = useSwitchChain()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [showCopiedFeedback, setShowCopiedFeedback] = useState(false)
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const toasts = useGlobalToasts()
   
@@ -53,7 +55,7 @@ export default function WalletButton() {
   // Helper function to get chain info from chain ID
   const getChainInfo = (chainId: string | number | undefined) => {
     let numChainId: number | undefined
-    
+
     if (typeof chainId === 'string') {
       if (chainId.startsWith('eip155:')) {
         numChainId = parseInt(chainId.split(':')[1])
@@ -63,18 +65,58 @@ export default function WalletButton() {
     } else {
       numChainId = chainId
     }
-    
+
     switch (numChainId) {
-      case base.id: // 8453
-        return { name: 'Base Mainnet', color: 'text-green-400', isBase: true, icon: '🔵' }
-      case baseSepolia.id: // 84532
-        return { name: 'Base Sepolia', color: 'text-blue-400', isBase: true, icon: '🧪' }
+      // Base chains
+      case 8453:
+        return { name: 'Base Mainnet', color: 'text-blue-400', isBase: true, icon: '🔵' }
+      case 84532:
+        return { name: 'Base Sepolia', color: 'text-blue-400', isBase: true, icon: '🔵' }
+
+      // Ethereum
       case 1:
-        return { name: 'Ethereum', color: 'text-gray-400', isBase: false, icon: '⚡' }
+        return { name: 'Ethereum', color: 'text-purple-400', isBase: false, icon: '🔷' }
       case 11155111:
-        return { name: 'Sepolia', color: 'text-yellow-400', isBase: false, icon: '🧪' }
+        return { name: 'Sepolia', color: 'text-purple-400', isBase: false, icon: '🔷' }
+
+      // Arbitrum
+      case 42161:
+        return { name: 'Arbitrum One', color: 'text-cyan-400', isBase: false, icon: '🔷' }
+      case 421614:
+        return { name: 'Arbitrum Sepolia', color: 'text-cyan-400', isBase: false, icon: '🔷' }
+
+      // Optimism
+      case 10:
+        return { name: 'Optimism', color: 'text-red-400', isBase: false, icon: '🔴' }
+      case 11155420:
+        return { name: 'OP Sepolia', color: 'text-red-400', isBase: false, icon: '🔴' }
+
+      // Polygon
+      case 137:
+        return { name: 'Polygon', color: 'text-purple-400', isBase: false, icon: '💜' }
+      case 80002:
+        return { name: 'Polygon Amoy', color: 'text-purple-400', isBase: false, icon: '💜' }
+
+      // Binance Smart Chain
+      case 56:
+        return { name: 'BNB Smart Chain', color: 'text-yellow-400', isBase: false, icon: '🟡' }
+      case 97:
+        return { name: 'BNB Testnet', color: 'text-yellow-400', isBase: false, icon: '🟡' }
+
+      // Avalanche
+      case 43114:
+        return { name: 'Avalanche', color: 'text-red-400', isBase: false, icon: '🔺' }
+      case 43113:
+        return { name: 'Avalanche Fuji', color: 'text-red-400', isBase: false, icon: '🔺' }
+
+      // Fantom
+      case 250:
+        return { name: 'Fantom', color: 'text-blue-400', isBase: false, icon: '👻' }
+      case 4002:
+        return { name: 'Fantom Testnet', color: 'text-blue-400', isBase: false, icon: '👻' }
+
       default:
-        return { name: numChainId ? `Chain ${numChainId}` : 'Unknown', color: 'text-red-400', isBase: false, icon: '❓' }
+        return { name: numChainId ? `Chain ${numChainId}` : 'Unknown', color: 'text-gray-400', isBase: false, icon: '❓' }
     }
   }
   
@@ -94,33 +136,10 @@ export default function WalletButton() {
         setTimeout(() => setShowCopiedFeedback(false), 2000)
         // No toast notification and keep dropdown open
       } catch (error) {
-        console.error('Failed to copy address:', error)
+        loggers.wallet.error('Failed to copy address:', error)
         // Only show error toast if copy fails
         toasts.error('Failed to copy address to clipboard', 'Copy Failed')
       }
-    }
-  }
-
-  // Handle network switch
-  const handleSwitchToBaseSepolia = async () => {
-    try {
-      await switchChain({ chainId: baseSepolia.id })
-      toasts.success('Successfully switched to Base Sepolia!', 'Network Changed')
-      setIsDropdownOpen(false)
-    } catch (error) {
-      console.error('Failed to switch to Base Sepolia:', error)
-      toasts.error('Failed to switch network. Please try again.', 'Network Switch Failed')
-    }
-  }
-
-  const handleSwitchToBaseMainnet = async () => {
-    try {
-      await switchChain({ chainId: base.id })
-      toasts.success('Successfully switched to Base Mainnet!', 'Network Changed')
-      setIsDropdownOpen(false)
-    } catch (error) {
-      console.error('Failed to switch to Base Mainnet:', error)
-      toasts.error('Failed to switch network. Please try again.', 'Network Switch Failed')
     }
   }
 
@@ -238,7 +257,7 @@ export default function WalletButton() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium text-sm">Wallet Connected</p>
-                    <p className="text-gray-400 text-xs truncate font-mono">{walletAddress}</p>
+                    <p className="text-gray-400 text-xs font-mono">{`${walletAddress.slice(0, 5)}...${walletAddress.slice(-5)}`}</p>
                   </div>
                 </div>
               </div>
@@ -246,40 +265,11 @@ export default function WalletButton() {
               {/* Network Status */}
               {chainInfo && (
                 <div className="p-3 bg-black/20">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">{chainInfo.icon}</span>
-                      <div>
-                        <p className="text-white text-sm font-medium">Current Network</p>
-                        <p className={`text-xs ${chainInfo.color}`}>{chainInfo.name}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      {/* Network Switch Button - Only show for Base networks */}
-                      {currentChain && (currentChain.id === base.id || currentChain.id === baseSepolia.id) && (
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={currentChain.id === base.id ? handleSwitchToBaseSepolia : handleSwitchToBaseMainnet}
-                          className="px-3 py-1.5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 border border-blue-500/20 hover:border-blue-500/40 rounded-lg transition-all duration-200 flex items-center space-x-1.5"
-                          title={currentChain.id === base.id ? 'Switch to Base Sepolia Testnet' : 'Switch to Base Mainnet'}
-                        >
-                          <svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5H7.5" />
-                          </svg>
-                          <span className="text-xs font-medium text-blue-300">
-                            {currentChain.id === base.id ? 'Testnet' : 'Mainnet'}
-                          </span>
-                        </motion.button>
-                      )}
-                      
-                      {/* Warning badge for non-Base networks */}
-                      {!chainInfo.isBase && (
-                        <span className={`px-2 py-1 rounded text-xs ${colors.badgeWarning}`}>
-                          Not Base
-                        </span>
-                      )}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">{chainInfo.icon}</span>
+                    <div>
+                      <p className="text-white text-sm font-medium">Current Network</p>
+                      <p className={`text-xs ${chainInfo.color}`}>{chainInfo.name}</p>
                     </div>
                   </div>
                 </div>
@@ -299,31 +289,20 @@ export default function WalletButton() {
                   <span className="text-sm">{showCopiedFeedback ? 'Copied!' : 'Copy Address'}</span>
                 </motion.button>
 
-                {/* Switch to Base Networks (if not on Base network) */}
-                {chainInfo && !chainInfo.isBase && (
-                  <>
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}
-                      onClick={handleSwitchToBaseMainnet}
-                      className="w-full px-3 py-2 text-left text-green-400 hover:bg-green-500/10 rounded-lg transition-colors flex items-center space-x-3"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      <span className="text-sm">Switch to Base Mainnet</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                      onClick={handleSwitchToBaseSepolia}
-                      className="w-full px-3 py-2 text-left text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex items-center space-x-3"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      <span className="text-sm">Switch to Base Sepolia</span>
-                    </motion.button>
-                  </>
-                )}
+                {/* Change Network */}
+                <motion.button
+                  whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                  onClick={() => {
+                    setIsNetworkModalOpen(true)
+                    setIsDropdownOpen(false)
+                  }}
+                  className="w-full px-3 py-2 text-left text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex items-center space-x-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  <span className="text-sm">Change Network</span>
+                </motion.button>
 
                 {/* View on Explorer */}
                 <motion.button
@@ -358,6 +337,12 @@ export default function WalletButton() {
             </>
           )}
         </AnimatePresence>
+
+        {/* Network Selector Modal */}
+        <NetworkSelectorModal
+          isOpen={isNetworkModalOpen}
+          onClose={() => setIsNetworkModalOpen(false)}
+        />
       </div>
     )
   }

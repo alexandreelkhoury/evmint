@@ -4,12 +4,13 @@ import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import React, { useRef, useState, useEffect } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
-import { base, baseSepolia } from 'viem/chains'
 import SEO from '../components/SEO'
 import WalletButton from '../components/WalletButton'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenForm } from '../hooks/useTokenForm'
 import { layout, typography, colors } from '../styles/designSystem'
+import { getChainById } from '../config/chains'
+import RotatingChainText from '../components/RotatingChainText'
 
 export default function HomePage() {
   const analytics = useFirebaseAnalytics()
@@ -35,9 +36,9 @@ export default function HomePage() {
 
   // Helper function to get network name
   const getNetworkName = () => {
-    if (chainId === base.id) return 'Base Mainnet'
-    if (chainId === baseSepolia.id) return 'Base Testnet'
-    return 'Base'
+    if (!chainId) return 'EVM Network'
+    const chain = getChainById(chainId)
+    return chain?.name || 'Unknown Network'
   }
   
   // Use shared token form hook for validation and state management
@@ -68,7 +69,7 @@ export default function HomePage() {
         network: getNetworkName()
       })
     } catch (error) {
-      console.error('Token creation failed:', error)
+      loggers.ui.error('Token creation failed:', error)
     }
   }
 
@@ -181,35 +182,35 @@ export default function HomePage() {
             className="mb-8"
           >
             <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-none mb-6">
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
                 className="block text-white drop-shadow-lg"
               >
-                Deploy Tokens
+                Deploy Tokens On
               </motion.span>
-              <motion.span 
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.9 }}
-                className="block bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent"
+                className="block"
               >
-                Like a Pro
-              </motion.span>
+                <RotatingChainText className="text-6xl sm:text-7xl lg:text-8xl font-black" interval={2000} />
+              </motion.div>
             </h1>
           </motion.div>
 
           {/* Subtitle */}
-          <motion.p 
+          <motion.p
             className="text-2xl sm:text-3xl text-gray-300 max-w-5xl mx-auto mb-16 leading-relaxed font-light"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.1 }}
           >
-            The most <span className="text-blue-400 font-semibold">powerful</span> and <span className="text-purple-400 font-semibold">user-friendly</span> way to launch ERC20 tokens on Base blockchain. 
+            The most <span className="text-blue-400 font-semibold">powerful</span> and <span className="text-purple-400 font-semibold">user-friendly</span> way to launch ERC20 tokens across multiple EVM blockchains.
             <br />
-            <span className="text-xl text-gray-400 mt-4 block">No coding skills required. Deploy in 5 seconds.</span>
+            <span className="text-xl text-gray-400 mt-4 block">No coding skills required. Support for 8+ chains including Base, Arbitrum, Polygon & more.</span>
           </motion.p>
 
           {/* Action Buttons */}
@@ -299,133 +300,137 @@ export default function HomePage() {
                 transition={{ duration: 0.3, delay: 0.2 }}
                 className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20 mb-6"
               >
-                <span className="text-sm font-medium text-green-400">⚡ Base Blockchain</span>
+                <span className="text-sm font-medium text-green-400">⚡ Multi-Chain EVM</span>
               </motion.div>
 
               <h2 className={`${typography.sectionTitle} text-3xl lg:text-4xl mb-6`}>
-                Why Choose <span className="bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">Base</span>?
+                Why Choose <span className="bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">EVM</span> Chains?
               </h2>
               <p className={`${typography.subtitle} text-xl max-w-3xl mx-auto`}>
-                Coinbase's Layer 2 blockchain offering 90% lower fees, instant confirmation, and <span className="text-blue-400 font-semibold">very high visibility</span> compared to oversaturated networks
+                Deploy on 8+ EVM blockchains including Base, Arbitrum, Polygon, BNB Chain & more. Lower fees, instant confirmation, and <span className="text-blue-400 font-semibold">maximum flexibility</span> for your project
               </p>
             </div>
 
-            {/* Comparison Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {/* Comparison: EVM L2s vs Solana */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
+              {/* EVM L2s - Winner */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.3 }}
-                className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-2xl p-6"
+                className="relative bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/40 rounded-2xl p-6"
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mr-4 p-2">
-                    <svg className="w-full h-full text-white" viewBox="0 0 111 111" fill="currentColor">
-                      <path d="M54.921 110.034C85.359 110.034 110.034 85.402 110.034 55.017C110.034 24.632 85.359 0 54.921 0C26.790 0 3.67 21.471 0.637 48.858H61.711V61.209H0.637C3.67 88.596 26.790 110.034 54.921 110.034Z"/>
-                    </svg>
+                <div className="absolute -top-3 -right-3">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+                    ✓ RECOMMENDED
                   </div>
-                  <h3 className="text-xl font-bold text-blue-400">Base</h3>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Liquidity Pool</span>
-                    <span className="text-blue-400 font-semibold">FREE</span>
+
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">EVM Layer 2s</h3>
+                  <p className="text-green-200 text-sm">Base • Arbitrum • Optimism • Polygon</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">High Visibility</p>
+                      <p className="text-gray-400 text-sm">Stand out with lower token volume</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Transaction Speed</span>
-                    <span className="text-blue-400 font-semibold">2 seconds</span>
+
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">Mature DeFi Ecosystem</p>
+                      <p className="text-gray-400 text-sm">Uniswap, DEXes, bridges & more</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Visibility</span>
-                    <span className="text-blue-400 font-semibold">Very High</span>
+
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">Ultra Low Fees</p>
+                      <p className="text-gray-400 text-sm">$0.01 - $3 per transaction</p>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Ecosystem</span>
-                    <span className="text-blue-400 font-semibold">Coinbase</span>
+
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">EVM Compatible</p>
+                      <p className="text-gray-400 text-sm">Works with MetaMask, Ethereum tools</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
 
+              {/* Solana - Not Recommended */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
-                className="bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-2xl p-6"
+                className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-2xl p-6"
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center mr-4 p-2">
-                    <svg className="w-full h-full text-white" viewBox="0 0 256 417" fill="currentColor">
-                      <path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z"/>
-                      <path d="M127.962 0L0 212.32l127.962 75.639V154.158z" fill="#8C8C8C"/>
-                      <path d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.601L256 236.587z"/>
-                      <path d="M127.962 416.905v-104.72L0 236.585z" fill="#8C8C8C"/>
-                      <path d="M127.961 287.958l127.96-75.637-127.96-58.162z" fill="#F2F2F2"/>
-                      <path d="M0 212.32l127.96 75.638v-133.8z" fill="#8C8C8C"/>
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-red-400">Ethereum</h3>
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">Solana</h3>
+                  <p className="text-orange-200 text-sm">Alternative Platform</p>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Liquidity Pool</span>
-                    <span className="text-red-400 font-semibold">$60</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Transaction Speed</span>
-                    <span className="text-red-400 font-semibold">5 seconds</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Visibility</span>
-                    <span className="text-yellow-400 font-semibold">High</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Ecosystem</span>
-                    <span className="text-yellow-400 font-semibold">Largest DeFi</span>
-                  </div>
-                </div>
-              </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, x: 0 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.5 }}
-                className="bg-gradient-to-br from-orange-500/10 to-yellow-500/10 border border-orange-500/20 rounded-2xl p-6"
-              >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center mr-4 p-2">
-                    <img 
-                      src="https://cryptologos.cc/logos/solana-sol-logo.png" 
-                      alt="Solana Logo" 
-                      className="w-8 h-8 object-contain"
-                      onError={(e) => {
-                        // Fallback to another official Solana logo URL if first one fails
-                        e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png"
-                      }}
-                    />
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">Heavily Oversaturated</p>
+                      <p className="text-gray-400 text-sm">10,000+ new tokens daily</p>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-orange-400">Solana</h3>
+
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">Very Low Visibility</p>
+                      <p className="text-gray-400 text-sm">Hard to stand out from the crowd</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-orange-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-7.732-12a2 2 0 00-3.464 0L2.268 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">Scam-Heavy Reputation</p>
+                      <p className="text-gray-400 text-sm">Many rug pulls hurt trust</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <svg className="w-6 h-6 text-orange-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <p className="text-white font-medium">Different Tech Stack</p>
+                      <p className="text-gray-400 text-sm">Not EVM - needs custom tools</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Liquidity Pool</span>
-                    <span className="text-orange-400 font-semibold">$40</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Market Saturation</span>
-                    <span className="text-red-400 font-semibold">Oversaturated</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Visibility</span>
-                    <span className="text-red-400 font-semibold">Very Low</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Ecosystem</span>
-                    <span className="text-orange-400 font-semibold">Memecoin Heavy</span>
-                  </div>
-                </div>
-                <div className="mt-4 p-3 bg-orange-500/10 rounded-lg">
-                  <p className="text-xs text-orange-200">
-                    ⚠️ Thousands of new memecoins daily - very hard to get noticed
+
+                <div className="mt-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                  <p className="text-xs text-red-200">
+                    ⚠️ Unless you have a very specific reason for Solana, EVM L2s offer better visibility and success rates for new projects
                   </p>
                 </div>
               </motion.div>
@@ -444,8 +449,8 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white mb-2">Low Cost</h4>
-                <p className="text-gray-400 text-sm">90% lower fees than Ethereum mainnet</p>
+                <h4 className="font-semibold text-white mb-2">Ultra Low Fees</h4>
+                <p className="text-gray-400 text-sm">95% cheaper than Ethereum L1</p>
               </motion.div>
 
               <motion.div
@@ -456,11 +461,11 @@ export default function HomePage() {
               >
                 <div className="w-16 h-16 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white mb-2">Fast Speed</h4>
-                <p className="text-gray-400 text-sm">2-second transaction confirmation</p>
+                <h4 className="font-semibold text-white mb-2">Choose Your Chain</h4>
+                <p className="text-gray-400 text-sm">Deploy on 8+ different EVM networks</p>
               </motion.div>
 
               <motion.div
@@ -471,11 +476,11 @@ export default function HomePage() {
               >
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h4 className="font-semibold text-white mb-2">Secure</h4>
-                <p className="text-gray-400 text-sm">Backed by Coinbase infrastructure</p>
+                <h4 className="font-semibold text-white mb-2">Lightning Fast</h4>
+                <p className="text-gray-400 text-sm">1-2 second confirmations on L2s</p>
               </motion.div>
             </div>
           </div>
@@ -506,7 +511,7 @@ export default function HomePage() {
                 <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">No-Code</span> Token Creation
               </h2>
               <p className={`${typography.subtitle} text-xl max-w-3xl mx-auto`}>
-                Professional-grade tools for ERC20 deployment, liquidity management, and DeFi integration on Base
+                Professional-grade tools for ERC20 deployment, liquidity management, and DeFi integration across 8+ EVM chains
               </p>
             </div>
 
@@ -757,7 +762,7 @@ export default function HomePage() {
                     </div>
                     <h3 className="text-xl font-bold text-white mb-3">Switch Network</h3>
                     <p className="text-orange-200">
-                      Please switch to Base mainnet or Base Sepolia testnet to create tokens. Your wallet needs to be on the correct network.
+                      Please switch to a supported EVM network to create tokens. Choose from Base, Arbitrum, Polygon, BNB Chain, Avalanche, or Fantom.
                     </p>
                   </div>
                 ) : (
@@ -801,7 +806,7 @@ export default function HomePage() {
                       </div>
                       <h3 className="text-xl font-bold text-white mb-3">Token Created Successfully!</h3>
                       <p className="text-green-200 mb-4">
-                        Your token has been deployed to Base blockchain.
+                        Your token has been deployed to {getNetworkName()}.
                       </p>
                       <div className="bg-black/20 rounded-xl p-4 mb-6">
                         <p className="text-xs font-mono break-all text-gray-300">

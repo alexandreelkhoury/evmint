@@ -46,6 +46,7 @@ export const privyConfig = {
     appearance: {
       theme: 'dark',
       accentColor: '#3B82F6',
+      showWalletLoginFirst: false,
     },
     embeddedWallets: {
       createOnLogin: 'off',
@@ -55,6 +56,8 @@ export const privyConfig = {
     defaultChain: baseConfig,
     // CRITICAL: This must exactly match wagmi's chains array
     supportedChains: ALL_CHAINS,
+    // Enable wallet modal features
+    walletConnectCloudProjectId: 'your-project-id', // Optional for WalletConnect
   },
 }
 

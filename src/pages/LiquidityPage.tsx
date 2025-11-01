@@ -14,6 +14,9 @@ import { useTokenSelection } from '../hooks/useTokenSelection'
 import { useUniswapV2Liquidity } from '../hooks/useUniswapV2Liquidity'
 import { useGlobalToasts } from '../App'
 import { formatUnits } from 'viem'
+import { validateAndFormatAddress, isValidEthereumAddress } from '../utils/validation'
+import { loggers } from '../utils/logger'
+import { TOKEN_ADDRESSES, TIMEOUTS } from '../config/constants'
 
 interface Token {
   address: string
@@ -94,7 +97,7 @@ export default function LiquidityPage() {
   // Token selection state
   const [tokenA, setTokenA] = useState<Token | null>(null)
   const [tokenB, setTokenB] = useState<Token | null>({
-    address: '0x4200000000000000000000000000000000000006',
+    address: TOKEN_ADDRESSES.WETH,
     name: 'Ethereum',
     symbol: 'ETH',
     decimals: 18
@@ -127,20 +130,42 @@ export default function LiquidityPage() {
   // Handle adding token from address
   const handleAddTokenFromAddress = useCallback(async () => {
     if (!tokenAddressInput) return
-    
+
     try {
-      await addCustomToken(tokenAddressInput)
+      // ✅ VALIDATE ADDRESS FORMAT
+      const validatedAddress = validateAndFormatAddress(tokenAddressInput)
+      loggers.liquidity.info('Adding custom token:', validatedAddress)
+
+      await addCustomToken(validatedAddress)
       setTokenAddressInput('')
+
+      // Show success toast
+      addToast({
+        title: 'Token Added',
+        message: 'Token has been imported successfully',
+        type: 'success'
+      })
     } catch (error: any) {
-      console.error('❌ BASE TOKEN LAUNCHER - Failed to add token:', error)
+      loggers.liquidity.error('Failed to add token:', error)
+
+      // Show user-friendly error message
+      const isValidationError = error.message.includes('Invalid Ethereum') || error.message.includes('Address is required')
+
+      addToast({
+        title: 'Failed to Add Token',
+        message: isValidationError
+          ? error.message
+          : 'Could not load token. Please check the address and try again.',
+        type: 'error'
+      })
+
       trackLiquidityError(analytics, error, {
         operationType: 'add_custom_token',
         tokenAddress: tokenAddressInput,
-        network: 'base'
+        network: currentChainId?.toString() || 'unknown'
       });
-      // Error handling could show a toast here if needed
     }
-  }, [tokenAddressInput, addCustomToken])
+  }, [tokenAddressInput, addCustomToken, addToast, analytics, currentChainId])
 
 
   // Validation functions
@@ -180,13 +205,13 @@ export default function LiquidityPage() {
   // Optimized token balance fetching
   const { data: balanceA } = useBalance({
     address: userAddress,
-    token: tokenA?.address === '0x4200000000000000000000000000000000000006' ? undefined : tokenA?.address as `0x${string}`,
+    token: tokenA?.address === TOKEN_ADDRESSES.WETH ? undefined : tokenA?.address as `0x${string}`,
     query: { enabled: !!userAddress && !!tokenA }
   })
 
   const { data: balanceB } = useBalance({
     address: userAddress,
-    token: tokenB?.address === '0x4200000000000000000000000000000000000006' ? undefined : tokenB?.address as `0x${string}`,
+    token: tokenB?.address === TOKEN_ADDRESSES.WETH ? undefined : tokenB?.address as `0x${string}`,
     query: { enabled: !!userAddress && !!tokenB }
   })
 
@@ -235,7 +260,7 @@ export default function LiquidityPage() {
       setShowProgressModal(true)
     }, 100)
     
-    const isTokenAEth = tokenA.address === '0x4200000000000000000000000000000000000006'
+    const isTokenAEth = tokenA.address === TOKEN_ADDRESSES.WETH
     const customToken = isTokenAEth ? tokenB : tokenA
     const ethAmount = isTokenAEth ? amountA : amountB
     const tokenAmount = isTokenAEth ? amountB : amountA
@@ -248,9 +273,8 @@ export default function LiquidityPage() {
         tokenAmount,
         ethAmount
       )
-      console.log('🚀 Liquidity addition transaction initiated')
     } catch (error: any) {
-      console.error('❌ BASE TOKEN LAUNCHER - Liquidity addition error:', error)
+      loggers.ui.error('❌ BASE TOKEN LAUNCHER - Liquidity addition error:', error)
       
       // Track detailed liquidity error
       trackLiquidityError(analytics, error, {
@@ -258,7 +282,7 @@ export default function LiquidityPage() {
         tokenAddress: tokenA?.address,
         tokenAmount: amountA,
         ethAmount: amountB,
-        network: 'base'
+        network: currentChainId?.toString() || 'unknown'
       });
     }
   }, [tokenA, tokenB, amountA, amountB, validateInputs, resetLoadingStates, addLiquidity])
@@ -267,7 +291,8 @@ export default function LiquidityPage() {
     try {
       if (poolIdOrMode === 'withdraw') {
         if (!validateInputs() || !selectedLpToken) return
-        console.log('🔄 Removing liquidity via withdraw mode:', {
+
+        loggers.liquidity.info('Removing liquidity (withdraw mode):', {
           lpTokenAddress: selectedLpToken.address,
           amount: lpTokenAmount
         })
@@ -278,8 +303,8 @@ export default function LiquidityPage() {
         if (!pool) {
           throw new Error('Pool not found')
         }
-        
-        console.log('🔄 Removing liquidity from legacy pool:', {
+
+        loggers.liquidity.info('Removing liquidity (pool mode):', {
           poolId: poolIdOrMode,
           tokenSymbol: pool.tokenSymbol,
           storedLpAddress: pool.poolAddress,
@@ -289,19 +314,18 @@ export default function LiquidityPage() {
         await removeLiquidity(poolIdOrMode)
       }
       
-      console.log('🚀 Liquidity removal transaction initiated')
       
       // FIX: Don't reset LP token selection immediately - wait for transaction completion
       // The reset will happen in the success handler instead
     } catch (error: any) {
-      console.error('❌ BASE TOKEN LAUNCHER - Liquidity removal error:', error)
+      loggers.ui.error('❌ BASE TOKEN LAUNCHER - Liquidity removal error:', error)
       
       // Track detailed liquidity removal error
       trackLiquidityError(analytics, error, {
         operationType: 'remove_liquidity',
         tokenAddress: selectedLpToken?.address,
         lpTokenAmount: lpTokenAmount,
-        network: 'base'
+        network: currentChainId?.toString() || 'unknown'
       });
       
       addToast({
@@ -334,11 +358,9 @@ export default function LiquidityPage() {
       
       // FIX: Reload LP tokens immediately after successful liquidity addition
       if (!isWithdrawal) {
-        console.log('🔄 Reloading LP tokens after successful liquidity addition...')
         loadUserLPTokens()
       } else {
         // FIX: Reset LP token selection only AFTER successful withdrawal
-        console.log('✅ Withdrawal completed, resetting LP token selection...')
         setSelectedLpToken(null)
         setLpTokenAmount('')
         loadUserLPTokens() // Also reload LP tokens to update balances
@@ -348,7 +370,7 @@ export default function LiquidityPage() {
 
   // Progress modal state management - CLEAN: Only handle proper success detection
   useEffect(() => {
-    console.log('🔍 Progress Modal State Check:', {
+    loggers.liquidity.info('Progress modal state:', {
       showProgressModal,
       isAddingLiquidity,
       currentStep,
@@ -356,14 +378,14 @@ export default function LiquidityPage() {
       transactionHash: !!transactionHash,
       timestamp: new Date().toISOString()
     })
-    
+
     // Success detection - when we have successful pool, close progress modal immediately
     if (showProgressModal && lastSuccessfulPool) {
-      console.log('🎉 Success detected! Closing progress modal...', {
+      loggers.liquidity.info('Closing progress modal on success:', {
         poolId: lastSuccessfulPool.id,
         txHash: lastSuccessfulPool.txHash
       })
-      
+
       setShowProgressModal(false)
     }
   }, [showProgressModal, lastSuccessfulPool])
@@ -432,9 +454,9 @@ export default function LiquidityPage() {
       </div>
 
       <SEO
-        title="Add Liquidity to Uniswap V2 on Base - Earn Trading Fees"
-        description="Add liquidity to Uniswap V2 pools on Base blockchain and start earning trading fees. Provide liquidity for your tokens and ETH pairs."
-        keywords="uniswap v2 liquidity, base blockchain liquidity, add liquidity base, earn trading fees, liquidity provider"
+        title="Add Liquidity to Uniswap V2 - Earn Trading Fees on EVM Chains"
+        description="Add liquidity to Uniswap V2 pools across multiple EVM blockchains and start earning trading fees. Provide liquidity for your tokens on Base, Ethereum, Arbitrum, and more."
+        keywords="uniswap v2 liquidity, multi-chain liquidity, add liquidity evm, earn trading fees, liquidity provider, base arbitrum ethereum"
         canonical="/liquidity"
       />
       
@@ -492,7 +514,7 @@ export default function LiquidityPage() {
                   <div>
                     <div className="text-yellow-300 font-semibold">Network Notice</div>
                     <div className="text-yellow-200 text-sm">
-                      Uniswap V2 is only available on Base Mainnet. Please switch networks to use liquidity features.
+                      Uniswap V2 liquidity features require a supported mainnet. Please switch to a compatible network to continue.
                     </div>
                   </div>
                 </div>
@@ -766,7 +788,7 @@ export default function LiquidityPage() {
                   </div>
                 ) : !isV2CorrectChain ? (
                   <div className={`${colors.warningBg} rounded-2xl p-6 text-center`}>
-                    <p className="text-orange-200">Please switch to Base network</p>
+                    <p className="text-orange-200">Please switch to a supported mainnet</p>
                   </div>
                 ) : (
                   <motion.button
@@ -939,7 +961,7 @@ export default function LiquidityPage() {
                   </div>
                 ) : !isV2CorrectChain ? (
                   <div className={`${colors.warningBg} rounded-2xl p-6 text-center`}>
-                    <p className="text-orange-200">Please switch to Base network</p>
+                    <p className="text-orange-200">Please switch to a supported mainnet</p>
                   </div>
                 ) : (
                   <motion.button
@@ -1058,7 +1080,7 @@ export default function LiquidityPage() {
 
         {lastSuccessfulPool && !showProgressModal && (
           <>
-            {console.log('🎉 RENDERING SUCCESS MODAL!', {
+            {loggers.liquidity.info('Showing success modal:', {
               poolId: lastSuccessfulPool.id,
               txHash: lastSuccessfulPool.txHash,
               lpTokenAddress: lastSuccessfulPool.poolAddress,

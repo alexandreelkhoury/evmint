@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect } from 'react'
 import { usePublicClient, useAccount, useChainId } from 'wagmi'
 import type { LPToken } from './useUniswapV2Liquidity'
+import { TOKEN_ADDRESSES } from '../config/constants'
+import { loggers } from '../utils/logger'
 
 // ERC20 ABI for token details
 const ERC20_ABI = [
@@ -83,7 +85,7 @@ export function useTokenSelection() {
   // Default available tokens (ETH/WETH)
   const availableTokens: Token[] = [
     {
-      address: '0x4200000000000000000000000000000000000006',
+      address: TOKEN_ADDRESSES.WETH,
       name: 'Ethereum',
       symbol: 'ETH',
       decimals: 18
@@ -147,7 +149,7 @@ export function useTokenSelection() {
         setUserCreatedTokens(convertedTokens)
       }
     } catch (error) {
-      console.error('Error loading user created tokens:', error)
+      loggers.liquidity.error('Error loading user created tokens:', error)
     }
   }, [userAddress, chainId])
 
@@ -178,7 +180,7 @@ export function useTokenSelection() {
         setUserLPTokens(formattedLPTokens)
       }
     } catch (error) {
-      console.error('Error loading LP tokens:', error)
+      loggers.liquidity.error('Error loading LP tokens:', error)
       setUserLPTokens([])
     }
   }, [userAddress, chainId])
@@ -228,9 +230,9 @@ export function useTokenSelection() {
       }
 
       setCustomTokens(prev => [...prev, newToken])
-      console.log('✅ Token added successfully:', newToken)
+      loggers.liquidity.success('Token added successfully:', newToken)
     } catch (error) {
-      console.error('❌ Failed to add custom token:', error)
+      loggers.liquidity.error('Failed to add custom token:', error)
       throw error
     } finally {
       setIsLoadingCustomToken(false)
@@ -272,7 +274,7 @@ export function useTokenSelection() {
         decimals: Number(decimals)
       }
     } catch (error) {
-      console.error('Failed to fetch token details:', error)
+      loggers.liquidity.error('Failed to fetch token details:', error)
       return null
     }
   }, [publicClient])

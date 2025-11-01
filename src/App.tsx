@@ -19,6 +19,7 @@ import TermsOfServicePage from './pages/TermsOfServicePage'
 import CookiePolicyPage from './pages/CookiePolicyPage'
 import RiskDisclosurePage from './pages/RiskDisclosurePage'
 import LegalDisclaimersPage from './pages/LegalDisclaimersPage'
+import { LiquidityProvider } from './contexts/LiquidityContext'
 
 // Create a context for toasts to be used globally
 import { createContext, useContext } from 'react'
@@ -47,7 +48,11 @@ function AppContent() {
             <Route path="/" element={<HomePage />} />
             <Route path="/create" element={<CreateTokenPage />} />
             <Route path="/tokens" element={<TokensPage />} />
-            <Route path="/liquidity" element={<LiquidityPage />} />
+            <Route path="/liquidity" element={
+              <LiquidityProvider>
+                <LiquidityPage />
+              </LiquidityProvider>
+            } />
             <Route path="/guide" element={<GuidePage />} />
             <Route path="/guides" element={<GuidesPage />} />
             <Route path="/guides/:guideId" element={<GuidePage />} />

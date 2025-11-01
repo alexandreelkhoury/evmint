@@ -142,3 +142,105 @@ export const VALIDATION_CONSTANTS = {
   MAX_DECIMALS: 18,
   MAX_SUPPLY: BigInt('115792089237316195423570985008687907853269984665640564039457584007913129639935') // uint256 max
 } as const
+
+// ===================================
+// ADDRESS VALIDATION
+// ===================================
+
+/**
+ * Ethereum address format regex
+ * Matches: 0x followed by 40 hexadecimal characters
+ */
+const ETH_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
+
+/**
+ * Check if a string is a valid Ethereum address format
+ * @param address - The address string to validate
+ * @returns true if valid Ethereum address format
+ */
+export function isValidEthereumAddress(address: string): boolean {
+  if (!address || typeof address !== 'string') {
+    return false
+  }
+  return ETH_ADDRESS_REGEX.test(address.trim())
+}
+
+/**
+ * Validate and format an Ethereum address
+ * @param address - The address to validate
+ * @returns Formatted lowercase address
+ * @throws Error if address is invalid
+ */
+export function validateAndFormatAddress(address: string): string {
+  const trimmed = address.trim()
+
+  if (!trimmed) {
+    throw new Error('Address is required')
+  }
+
+  if (!isValidEthereumAddress(trimmed)) {
+    throw new Error('Invalid Ethereum address format. Must be 0x followed by 40 hexadecimal characters.')
+  }
+
+  // Normalize to lowercase
+  return trimmed.toLowerCase()
+}
+
+/**
+ * Check if address is the zero address
+ */
+export function isZeroAddress(address: string): boolean {
+  return address.toLowerCase() === '0x0000000000000000000000000000000000000000'
+}
+
+/**
+ * Check if address is a valid contract address (not zero address)
+ */
+export function isValidContractAddress(address: string): boolean {
+  return isValidEthereumAddress(address) && !isZeroAddress(address)
+}
+
+// ===================================
+// AMOUNT VALIDATION
+// ===================================
+
+/**
+ * Check if amount string is valid number format
+ */
+export function isValidAmount(amount: string): boolean {
+  if (!amount || typeof amount !== 'string') {
+    return false
+  }
+
+  const num = parseFloat(amount)
+  return !isNaN(num) && num > 0 && isFinite(num)
+}
+
+/**
+ * Validate numeric amount
+ * @param amount - Amount as string
+ * @param fieldName - Field name for error message
+ * @returns Validated amount as number
+ * @throws Error if invalid
+ */
+export function validateAmount(amount: string, fieldName: string = 'amount'): number {
+  if (!amount || amount.trim() === '') {
+    throw new Error(`${fieldName} is required`)
+  }
+
+  const num = parseFloat(amount)
+
+  if (isNaN(num)) {
+    throw new Error('Please enter a valid number')
+  }
+
+  if (!isFinite(num)) {
+    throw new Error('Amount must be a finite number')
+  }
+
+  if (num <= 0) {
+    throw new Error('Amount must be greater than 0')
+  }
+
+  return num
+}

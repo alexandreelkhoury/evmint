@@ -3,16 +3,18 @@ import { useAccount, useChainId, useSwitchChain, useDeployContract, useWaitForTr
 import { parseEther } from 'viem'
 import { isChainSupported, baseConfig } from '../config/chains'
 import { MY_ERC20_ABI, MY_ERC20_BYTECODE, FEE_RECIPIENT } from '../contracts/MyERC20Artifacts'
-import { 
+import {
   verifyContractWithEtherscan,
   encodeConstructorArguments,
   type VerificationResult
 } from '../utils/contractVerification'
-import { 
-  validateTokenData, 
+import {
+  validateTokenData,
   sanitizeString,
-  type TokenValidationResult 
+  type TokenValidationResult
 } from '../utils/validation'
+import { TIMEOUTS, FEES } from '../config/constants'
+import { loggers } from '../utils/logger'
 
 // Use the validated token data type from validation system
 export type TokenData = TokenValidationResult
@@ -73,8 +75,8 @@ export function useOpenZeppelinTokenDeployment() {
     if (!publicClient || !userAddress) return
 
     try {
-      console.log('🔄 Fetching real token data from contract:', tokenAddress)
-      
+      loggers.contract.info('Fetching real token data from contract:', tokenAddress)
+
       // Fetch token details from deployed contract
       const [name, symbol, decimals, totalSupply] = await Promise.all([
         publicClient.readContract({
@@ -123,13 +125,13 @@ export function useOpenZeppelinTokenDeployment() {
         if (tokenIndex >= 0) {
           allTokens[tokenIndex] = updatedToken
           localStorage.setItem(STORAGE_KEY, JSON.stringify(allTokens))
-          console.log('✅ Updated token with real contract data:', updatedToken)
+          loggers.contract.success('Updated token with real contract data:', updatedToken)
         }
       } catch (error) {
-        console.error('❌ Error updating token in storage:', error)
+        loggers.contract.error('Error updating token in storage:', error)
       }
     } catch (error) {
-      console.error('❌ Error fetching token contract data:', error)
+      loggers.contract.error('Error fetching token contract data:', error)
     }
   }, [publicClient, userAddress, chainId])
 
@@ -137,8 +139,8 @@ export function useOpenZeppelinTokenDeployment() {
     if (!userAddress) return
     
     setIsRefreshing(true)
-    console.log('🔄 loadUserTokens called, isInitialLoading:', isInitialLoading)
-    
+    loggers.contract.debug('loadUserTokens called, isInitialLoading:', isInitialLoading)
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
@@ -158,7 +160,7 @@ export function useOpenZeppelinTokenDeployment() {
         // Update localStorage if migration was needed
         if (needsUpdate) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(allTokens))
-          console.log('🔄 Migrated existing tokens to include chainId')
+          loggers.contract.info('Migrated existing tokens to include chainId')
         }
         
         const userCreatedTokens = allTokens.filter(token => 
@@ -166,11 +168,12 @@ export function useOpenZeppelinTokenDeployment() {
           token.chainId === chainId
         )
         
-        console.log(`🔍 Token filtering results:`)
-        console.log(`- Current chainId: ${chainId}`)
-        console.log(`- Total tokens in storage: ${allTokens.length}`)
-        console.log(`- User tokens on current network: ${userCreatedTokens.length}`)
-        console.log(`- Filtered tokens:`, userCreatedTokens.map(t => ({ name: t.name, symbol: t.symbol, chainId: t.chainId, address: t.address })))
+        loggers.contract.debug('Token filtering results:', {
+          currentChainId: chainId,
+          totalTokens: allTokens.length,
+          userTokensOnNetwork: userCreatedTokens.length,
+          filteredTokens: userCreatedTokens.map(t => ({ name: t.name, symbol: t.symbol, chainId: t.chainId, address: t.address }))
+        })
         
         setUserTokens(userCreatedTokens)
         
@@ -192,26 +195,26 @@ export function useOpenZeppelinTokenDeployment() {
         await new Promise(resolve => setTimeout(resolve, 300))
       }
     } catch (error) {
-      console.error('Error loading user tokens:', error)
+      loggers.contract.error('Error loading user tokens:', error)
     } finally {
       setIsRefreshing(false)
       if (!hasInitiallyLoaded.current) {
         setIsInitialLoading(false)
         hasInitiallyLoaded.current = true
-        console.log('✅ First time loading completed, setting isInitialLoading to false')
+        loggers.contract.debug('First time loading completed, setting isInitialLoading to false')
       }
     }
   }, [userAddress, chainId, isInitialLoading, updateTokenWithContractData])
 
   // Load user tokens from localStorage on mount
   useEffect(() => {
-    console.log('📡 useEffect triggered - userAddress:', userAddress, 'chainId:', chainId, 'hasInitiallyLoaded:', hasInitiallyLoaded.current)
+    loggers.contract.debug('useEffect triggered', { userAddress, chainId, hasInitiallyLoaded: hasInitiallyLoaded.current })
     if (userAddress) {
       loadUserTokens()
     } else {
       // No user address yet, set initial loading to false immediately
       if (!hasInitiallyLoaded.current) {
-        console.log('⚡ No userAddress, setting isInitialLoading to false')
+        loggers.contract.debug('No userAddress, setting isInitialLoading to false')
         setIsInitialLoading(false)
         hasInitiallyLoaded.current = true
       }
@@ -239,13 +242,13 @@ export function useOpenZeppelinTokenDeployment() {
       allTokens.push(newToken)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(allTokens))
     } catch (error) {
-      console.error('Error saving token to storage:', error)
+      loggers.contract.error('Error saving token to storage:', error)
     }
   }
 
   const verifyDeployedContract = useCallback(async (contractAddress: string) => {
     if (!pendingTokenDataRef.current) {
-      console.warn('⚠️ No token data available for verification')
+      loggers.contract.warn('No token data available for verification')
       return
     }
 
@@ -255,24 +258,24 @@ export function useOpenZeppelinTokenDeployment() {
       setIsVerifying(true)
       setVerificationStatus('pending')
       
-      console.log('🔍 Starting contract verification for:', contractAddress)
-      
+      loggers.contract.info('Starting contract verification for:', contractAddress)
+
       // Wait for the contract to be available on the network (blockchain propagation)
-      console.log('⏳ Waiting for contract to propagate on blockchain...')
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      loggers.contract.info('Waiting for contract to propagate on blockchain...')
+      await new Promise(resolve => setTimeout(resolve, TIMEOUTS.POLLING_INTERVAL))
       
       // Verify the contract exists by checking bytecode
       if (publicClient) {
         try {
           const bytecode = await publicClient.getBytecode({ address: contractAddress as `0x${string}` })
           if (!bytecode || bytecode === '0x') {
-            console.error('❌ No contract found at address:', contractAddress)
+            loggers.contract.error('No contract found at address:', contractAddress)
             setVerificationStatus('failed')
             return
           }
-          console.log('✅ Contract bytecode confirmed at:', contractAddress)
+          loggers.contract.success('Contract bytecode confirmed at:', contractAddress)
         } catch (error) {
-          console.error('❌ Error checking contract bytecode:', error)
+          loggers.contract.error('Error checking contract bytecode:', error)
           setVerificationStatus('failed')
           return
         }
@@ -288,17 +291,17 @@ export function useOpenZeppelinTokenDeployment() {
       )
 
       if (verificationResult.success && verificationResult.isVerified) {
-        console.log('✅ Contract verification submitted successfully!')
+        loggers.contract.success('Contract verification submitted successfully!')
         setVerificationStatus('success')
         setVerificationMethod('etherscan')
       } else {
-        console.warn('⚠️ Contract verification failed')
-        console.log('Verification result:', verificationResult.message)
+        loggers.contract.warn('Contract verification failed')
+        loggers.contract.info('Verification result:', verificationResult.message)
         setVerificationStatus('failed')
       }
 
     } catch (error) {
-      console.error('❌ Error during contract verification:', error)
+      loggers.contract.error('Error during contract verification:', error)
       setVerificationStatus('failed')
     } finally {
       setIsVerifying(false)
@@ -313,12 +316,12 @@ export function useOpenZeppelinTokenDeployment() {
         setCreatedTokenAddress(newTokenAddress)
         addTokenToStorage(newTokenAddress, hash!)
         
-        console.log('✅ Token creation successful')
-        
+        loggers.contract.success('Token creation successful')
+
         // Wait a moment for the contract to be available, then fetch real data
         setTimeout(() => {
           updateTokenWithContractData(newTokenAddress, hash!)
-        }, 2000)
+        }, TIMEOUTS.TRANSACTION_RETRY_DELAY)
         
         loadUserTokens()
 
@@ -331,11 +334,12 @@ export function useOpenZeppelinTokenDeployment() {
   // Handle errors with detailed debugging
   useEffect(() => {
     if (deployError) {
-      console.error('🚨 DEPLOYMENT ERROR DETAILS:')
-      console.error('Full error object:', deployError)
-      console.error('Error message:', deployError.message)
-      console.error('Error name:', deployError.name)
-      console.error('Error stack:', deployError.stack)
+      loggers.contract.error('DEPLOYMENT ERROR DETAILS:', {
+        error: deployError,
+        message: deployError.message,
+        name: deployError.name,
+        stack: deployError.stack
+      })
       
       
       let cleanMessage = 'Deployment failed'
@@ -392,9 +396,9 @@ export function useOpenZeppelinTokenDeployment() {
     }
 
     // Temporarily bypass validation to debug stack underflow issue
-    console.log('🔍 Using direct token data without validation...')
+    loggers.contract.debug('Using direct token data without validation...')
     const sanitizedTokenData = tokenData
-    console.log('✅ Token data (no validation):', sanitizedTokenData)
+    loggers.contract.debug('Token data (no validation):', sanitizedTokenData)
 
     // Skip security analysis for now
     const securityAnalysis = { riskLevel: 'low' as const, warnings: [] }
@@ -418,18 +422,20 @@ export function useOpenZeppelinTokenDeployment() {
     pendingTokenDataRef.current = sanitizedTokenData
 
     try {
-      console.log('🚀 Attempting token deployment with sanitized data...')
-      console.log('User address:', userAddress)
-      console.log('Chain ID:', chainId)
-      console.log('Sanitized token data:', sanitizedTokenData)
-      console.log('Security risk level:', securityAnalysis.riskLevel)
-      
+      loggers.contract.info('Attempting token deployment with sanitized data')
+      loggers.contract.debug('Deployment details:', {
+        userAddress,
+        chainId,
+        tokenData: sanitizedTokenData,
+        riskLevel: securityAnalysis.riskLevel
+      })
+
       // Final validation check
       if (!sanitizedTokenData.name || !sanitizedTokenData.symbol || !sanitizedTokenData.totalSupply) {
         throw new Error('Missing required token data after sanitization')
       }
-      
-      console.log('🚀 Deploying with args:', {
+
+      loggers.contract.info('Deploying with args:', {
         name: sanitizedTokenData.name,
         symbol: sanitizedTokenData.symbol,
         totalSupply: sanitizedTokenData.totalSupply,
@@ -445,7 +451,7 @@ export function useOpenZeppelinTokenDeployment() {
           BigInt(sanitizedTokenData.totalSupply),
           sanitizedTokenData.decimals
         ],
-        value: BigInt(20000000000000000), // 0.02 ETH in wei - matches contract FEE constant
+        value: parseEther(FEES.DEPLOYMENT_FEE.toString()), // 0.02 ETH - matches contract FEE constant
       })
 
       // What happens after clicking "Confirm" in MetaMask:

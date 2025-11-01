@@ -12,7 +12,7 @@ interface SEOProps {
 
 export default function SEO({ 
   title = "Base Token Creator - Launch ERC20 Tokens in 5 Seconds | 90% Lower Fees",
-  description = "🚀 Create ERC20 tokens on Base blockchain instantly! No coding required. Deploy for <$1, add Uniswap liquidity, get verified on BaseScan. Used by 10,000+ projects. Start your crypto empire today!",
+  description = "🚀 Create ERC20 tokens on 8+ EVM blockchains instantly! No coding required. Deploy for <$3, add liquidity on DEXes, auto-verify. Support for Base, Arbitrum, Polygon, BSC & more. Start your crypto empire today!",
   keywords = "base token creator, erc20 token generator, base blockchain, create cryptocurrency, meme coin creator, token launcher base, no code crypto, defi token maker, uniswap token, base layer 2, coinbase base, basescan token, crypto token generator, ethereum alternative, cheap token deployment",
   canonical,
   ogImage = "/og-image.png",
@@ -60,7 +60,7 @@ export default function SEO({
       <meta property="og:image" content={`${siteUrl}${ogImage}`} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="Base Token Creator - Launch ERC20 tokens on Base blockchain" />
+      <meta property="og:image:alt" content="Multi-Chain Token Creator - Launch ERC20 tokens on 8+ EVM blockchains" />
       <meta property="og:site_name" content="Base Token Creator" />
       <meta property="og:locale" content="en_US" />
       <meta property="fb:app_id" content="your-facebook-app-id" />

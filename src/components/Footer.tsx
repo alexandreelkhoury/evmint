@@ -17,7 +17,7 @@ export default function Footer() {
               <span className="text-base sm:text-lg font-bold text-white">Base Token Creator</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-md">
-              The most advanced platform for creating and managing ERC20 tokens on Base blockchain. Launch your project with 90% lower fees and lightning-fast transactions.
+              The most advanced platform for creating and managing ERC20 tokens across 8+ EVM blockchains. Launch your project with 95% lower fees and lightning-fast transactions.
             </p>
             <p className="text-gray-500 text-xs">
               No code required • 5-second deployment • Enterprise security

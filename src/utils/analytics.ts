@@ -263,9 +263,15 @@ export const trackButtonClick = (analytics: Analytics | null, buttonName: string
 
 export const trackFormSubmission = (analytics: Analytics | null, formName: string, success: boolean) => {
   if (!analytics) return
-  
+
   logEvent(analytics, 'form_submitted', {
     form_name: formName,
     success: success
   })
 }
+
+/**
+ * Generic event logging wrapper
+ * Use this for custom events in components
+ */
+export { logEvent }

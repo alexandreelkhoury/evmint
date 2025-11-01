@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt, useReadContract, usePublicClient } from 'wagmi'
 import { parseUnits, parseEther, formatUnits } from 'viem'
 import { getDexContracts, getWethAddress, getChainById, hasUniswapV2 } from '../config/chains'
+import { TIMEOUTS, RETRY_CONFIG, STORAGE_KEYS } from '../config/constants'
+import { loggers } from '../utils/logger'
 
 // Uniswap V2 Router ABI
 const ROUTER_ABI = [
@@ -308,13 +310,10 @@ export function useUniswapV2Liquidity() {
   } = useWriteContract({
     mutation: {
       onError: (error, variables, context) => {
-        console.error('🚨 Transaction Error:', {
+        loggers.liquidity.error('Transaction Error:', {
           error: error.message,
           code: (error as any)?.code,
-          cause: (error as any)?.cause,
-          variables,
-          context,
-          timestamp: new Date().toISOString()
+          cause: (error as any)?.cause
         })
         
         const errorType = getErrorType(error)
@@ -333,7 +332,7 @@ export function useUniswapV2Liquidity() {
         setIsPreparingRemoveLiquidity(false)
       },
       onSuccess: (data, variables, context) => {
-        console.log('✅ Transaction submitted successfully:', {
+        loggers.liquidity.success(' Transaction submitted successfully:', {
           hash: data,
           variables,
           context,
@@ -342,7 +341,7 @@ export function useUniswapV2Liquidity() {
         // Transaction hash is set in individual functions
       },
       onSettled: (data, error) => {
-        console.log('📋 Transaction settled:', {
+        loggers.liquidity.info(' Transaction settled:', {
           success: !!data,
           hasError: !!error,
           hash: data,
@@ -367,10 +366,10 @@ export function useUniswapV2Liquidity() {
     data: receipt
   } = useWaitForTransactionReceipt({
     hash: currentTxHash,
-    timeout: 300000, // 5 minutes timeout for testnet
+    timeout: TIMEOUTS.TRANSACTION_WAIT, // 5 minutes timeout for testnet
     query: {
-      retry: 15, // Increased retries
-      retryDelay: 2000, // Reduced delay
+      retry: RETRY_CONFIG.MAX_RETRIES, // Increased retries
+      retryDelay: TIMEOUTS.TRANSACTION_RETRY_DELAY, // Reduced delay
       enabled: !!currentTxHash // Only enable when we have a hash
     }
   })
@@ -423,7 +422,7 @@ export function useUniswapV2Liquidity() {
   useEffect(() => {
     if (poolToRemove && lpAllowance === undefined) {
       const contracts = getContracts()
-      console.log('🔍 LP Allowance Query Issue:', {
+      loggers.liquidity.info('LP allowance query state:', {
         lpTokenAddress: poolToRemove.poolAddress,
         routerAddress: contracts.router,
         queryEnabled: !!(userAddress && poolToRemove?.poolAddress && contracts.router)
@@ -439,8 +438,8 @@ export function useUniswapV2Liquidity() {
     query: {
       enabled: !!tokenToProcess?.address,
       retry: 5,
-      retryDelay: 2000,
-      staleTime: 300000 // 5 minutes
+      retryDelay: TIMEOUTS.TRANSACTION_RETRY_DELAY,
+      staleTime: TIMEOUTS.QUERY_STALE_TIME // 5 minutes
     }
   })
 
@@ -459,12 +458,12 @@ export function useUniswapV2Liquidity() {
       if (existingIndex === -1) {
         allLPTokens.push(lpToken)
         localStorage.setItem(LP_TOKENS_STORAGE_KEY, JSON.stringify(allLPTokens))
-        console.log('✅ LP token saved to storage for token selection:', lpToken)
+        loggers.liquidity.success(' LP token saved to storage for token selection:', lpToken)
       } else {
-        console.log('🔄 LP token already exists in storage:', lpToken.address)
+        loggers.liquidity.info(' LP token already exists in storage:', lpToken.address)
       }
     } catch (error) {
-      console.error('Error saving LP token to localStorage:', error)
+      loggers.liquidity.error('Error saving LP token to localStorage:', error)
     }
   }
 
@@ -479,7 +478,7 @@ export function useUniswapV2Liquidity() {
         
         // Validate data structure
         if (!Array.isArray(allPools)) {
-          console.warn('Invalid pools data structure in useEffect, clearing localStorage')
+          loggers.liquidity.warn('Invalid pools data structure in useEffect, clearing localStorage')
           localStorage.removeItem(LIQUIDITY_STORAGE_KEY)
           setUserPools([])
           return
@@ -496,7 +495,7 @@ export function useUniswapV2Liquidity() {
         let needsPoolUpdate = false
         userCreatedPools = userCreatedPools.map((pool: LiquidityPool) => {
           if (pool.poolAddress === '0x0000000000000000000000000000000000000000' || !pool.poolAddress) {
-            console.log('🔄 Migrating pool with invalid LP address:', pool.id)
+            loggers.liquidity.info(' Migrating pool with invalid LP address:', pool.id)
             needsPoolUpdate = true
             
             // Try to derive LP token address from Uniswap V2 factory
@@ -551,18 +550,18 @@ export function useUniswapV2Liquidity() {
             return updated || pool
           })
           localStorage.setItem(LIQUIDITY_STORAGE_KEY, JSON.stringify(updatedAllPools))
-          console.log('✅ Migrated pools with invalid LP addresses')
+          loggers.liquidity.success(' Migrated pools with invalid LP addresses')
         }
         
         setUserPools(userCreatedPools)
       }
     } catch (error) {
-      console.error('Error loading liquidity pools in useEffect:', error)
+      loggers.liquidity.error('Error loading liquidity pools in useEffect:', error)
       // Clear corrupted data
       try {
         localStorage.removeItem(LIQUIDITY_STORAGE_KEY)
       } catch (clearError) {
-        console.error('Error clearing localStorage in useEffect:', clearError)
+        loggers.liquidity.error('Error clearing localStorage in useEffect:', clearError)
       }
       setUserPools([])
     }
@@ -574,7 +573,6 @@ export function useUniswapV2Liquidity() {
       const isTestnet = chainId === baseSepolia.id
       const baseUrl = isTestnet ? 'https://sepolia.basescan.org' : 'https://basescan.org'
       console.log(`🔗 Transaction submitted! View on explorer: ${baseUrl}/tx/${currentTxHash}`)
-      console.log('⏳ Waiting for transaction confirmation...', {
         hash: currentTxHash,
         currentStep,
         isTokenProcess: !!tokenToProcess,
@@ -591,13 +589,10 @@ export function useUniswapV2Liquidity() {
     }
     
     if (isConfirming && currentTxHash) {
-      console.log('🔄 Transaction is being confirmed...')
       
       // Set a timeout to warn about slow confirmation
       const timeoutId = setTimeout(() => {
         if (isConfirming) {
-          console.log('⚠️ Transaction is taking longer than expected. This can happen on Base.')
-          console.log('💡 You can check the transaction status manually using the explorer link.')
         }
       }, 60000) // 1 minute warning
       
@@ -699,7 +694,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
     if (confirmError) {
       const errorType = getErrorType(confirmError)
       
-      console.error('🚨 Transaction Confirmation Error:', {
+      loggers.liquidity.error('🚨 Transaction Confirmation Error:', {
         error: confirmError.message,
         errorCode: (confirmError as any)?.code,
         errorType,
@@ -723,9 +718,9 @@ const getErrorMessage = (error: any, errorType: string): string => {
 
     // CRITICAL FIX: Only process receipt if it matches current transaction hash
     if (isConfirmed && receipt && receipt.transactionHash === currentTxHash) {
-      console.log('✅ Receipt matches current transaction hash - processing...')
+      loggers.liquidity.success(' Receipt matches current transaction hash - processing...')
     } else if (isConfirmed && receipt && receipt.transactionHash !== currentTxHash) {
-      console.log('⚠️ MISMATCH: Receipt is from old transaction, ignoring...', {
+      loggers.liquidity.warn(' MISMATCH: Receipt is from old transaction, ignoring...', {
         receiptHash: receipt.transactionHash,
         currentHash: currentTxHash,
         currentStep
@@ -734,7 +729,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
     }
 
     if (isConfirmed && receipt && receipt.transactionHash === currentTxHash) {
-      console.log('🎉 Transaction confirmed with receipt!', {
+      loggers.liquidity.success(' Transaction confirmed with receipt!', {
         currentStep,
         hash: currentTxHash,
         receiptStatus: receipt.status,
@@ -753,7 +748,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
       
       if (currentStep === 'approve' && tokenToProcess) {
         // Approval successful, now add liquidity
-        console.log('✅ Approval confirmed! Now adding liquidity...')
+        loggers.liquidity.success(' Approval confirmed! Now adding liquidity...')
         
         // CRITICAL: Reset currentTxHash before moving to next step
         // This prevents the receipt handler from thinking add liquidity is done
@@ -763,7 +758,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         // Use async pattern to properly handle the second transaction
         setTimeout(async () => {
           try {
-            console.log('🚀 Starting add liquidity step after approval...')
+            loggers.liquidity.info(' Starting add liquidity step after approval...')
             
             // Refresh allowance and wait a moment for blockchain state to update
             await refetchAllowance()
@@ -773,14 +768,13 @@ const getErrorMessage = (error: any, errorType: string): string => {
             
             await handleAddLiquidityStep(tokenToProcess)
           } catch (error) {
-            console.error('❌ Failed to add liquidity after approval:', error)
+            loggers.liquidity.error('❌ Failed to add liquidity after approval:', error)
             setError(error instanceof Error ? error : new Error('Failed to add liquidity'))
             setCurrentStep(null)
             setTokenToProcess(null)
           }
         }, 1500) // Increased delay to ensure approval is fully processed
       } else if (currentStep === 'add' && tokenToProcess) {
-        console.log('🏗️ Creating success pool object for liquidity addition...', {
           tokenToProcess,
           poolAddress,
           hash: currentTxHash,
@@ -793,7 +787,6 @@ const getErrorMessage = (error: any, errorType: string): string => {
         
         // Parse transaction logs to find LP token mint events
         if (receipt.logs && receipt.logs.length > 0) {
-          console.log('🔍 Analyzing transaction logs for LP token address...', {
             totalLogs: receipt.logs.length,
             logs: receipt.logs.map((log, i) => ({
               index: i,
@@ -811,7 +804,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
           
           if (lpMintEvents.length > 0) {
             actualLpTokenAddress = lpMintEvents[0].address
-            console.log('✅ Found LP token address from mint event:', actualLpTokenAddress)
+            loggers.liquidity.success(' Found LP token address from mint event:', actualLpTokenAddress)
           }
         }
 
@@ -838,7 +831,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
           imageUrl: `https://api.dicebear.com/7.x/shapes/svg?seed=${tokenInfo.address}&backgroundColor=10b981,3b82f6`
         }
 
-        console.log('🎯 Pool object created:', newPool)
+        loggers.liquidity.info(' Pool object created:', newPool)
 
         // Save to localStorage with error handling
         try {
@@ -847,14 +840,14 @@ const getErrorMessage = (error: any, errorType: string): string => {
           
           // Validate existing data
           if (!Array.isArray(allPools)) {
-            console.warn('Corrupted pools data, resetting...')
+            loggers.liquidity.warn('Corrupted pools data, resetting...')
             localStorage.setItem(LIQUIDITY_STORAGE_KEY, JSON.stringify([newPool]))
           } else {
             allPools.push(newPool)
             localStorage.setItem(LIQUIDITY_STORAGE_KEY, JSON.stringify(allPools))
           }
         } catch (storageError) {
-          console.error('Error saving pool to localStorage:', storageError)
+          loggers.liquidity.error('Error saving pool to localStorage:', storageError)
           // Still continue with the operation even if storage fails
         }
 
@@ -878,7 +871,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
           })
         }
         
-        console.log('🚀 CRITICAL: Setting lastSuccessfulPool - this should trigger success modal!', {
+        loggers.liquidity.info(' CRITICAL: Setting lastSuccessfulPool - this should trigger success modal!', {
           poolBeingSet: newPool,
           poolId: newPool.id,
           txHash: newPool.txHash,
@@ -888,7 +881,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         
         setLastSuccessfulPool(newPool) // Set result immediately for success detection
         
-        console.log('✅ SUCCESS STATE SET! Clearing processing states...', {
+        loggers.liquidity.success(' SUCCESS STATE SET! Clearing processing states...', {
           clearingCurrentStep: currentStep,
           clearingTokenToProcess: !!tokenToProcess,
           timestamp: new Date().toISOString()
@@ -902,7 +895,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         setIsPreparingAddLiquidity(false) // FIX: Clear immediate loading state
       } else if (currentStep === 'remove_approve' && poolToRemove) {
         // LP token approval successful, now remove liquidity
-        console.log('✅ LP token approval confirmed! Proceeding to remove liquidity...', {
+        loggers.liquidity.success(' LP token approval confirmed! Proceeding to remove liquidity...', {
           poolToRemove: poolToRemove.poolAddress,
           liquidityTokens: poolToRemove.liquidityTokens,
           hash: currentTxHash
@@ -919,15 +912,15 @@ const getErrorMessage = (error: any, errorType: string): string => {
             let finalLpBalance: bigint
             if (poolToRemove.liquidityTokens) {
               finalLpBalance = parseUnits(poolToRemove.liquidityTokens, 18)
-              console.log('✅ Using stored LP amount from pool:', finalLpBalance.toString())
+              loggers.liquidity.success(' Using stored LP amount from pool:', finalLpBalance.toString())
             } else {
               finalLpBalance = lpBalance || 0n
-              console.log('✅ Using blockchain LP balance:', finalLpBalance.toString())
+              loggers.liquidity.success(' Using blockchain LP balance:', finalLpBalance.toString())
             }
             
             await handleRemoveLiquidityStep(finalLpBalance)
           } catch (error) {
-            console.error('❌ Failed to remove liquidity:', error)
+            loggers.liquidity.error('❌ Failed to remove liquidity:', error)
             setError(error instanceof Error ? error : new Error('Failed to remove liquidity'))
             setCurrentStep(null)
             setPoolToRemove(null)
@@ -936,7 +929,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         }, 1000) // Small delay to ensure state updates
       } else if (currentStep === 'remove_liquidity' && poolToRemove) {
         // Liquidity removed successfully
-        console.log('✅ Liquidity removal confirmed!', {
+        loggers.liquidity.success(' Liquidity removal confirmed!', {
           poolId: poolToRemove.id,
           lpTokens: poolToRemove.liquidityTokens,
           hash: currentTxHash
@@ -1009,7 +1002,6 @@ const getErrorMessage = (error: any, errorType: string): string => {
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)
 
     // CRITICAL: Check current allowance before attempting add liquidity
-    console.log('🔍 PRE-LIQUIDITY ALLOWANCE CHECK')
     
     // FORCE a fresh read from blockchain instead of using cached allowance
     let actualOnChainAllowance: bigint
@@ -1030,14 +1022,14 @@ const getErrorMessage = (error: any, errorType: string): string => {
         args: [userAddress as `0x${string}`, getContracts().router as `0x${string}`]
       }) as bigint
     } catch (error) {
-      console.error('❌ Failed to read on-chain allowance:', error)
+      loggers.liquidity.error('❌ Failed to read on-chain allowance:', error)
       throw new Error('Failed to verify token allowance. Please try again.')
     }
 
     const cachedAllowance = (allowance as bigint) || 0n
     const routerAddress = getContracts().router
     
-    console.log('🦄 Adding liquidity to Uniswap V2...', {
+    loggers.liquidity.info(' Adding liquidity to Uniswap V2...', {
       token: tokenInfo.address,
       tokenAmount: tokenInfo.tokenAmount,
       ethAmount: tokenInfo.ethAmount,
@@ -1078,11 +1070,11 @@ const getErrorMessage = (error: any, errorType: string): string => {
         args: [userAddress as `0x${string}`]
       }) as bigint
     } catch (error) {
-      console.error('❌ Failed to read token balance:', error)
+      loggers.liquidity.error('❌ Failed to read token balance:', error)
       throw new Error('Failed to verify token balance. Please try again.')
     }
 
-    console.log('💰 TOKEN BALANCE CHECK:', {
+    loggers.liquidity.debug(' TOKEN BALANCE CHECK:', {
       tokenBalance: actualTokenBalance.toString(),
       amountNeeded: tokenAmountWei.toString(),
       hasEnoughTokens: actualTokenBalance >= tokenAmountWei,
@@ -1097,7 +1089,6 @@ const getErrorMessage = (error: any, errorType: string): string => {
     }
 
     // CRITICAL: Test if the token can be transferred at all
-    console.log('🧪 TESTING DIRECT TOKEN TRANSFER CAPABILITY...')
     try {
       // Test a very small transfer to the router to see if it works
       const testAmount = 1000000000000000000n // 1 token
@@ -1118,9 +1109,9 @@ const getErrorMessage = (error: any, errorType: string): string => {
         account: userAddress as `0x${string}`
       })
       
-      console.log('✅ Direct transfer simulation successful - token can be transferred')
+      loggers.liquidity.success(' Direct transfer simulation successful - token can be transferred')
     } catch (transferError: any) {
-      console.error('❌ DIRECT TRANSFER TEST FAILED:', {
+      loggers.liquidity.error('❌ DIRECT TRANSFER TEST FAILED:', {
         error: transferError,
         reason: transferError.reason || transferError.shortMessage,
         message: transferError.message
@@ -1133,7 +1124,6 @@ const getErrorMessage = (error: any, errorType: string): string => {
     }
 
     // CRITICAL: Simulate the transaction first to get detailed error info
-    console.log('🔍 SIMULATING TRANSACTION BEFORE SENDING...')
     try {
       const simulationResult = await publicClient!.simulateContract({
         address: getContracts().router as `0x${string}`,
@@ -1151,12 +1141,12 @@ const getErrorMessage = (error: any, errorType: string): string => {
         account: userAddress as `0x${string}`
       })
       
-      console.log('✅ SIMULATION SUCCESSFUL:', {
+      loggers.liquidity.success(' SIMULATION SUCCESSFUL:', {
         result: simulationResult.result,
         request: simulationResult.request
       })
     } catch (simulationError: any) {
-      console.error('❌ SIMULATION FAILED - DETAILED ERROR:', {
+      loggers.liquidity.error('❌ SIMULATION FAILED - DETAILED ERROR:', {
         error: simulationError,
         message: simulationError.message,
         cause: simulationError.cause,
@@ -1168,12 +1158,12 @@ const getErrorMessage = (error: any, errorType: string): string => {
       
       // Try to extract more detailed error information
       if (simulationError.cause) {
-        console.error('❌ SIMULATION ERROR CAUSE:', simulationError.cause)
+        loggers.liquidity.error('❌ SIMULATION ERROR CAUSE:', simulationError.cause)
       }
       
       // Check if it's a revert with reason
       if (simulationError.data) {
-        console.error('❌ SIMULATION ERROR DATA:', simulationError.data)
+        loggers.liquidity.error('❌ SIMULATION ERROR DATA:', simulationError.data)
       }
       
       throw new Error(`❌ Transaction simulation failed: ${simulationError.shortMessage || simulationError.message}. 
@@ -1182,7 +1172,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
     }
 
     // If simulation passes, proceed with actual transaction
-    console.log('✅ Simulation passed, sending actual transaction...')
+    loggers.liquidity.success(' Simulation passed, sending actual transaction...')
     const hash = await writeContractAsync({
       address: getContracts().router as `0x${string}`,
       abi: ROUTER_ABI,
@@ -1256,7 +1246,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
     setTokenToProcess(tokenProcessInfo)
 
     try {
-      console.log('🔍 Starting liquidity addition process...', {
+      loggers.liquidity.debug(' Starting liquidity addition process...', {
         tokenAddress: tokenProcessInfo.address,
         chainId,
         isTestnet: chainId === baseSepolia.id,
@@ -1276,7 +1266,6 @@ const getErrorMessage = (error: any, errorType: string): string => {
         }
       }
       
-      console.log('🔍 Decimals fetch result:', {
         tokenDecimals,
         decimalsError: decimalsError?.message,
         decimalsLoading,
@@ -1284,20 +1273,19 @@ const getErrorMessage = (error: any, errorType: string): string => {
       })
       
       if (decimalsError) {
-        console.error('❌ Token decimals error:', decimalsError)
+        loggers.liquidity.error('❌ Token decimals error:', decimalsError)
         // Try alternative approach - use publicClient directly
         try {
-          console.log('🔄 Trying direct contract call...')
           const directDecimals = await publicClient?.readContract({
             address: tokenProcessInfo.address as `0x${string}`,
             abi: ERC20_ABI,
             functionName: 'decimals'
           })
-          console.log('✅ Direct decimals fetch successful:', directDecimals)
+          loggers.liquidity.success(' Direct decimals fetch successful:', directDecimals)
           if (directDecimals !== undefined) {
             // Use direct result instead of hook result
             const finalDecimals = Number(directDecimals)
-            console.log('✅ Using direct decimals result:', finalDecimals)
+            loggers.liquidity.success(' Using direct decimals result:', finalDecimals)
             
             const tokenAmountWei = parseUnits(tokenAmount, finalDecimals)
             
@@ -1313,7 +1301,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
               setCurrentStep('approve')
               await handleApproveToken(tokenProcessInfo)
             } else {
-              console.log('✅ Token already approved, adding liquidity directly...')
+              loggers.liquidity.success(' Token already approved, adding liquidity directly...')
               setCurrentStep('add')
               await handleAddLiquidityStep(tokenProcessInfo)
             }
@@ -1322,7 +1310,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
             throw new Error(`Failed to read token contract: ${decimalsError.message || 'Invalid token address or network error'}`)
           }
         } catch (directError) {
-          console.error('❌ Direct fetch also failed:', directError)
+          loggers.liquidity.error('❌ Direct fetch also failed:', directError)
           throw new Error(`Failed to read token contract: ${decimalsError.message || 'Invalid token address or network error'}`)
         }
       }
@@ -1332,7 +1320,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         throw new Error('Could not fetch token decimals. Please verify the token address is correct and you are on the right network.')
       }
 
-      console.log('✅ Token decimals loaded:', finalDecimals)
+      loggers.liquidity.success(' Token decimals loaded:', finalDecimals)
 
       const tokenAmountWei = parseUnits(tokenAmount, finalDecimals)
       
@@ -1350,16 +1338,16 @@ const getErrorMessage = (error: any, errorType: string): string => {
         
         // SIMPLIFIED: Let wagmi handle errors, just await the transaction
         await handleApproveToken(tokenProcessInfo)
-        console.log('✅ Approval transaction initiated - waiting for confirmation...')
+        loggers.liquidity.success(' Approval transaction initiated - waiting for confirmation...')
         // Transaction confirmation will be handled in useEffect
       } else {
         // Already approved, add liquidity directly
-        console.log('✅ Token already approved, adding liquidity directly...')
+        loggers.liquidity.success(' Token already approved, adding liquidity directly...')
         setCurrentStep('add')
         
         // SIMPLIFIED: Let wagmi handle errors, just await the transaction
         await handleAddLiquidityStep(tokenProcessInfo)
-        console.log('✅ Add liquidity transaction initiated - waiting for confirmation...')
+        loggers.liquidity.success(' Add liquidity transaction initiated - waiting for confirmation...')
         // Transaction confirmation will be handled in useEffect
       }
     } catch (e) {
@@ -1418,7 +1406,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         functionName: 'token0'
       })
       
-      console.log('🔍 CALCULATING MINIMUM AMOUNTS:', {
+      loggers.liquidity.debug(' CALCULATING MINIMUM AMOUNTS:', {
         lpAmount: lpAmount.toString(),
         totalSupply: totalSupply?.toString(),
         token0,
@@ -1435,7 +1423,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         amountTokenMin = shareRatio > 500n ? (shareRatio * 95n) / 10000n : 1n // 95% of expected, minimum 1 wei
         amountETHMin = shareRatio > 500n ? (shareRatio * 95n) / 10000n : 1n   // 95% of expected, minimum 1 wei
         
-        console.log('✅ CALCULATED MINIMUM AMOUNTS:', {
+        loggers.liquidity.success(' CALCULATED MINIMUM AMOUNTS:', {
           shareRatio: shareRatio.toString(),
           amountTokenMin: amountTokenMin.toString(),
           amountETHMin: amountETHMin.toString()
@@ -1444,7 +1432,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         throw new Error('Could not get total supply')
       }
     } catch (error) {
-      console.warn('⚠️ Could not calculate optimal minimums, using safe defaults:', error)
+      loggers.liquidity.warn('⚠️ Could not calculate optimal minimums, using safe defaults:', error)
       // Fallback: Use 0.1% of LP amount as minimum (very conservative)
       amountTokenMin = lpAmount / 1000n || 1n // 0.1% or 1 wei minimum
       amountETHMin = lpAmount / 1000n || 1n   // 0.1% or 1 wei minimum
@@ -1453,7 +1441,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200) // 20 minutes from now
 
     // DEBUG: Add comprehensive logging to diagnose the underflow error
-    console.log('🔍 DEBUGGING LP Removal Transaction...', {
+    loggers.liquidity.debug(' DEBUGGING LP Removal Transaction...', {
       token: poolToRemove?.tokenAddress,
       lpTokenAddress: poolToRemove?.poolAddress,
       lpTokens: lpAmount.toString(),
@@ -1482,7 +1470,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         args: [userAddress as `0x${string}`, getContracts().router as `0x${string}`]
       })
 
-      console.log('💰 ACTUAL LP TOKEN STATE:', {
+      loggers.liquidity.debug(' ACTUAL LP TOKEN STATE:', {
         requestedAmount: lpAmount.toString(),
         requestedFormatted: formatUnits(lpAmount, 18),
         actualBalance: actualLpBalance?.toString(),
@@ -1495,7 +1483,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
 
       // FIX: If we're trying to remove more than balance, use actual balance instead
       if (actualLpBalance && (actualLpBalance as bigint) < lpAmount) {
-        console.log('⚠️ Requested amount exceeds actual balance, using actual balance instead')
+        loggers.liquidity.warn(' Requested amount exceeds actual balance, using actual balance instead')
         lpAmount = actualLpBalance as bigint
       }
 
@@ -1505,11 +1493,11 @@ const getErrorMessage = (error: any, errorType: string): string => {
       }
 
     } catch (balanceCheckError) {
-      console.error('❌ Error checking LP token state:', balanceCheckError)
+      loggers.liquidity.error('❌ Error checking LP token state:', balanceCheckError)
       // Don't throw here, let the transaction attempt anyway in case it's a query issue
     }
 
-    console.log('🦄 Removing liquidity from Uniswap V2...', {
+    loggers.liquidity.info(' Removing liquidity from Uniswap V2...', {
       token: poolToRemove?.tokenAddress,
       lpTokens: lpAmount.toString(),
       amountTokenMin: amountTokenMin.toString(),
@@ -1564,7 +1552,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
     if (lpAmount) {
       // New mode: LP token address and amount provided directly
       lpTokenAddress = poolIdOrLpToken
-      console.log('🔄 Direct LP token withdrawal:', { lpTokenAddress, lpAmount })
+      loggers.liquidity.info(' Direct LP token withdrawal:', { lpTokenAddress, lpAmount })
       
       // Parse the LP amount first
       try {
@@ -1574,7 +1562,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
       }
 
       // Fetch token addresses from LP token contract
-      console.log('🔍 Fetching token addresses from LP token contract...')
+      loggers.liquidity.debug(' Fetching token addresses from LP token contract...')
       let token0Address: string
       let token1Address: string
       
@@ -1595,13 +1583,13 @@ const getErrorMessage = (error: any, errorType: string): string => {
         token0Address = token0 as string
         token1Address = token1 as string
         
-        console.log('✅ LP Token composition:', {
+        loggers.liquidity.success(' LP Token composition:', {
           token0: token0Address,
           token1: token1Address,
           wethAddress: getContracts().weth
         })
       } catch (error) {
-        console.error('❌ Failed to fetch token addresses from LP token:', error)
+        loggers.liquidity.error('❌ Failed to fetch token addresses from LP token:', error)
         throw new Error('Invalid LP token - unable to fetch token composition')
       }
       
@@ -1609,7 +1597,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
       const wethAddress = getContracts().weth
       const actualTokenAddress = token0Address === wethAddress ? token1Address : token0Address
       
-      console.log('🔍 Fetching real token details for:', actualTokenAddress)
+      loggers.liquidity.debug(' Fetching real token details for:', actualTokenAddress)
       
       // Fetch real token name and symbol
       let realTokenName = 'Unknown Token'
@@ -1648,13 +1636,13 @@ const getErrorMessage = (error: any, errorType: string): string => {
         realTokenName = (tokenName as string) || 'Unknown Token'
         realTokenSymbol = (tokenSymbol as string) || 'UNKNOWN'
         
-        console.log('✅ Fetched real token details:', {
+        loggers.liquidity.success(' Fetched real token details:', {
           address: actualTokenAddress,
           name: realTokenName,
           symbol: realTokenSymbol
         })
       } catch (error) {
-        console.warn('⚠️ Could not fetch token details, using defaults:', error)
+        loggers.liquidity.warn('⚠️ Could not fetch token details, using defaults:', error)
       }
       
       // Create a temporary pool object for the removal process
@@ -1671,7 +1659,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         liquidityTokens: lpAmount
       }
       
-      console.log('✅ Temporary pool object created:', pool)
+      loggers.liquidity.success(' Temporary pool object created:', pool)
     } else {
       // Legacy mode: Find pool by ID
       pool = userPools.find(p => p.id === poolIdOrLpToken)
@@ -1681,7 +1669,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
       
       // Check if this pool needs real LP address resolution
       if (pool.poolAddress.startsWith('MIGRATION_') || pool.poolAddress === pool.txHash) {
-        console.log('🔄 Pool has temporary LP address, trying to resolve real LP address...')
+        loggers.liquidity.info(' Pool has temporary LP address, trying to resolve real LP address...')
         
         // Try to get the real LP token address from Uniswap V2 factory
         try {
@@ -1693,7 +1681,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
           })
           
           if (realLpAddress && realLpAddress !== '0x0000000000000000000000000000000000000000') {
-            console.log('✅ Found real LP address:', realLpAddress)
+            loggers.liquidity.success(' Found real LP address:', realLpAddress)
             lpTokenAddress = realLpAddress
             
             // Update the pool in storage with real LP address
@@ -1708,16 +1696,16 @@ const getErrorMessage = (error: any, errorType: string): string => {
                   return p
                 })
                 localStorage.setItem(LIQUIDITY_STORAGE_KEY, JSON.stringify(updatedPools))
-                console.log('✅ Updated pool with real LP address in storage')
+                loggers.liquidity.success(' Updated pool with real LP address in storage')
               }
             } catch (updateError) {
-              console.error('Error updating pool in storage:', updateError)
+              loggers.liquidity.error('Error updating pool in storage:', updateError)
             }
           } else {
             throw new Error('No liquidity pool exists for this token pair')
           }
         } catch (queryError) {
-          console.error('Failed to query real LP address:', queryError)
+          loggers.liquidity.error('Failed to query real LP address:', queryError)
           throw new Error('Could not find the liquidity pool for this token. The pool may not exist or you may have already removed all liquidity.')
         }
       } else {
@@ -1733,7 +1721,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
       if (lpAmount) {
         // Use the provided LP amount directly
         finalLpBalance = lpTokenBalance
-        console.log('✅ Using provided LP amount:', finalLpBalance.toString())
+        loggers.liquidity.success(' Using provided LP amount:', finalLpBalance.toString())
       } else {
         // Wait for LP balance to load from blockchain
         await refetchLpBalance()
@@ -1743,7 +1731,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         }
         
         finalLpBalance = lpBalance
-        console.log('✅ LP Balance loaded from blockchain:', finalLpBalance.toString())
+        loggers.liquidity.success(' LP Balance loaded from blockchain:', finalLpBalance.toString())
       }
 
       // Check current LP allowance
@@ -1760,16 +1748,16 @@ const getErrorMessage = (error: any, errorType: string): string => {
         
         // SIMPLIFIED: Let wagmi handle errors, just await the transaction
         await handleApproveLpToken(finalLpBalance, pool)
-        console.log('✅ LP approval transaction initiated - waiting for confirmation...')
+        loggers.liquidity.success(' LP approval transaction initiated - waiting for confirmation...')
         // Transaction confirmation will be handled in useEffect
       } else {
         // Already approved, remove liquidity directly
-        console.log('✅ LP tokens already approved, removing liquidity directly...')
+        loggers.liquidity.success(' LP tokens already approved, removing liquidity directly...')
         setCurrentStep('remove_liquidity')
         
         // SIMPLIFIED: Let wagmi handle errors, just await the transaction
         await handleRemoveLiquidityStep(finalLpBalance)
-        console.log('✅ Remove liquidity transaction initiated - waiting for confirmation...')
+        loggers.liquidity.success(' Remove liquidity transaction initiated - waiting for confirmation...')
         // Transaction confirmation will be handled in useEffect
       }
     } catch (e) {
@@ -1796,7 +1784,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         
         // Validate the data structure
         if (!Array.isArray(allPools)) {
-          console.warn('Invalid pools data structure, clearing localStorage')
+          loggers.liquidity.warn('Invalid pools data structure, clearing localStorage')
           localStorage.removeItem(LIQUIDITY_STORAGE_KEY)
           setUserPools([])
           return
@@ -1811,12 +1799,12 @@ const getErrorMessage = (error: any, errorType: string): string => {
         setUserPools(userCreatedPools)
       }
     } catch (error) {
-      console.error('Error loading pools from localStorage:', error)
+      loggers.liquidity.error('Error loading pools from localStorage:', error)
       // Clear corrupted data
       try {
         localStorage.removeItem(LIQUIDITY_STORAGE_KEY)
       } catch (clearError) {
-        console.error('Error clearing localStorage:', clearError)
+        loggers.liquidity.error('Error clearing localStorage:', clearError)
       }
       setUserPools([])
     }

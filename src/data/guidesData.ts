@@ -12,11 +12,11 @@ export const guides = [
       },
       {
         title: '⚡ Deploy Your Token (5 seconds)',
-        text: '1. Go to our Create Token page\n2. Fill in your token details\n3. Connect your wallet (you need less than $1 in ETH for gas)\n4. Click "Deploy Token"\n5. Wait 5 seconds for confirmation\n\n✅ Your token is now live on Base blockchain!\n🎉 Contract will be automatically verified on BaseScan!'
+        text: '1. Go to our Create Token page\n2. Fill in your token details\n3. Connect your wallet (you need less than $1 for gas)\n4. Click "Deploy Token"\n5. Wait 5 seconds for confirmation\n\n✅ Your token is now live on your selected EVM blockchain!\n🎉 Contract will be automatically verified on the block explorer!'
       },
       {
         title: '🎉 Share Your Token',
-        text: 'Your token is ready! Share these with your community:\n\n• Contract Address: Copy from BaseScan\n• Token information for wallet imports\n• BaseScan Page: For verification and transparency\n\n💡 Next step: Check out our Liquidity Management guide to make your token tradeable!'
+        text: 'Your token is ready! Share these with your community:\n\n• Contract Address: Copy from block explorer\n• Token information for wallet imports\n• Block Explorer Page: For verification and transparency\n\n💡 Next step: Check out our Liquidity Management guide to make your token tradeable!'
       },
       {
         title: '⚠️ Important Notes',
@@ -45,7 +45,7 @@ export const guides = [
       },
       {
         title: '📊 After Adding Liquidity',
-        text: 'Success modal shows:\n• ✅ Confirmation of amounts added\n• 📈 **DEXScreener Chart Link** - View live trading\n• 🔗 Transaction link on BaseScan\n• Your liquidity position in pools list\n\nYou earn 0.3% fees from all trades!'
+        text: 'Success modal shows:\n• ✅ Confirmation of amounts added\n• 📈 **DEXScreener Chart Link** - View live trading\n• 🔗 Transaction link on block explorer\n• Your liquidity position in pools list\n\nYou earn 0.3% fees from all trades!'
       },
       {
         title: '💎 Save Your LP Token Address!',
@@ -57,7 +57,7 @@ export const guides = [
       },
       {
         title: '🌐 Network Requirements',
-        text: 'Uniswap V2 is only available on:\n• ✅ **Base Mainnet** - Full functionality\n• ❌ **Base Sepolia** - Not supported\n\nSwitch to Base mainnet in your wallet to use liquidity features.'
+        text: 'Uniswap V2 liquidity is available on supported mainnet networks. Some testnets may not have Uniswap V2 deployed.\n\n✅ Full DEX functionality on mainnets\n⚠️ Limited or no DEX support on testnets\n\nSwitch to a supported mainnet in your wallet to use liquidity features.'
       }
     ]
   },
@@ -70,7 +70,7 @@ export const guides = [
     content: [
       {
         title: 'Smart Contract Security',
-        text: '✅ Your contracts are automatically verified on BaseScan after deployment! This provides transparency and allows users to review the source code. Use well-tested contract templates and avoid custom modifications unless audited.'
+        text: '✅ Your contracts are automatically verified on block explorers after deployment! This provides transparency and allows users to review the source code. Use well-tested contract templates and avoid custom modifications unless audited.'
       },
       {
         title: 'Private Key Safety',
@@ -94,8 +94,8 @@ export const guides = [
     gradient: 'from-pink-500 to-violet-500',
     content: [
       {
-        title: '🖼️ Step 1: Add Token Logo to BaseScan',
-        text: '✅ Your contract is already verified automatically!\n\n1. Go to your verified token page on BaseScan\n2. Click "Update Token Information" button\n3. Fill out the form with:\n   • Token Name & Symbol\n   • Token Logo (PNG/JPG, 200x200px recommended)\n   • Official Website & Email\n   • Description & Social Media Links'
+        title: '🖼️ Step 1: Add Token Logo to Block Explorer',
+        text: '✅ Your contract is already verified automatically!\n\n1. Go to your verified token page on the block explorer (BaseScan, Etherscan, Arbiscan, etc.)\n2. Click "Update Token Information" button\n3. Fill out the form with:\n   • Token Name & Symbol\n   • Token Logo (PNG/JPG, 200x200px recommended)\n   • Official Website & Email\n   • Description & Social Media Links'
       },
       {
         title: '📱 Step 2: Add to MetaMask & Wallets',
@@ -103,11 +103,11 @@ export const guides = [
       },
       {
         title: '🔗 Step 3: Add to Token Lists',
-        text: '1. Create PR to Base token list: https://github.com/base-org/token-list\n2. Submit to community token lists\n3. Include metadata JSON with logo IPFS hash\n4. This enables automatic wallet integration'
+        text: '1. Submit to relevant token lists for your blockchain (Base, Ethereum, Arbitrum, etc.)\n2. Submit to community token lists\n3. Include metadata JSON with logo IPFS hash\n4. This enables automatic wallet integration'
       },
       {
         title: '💡 Step 4: CoinMarketCap & CoinGecko Listing',
-        text: 'Requirements:\n• CoinMarketCap: https://coinmarketcap.com/request/\n• CoinGecko: https://www.coingecko.com/en/coins/new\n• ✅ Verified contract on BaseScan (automatic!)\n• Active trading (DEX liquidity required)\n• Complete project information\n• Logo and social media presence'
+        text: 'Requirements:\n• CoinMarketCap: https://coinmarketcap.com/request/\n• CoinGecko: https://www.coingecko.com/en/coins/new\n• ✅ Verified contract on block explorer (automatic!)\n• Active trading (DEX liquidity required)\n• Complete project information\n• Logo and social media presence'
       },
       {
         title: '📄 Logo Specifications',
@@ -115,7 +115,7 @@ export const guides = [
       },
       {
         title: '🔍 Verification Benefits',
-        text: 'Benefits of completing these steps:\n✅ Green checkmark on BaseScan\n✅ Logo display on all explorers\n✅ Trust indicators for users\n✅ Eligible for DEX listings\n✅ Better SEO and discoverability\n✅ Increased trading volume potential'
+        text: 'Benefits of completing these steps:\n✅ Green checkmark on block explorers\n✅ Logo display on all explorers\n✅ Trust indicators for users\n✅ Eligible for DEX listings\n✅ Better SEO and discoverability\n✅ Increased trading volume potential'
       }
     ]
   }
