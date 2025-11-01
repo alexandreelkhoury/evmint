@@ -75,7 +75,7 @@ export default function CreateTokenPage() {
         symbol: formData.symbol,
         supply: formData.totalSupply,
         decimals: formData.decimals,
-        network: getNetworkName()
+        network: chainName
       });
       
       // Error is already handled by the hook and will be displayed
@@ -522,7 +522,7 @@ export default function CreateTokenPage() {
                       <div className="flex items-center justify-center space-x-3">
                         <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                         <span>
-                          {isVerifying ? 'Verifying Contract...' : `Creating Token on ${getNetworkName()}...`}
+                          {isVerifying ? 'Verifying Contract...' : `Creating Token on ${chainName}...`}
                         </span>
                       </div>
                     ) : (

@@ -776,6 +776,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
           }
         }, 1500) // Increased delay to ensure approval is fully processed
       } else if (currentStep === 'add' && tokenToProcess) {
+        loggers.liquidity.info('✅ Liquidity added successfully:', {
           tokenToProcess,
           poolAddress,
           hash: currentTxHash,
@@ -788,6 +789,7 @@ const getErrorMessage = (error: any, errorType: string): string => {
         
         // Parse transaction logs to find LP token mint events
         if (receipt.logs && receipt.logs.length > 0) {
+          loggers.liquidity.info('📋 Parsing transaction receipt logs:', {
             totalLogs: receipt.logs.length,
             logs: receipt.logs.map((log, i) => ({
               index: i,
@@ -1266,13 +1268,14 @@ const getErrorMessage = (error: any, errorType: string): string => {
           if (!decimalsLoading && (tokenDecimals !== undefined || decimalsError)) break
         }
       }
-      
+
+      loggers.liquidity.info('Token decimals query result:', {
         tokenDecimals,
         decimalsError: decimalsError?.message,
         decimalsLoading,
         tokenAddress: tokenProcessInfo.address
       })
-      
+
       if (decimalsError) {
         loggers.liquidity.error('❌ Token decimals error:', decimalsError)
         // Try alternative approach - use publicClient directly
