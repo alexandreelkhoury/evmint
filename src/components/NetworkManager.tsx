@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useAccount, useChainId, useSwitchChain } from 'wagmi'
-import { base, baseSepolia } from 'viem/chains'
 import { motion } from 'framer-motion'
 import { useGlobalToasts } from '../App'
+import { isChainSupported, baseConfig, MAINNET_CHAINS } from '../config/chains'
+import { useChainConfig } from '../hooks/useChainConfig'
 
 export default function NetworkManager() {
   const { isConnected } = useAccount()
   const chainId = useChainId()
   const { switchChain, isPending } = useSwitchChain()
   const { addToast } = useGlobalToasts()
+  const { name: currentChainName } = useChainConfig()
   const [showModal, setShowModal] = useState(false)
   const [hasShownModal, setHasShownModal] = useState(false)
 
-  const isCorrectChain = chainId === base.id || chainId === baseSepolia.id
+  const isCorrectChain = isChainSupported(chainId)
 
   useEffect(() => {
     // Only show modal if user is connected but on wrong network
@@ -29,11 +31,12 @@ export default function NetworkManager() {
 
   const handleSwitchToBase = async () => {
     try {
-      await switchChain({ chainId: base.id })
+      // Default to Base mainnet as recommended chain
+      await switchChain({ chainId: baseConfig.id })
       setShowModal(false)
       addToast({
         title: 'Network Switched',
-        message: 'Successfully switched to Base mainnet',
+        message: `Successfully switched to ${baseConfig.name}`,
         type: 'success',
         duration: 3000
       })
@@ -41,7 +44,7 @@ export default function NetworkManager() {
       console.error('Failed to switch network:', error)
       addToast({
         title: 'Network Switch Failed',
-        message: 'Please manually switch to Base network in your wallet',
+        message: 'Please manually switch to a supported network in your wallet',
         type: 'error',
         duration: 5000
       })
@@ -52,7 +55,7 @@ export default function NetworkManager() {
     setShowModal(false)
     addToast({
       title: 'Network Notice',
-      message: 'You can switch to Base network anytime from your wallet',
+      message: 'You can switch networks anytime using the chain selector in the header',
       type: 'info',
       duration: 4000
     })
@@ -88,30 +91,34 @@ export default function NetworkManager() {
       >
         <div className="text-center">
           {/* Icon */}
-          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" viewBox="0 0 111 111" fill="currentColor">
-              <path d="M54.921 110.034C85.359 110.034 110.034 85.402 110.034 55.017C110.034 24.632 85.359 0 54.921 0C26.790 0 3.67 21.471 0.637 48.858H61.711V61.209H0.637C3.67 88.596 26.790 110.034 54.921 110.034Z"/>
+          <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl flex items-center justify-center">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
 
           <h3 className="text-2xl font-bold text-white mb-3">
-            Switch to Base Network
+            Unsupported Network
           </h3>
-          
-          <p className="text-gray-300 mb-6 text-sm leading-relaxed">
-            This app works best on <span className="text-blue-400 font-semibold">Base mainnet</span>. 
-            Switch now for lower fees, faster transactions, and better token visibility.
+
+          <p className="text-gray-300 mb-4 text-sm leading-relaxed">
+            You're currently on <span className="text-red-400 font-semibold">{currentChainName}</span>, which is not supported by this app.
           </p>
 
-          {/* Benefits */}
-          <div className="grid grid-cols-2 gap-3 mb-6 text-xs">
-            <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-              <div className="text-green-400 font-semibold">90% Lower Fees</div>
-              <div className="text-gray-400">vs Ethereum</div>
-            </div>
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-              <div className="text-blue-400 font-semibold">2s Confirmation</div>
-              <div className="text-gray-400">Fast transactions</div>
+          <p className="text-gray-400 mb-6 text-xs">
+            We recommend <span className="text-blue-400 font-semibold">{baseConfig.name}</span> for the best experience, or choose from any supported chain.
+          </p>
+
+          {/* Supported Networks Preview */}
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 mb-6">
+            <div className="text-xs text-gray-400 mb-2">Supported Networks:</div>
+            <div className="flex flex-wrap gap-1 justify-center">
+              {MAINNET_CHAINS.slice(0, 6).map((chain) => (
+                <span key={chain.id} className="text-xs px-2 py-1 bg-gray-700 rounded">{chain.icon}</span>
+              ))}
+              {MAINNET_CHAINS.length > 6 && (
+                <span className="text-xs px-2 py-1 bg-gray-700 rounded text-gray-400">+{MAINNET_CHAINS.length - 6} more</span>
+              )}
             </div>
           </div>
 
@@ -130,7 +137,7 @@ export default function NetworkManager() {
                   Switching...
                 </div>
               ) : (
-                'Switch to Base'
+                `Switch to ${baseConfig.name}`
               )}
             </motion.button>
             
