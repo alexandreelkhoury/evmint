@@ -1,5 +1,5 @@
 import { loggers } from '../utils/logger'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwitchChain, useChainId } from 'wagmi'
@@ -28,6 +28,24 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
   const [searchQuery, setSearchQuery] = useState('')
   const [activeTab, setActiveTab] = useState<'mainnet' | 'testnet'>('mainnet')
   const [switchingTo, setSwitchingTo] = useState<number | null>(null)
+  const [previousChainId, setPreviousChainId] = useState<number | undefined>(currentChainId)
+
+  // Detect when chain actually switches and close modal
+  useEffect(() => {
+    if (switchingTo !== null && currentChainId === switchingTo) {
+      // Chain successfully switched!
+      loggers.network.info('Chain switched successfully to:', currentChainId)
+      onClose()
+      setSwitchingTo(null)
+    }
+  }, [currentChainId, switchingTo, onClose])
+
+  // Update previous chain ID
+  useEffect(() => {
+    if (currentChainId !== previousChainId) {
+      setPreviousChainId(currentChainId)
+    }
+  }, [currentChainId, previousChainId])
 
   // Filter chains based on search and active tab
   const filteredChains = useMemo(() => {
@@ -67,14 +85,14 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
         })
       }
 
-      // Wait for user to approve the network switch in their wallet
+      // Trigger the wallet switch request
+      // The modal will automatically close when currentChainId changes (via useEffect)
       await switchChain({ chainId: chain.id })
 
-      // Only close modal after successful switch (user approved in wallet)
-      onClose()
-      setSwitchingTo(null)
+      // Note: Don't close modal here! The useEffect will close it when
+      // currentChainId actually changes to the target chain
     } catch (error) {
-      // User rejected or error occurred - keep modal open
+      // User rejected or error occurred - keep modal open and reset state
       loggers.network.error('Failed to switch chain:', error)
       setSwitchingTo(null)
     }
