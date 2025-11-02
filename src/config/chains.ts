@@ -133,8 +133,8 @@ export const ethereumMainnetConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_ETHERSCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://eth.llamarpc.com'] },
-    public: { http: ['https://eth.llamarpc.com', 'https://rpc.ankr.com/eth'] },
+    default: { http: ['https://mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://eth.llamarpc.com', 'https://rpc.ankr.com/eth'] },
   },
   rpcEnvVar: 'VITE_ETHEREUM_MAINNET_RPC',
   features: {
@@ -164,8 +164,8 @@ export const sepoliaConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_ETHERSCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://rpc.sepolia.org'] },
-    public: { http: ['https://rpc.sepolia.org', 'https://ethereum-sepolia.blockpi.network/v1/rpc/public'] },
+    default: { http: ['https://sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://rpc.sepolia.org', 'https://ethereum-sepolia.blockpi.network/v1/rpc/public'] },
   },
   rpcEnvVar: 'VITE_ETHEREUM_SEPOLIA_RPC',
   features: {
@@ -203,8 +203,8 @@ export const baseConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_BASESCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://mainnet.base.org'] },
-    public: { http: ['https://mainnet.base.org', 'https://base.llamarpc.com'] },
+    default: { http: ['https://base-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://base-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://mainnet.base.org', 'https://base.llamarpc.com'] },
   },
   rpcEnvVar: 'VITE_BASE_MAINNET_RPC',
   features: {
@@ -233,8 +233,8 @@ export const baseSepoliaConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_BASESCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://sepolia.base.org'] },
-    public: { http: ['https://sepolia.base.org'] },
+    default: { http: ['https://base-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://base-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://sepolia.base.org'] },
   },
   rpcEnvVar: 'VITE_BASE_SEPOLIA_RPC',
   features: {
@@ -272,8 +272,8 @@ export const arbitrumConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_ARBISCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://arb1.arbitrum.io/rpc'] },
-    public: { http: ['https://arb1.arbitrum.io/rpc', 'https://arbitrum.llamarpc.com'] },
+    default: { http: ['https://arbitrum-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://arbitrum-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://arb1.arbitrum.io/rpc', 'https://arbitrum.llamarpc.com'] },
   },
   rpcEnvVar: 'VITE_ARBITRUM_MAINNET_RPC',
   features: {
@@ -300,8 +300,8 @@ export const arbitrumSepoliaConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_ARBISCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://sepolia-rollup.arbitrum.io/rpc'] },
-    public: { http: ['https://sepolia-rollup.arbitrum.io/rpc'] },
+    default: { http: ['https://arbitrum-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://arbitrum-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://sepolia-rollup.arbitrum.io/rpc'] },
   },
   rpcEnvVar: 'VITE_ARBITRUM_SEPOLIA_RPC',
   features: {
@@ -337,8 +337,8 @@ export const optimismConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_OPTIMISM_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://mainnet.optimism.io'] },
-    public: { http: ['https://mainnet.optimism.io', 'https://optimism.llamarpc.com'] },
+    default: { http: ['https://optimism-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://optimism-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://mainnet.optimism.io', 'https://optimism.llamarpc.com'] },
   },
   rpcEnvVar: 'VITE_OPTIMISM_MAINNET_RPC',
   features: {
@@ -365,8 +365,8 @@ export const optimismSepoliaConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_OPTIMISM_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://sepolia.optimism.io'] },
-    public: { http: ['https://sepolia.optimism.io'] },
+    default: { http: ['https://optimism-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://optimism-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://sepolia.optimism.io'] },
   },
   rpcEnvVar: 'VITE_OPTIMISM_SEPOLIA_RPC',
   features: {
@@ -404,8 +404,8 @@ export const polygonConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_POLYGONSCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://polygon-rpc.com'] },
-    public: { http: ['https://polygon-rpc.com', 'https://polygon.llamarpc.com'] },
+    default: { http: ['https://polygon-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://polygon-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://polygon-rpc.com', 'https://polygon.llamarpc.com'] },
   },
   rpcEnvVar: 'VITE_POLYGON_MAINNET_RPC',
   features: {
@@ -432,8 +432,8 @@ export const polygonAmoyConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_POLYGONSCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://rpc-amoy.polygon.technology'] },
-    public: { http: ['https://rpc-amoy.polygon.technology'] },
+    default: { http: ['https://polygon-amoy.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://polygon-amoy.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://rpc-amoy.polygon.technology'] },
   },
   rpcEnvVar: 'VITE_POLYGON_AMOY_RPC',
   features: {
@@ -533,8 +533,8 @@ export const avalancheConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_SNOWTRACE_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://api.avax.network/ext/bc/C/rpc'] },
-    public: { http: ['https://api.avax.network/ext/bc/C/rpc', 'https://avalanche.public-rpc.com'] },
+    default: { http: ['https://avalanche-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://avalanche-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://api.avax.network/ext/bc/C/rpc', 'https://avalanche.public-rpc.com'] },
   },
   rpcEnvVar: 'VITE_AVALANCHE_MAINNET_RPC',
   features: {
@@ -561,8 +561,8 @@ export const avalancheFujiConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_SNOWTRACE_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://api.avax-test.network/ext/bc/C/rpc'] },
-    public: { http: ['https://api.avax-test.network/ext/bc/C/rpc'] },
+    default: { http: ['https://avalanche-fuji.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://avalanche-fuji.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://api.avax-test.network/ext/bc/C/rpc'] },
   },
   rpcEnvVar: 'VITE_AVALANCHE_FUJI_RPC',
   features: {
@@ -764,8 +764,8 @@ export const blastConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_BLASTSCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://rpc.blast.io'] },
-    public: { http: ['https://rpc.blast.io', 'https://blast.publicnode.com'] },
+    default: { http: ['https://blast-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://blast-mainnet.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://rpc.blast.io', 'https://blast.publicnode.com'] },
   },
   rpcEnvVar: 'VITE_BLAST_MAINNET_RPC',
   features: {
@@ -792,8 +792,8 @@ export const blastSepoliaConfig: ChainConfig = {
     apiKeyEnvVar: 'VITE_BLASTSCAN_API_KEY',
   },
   rpcUrls: {
-    default: { http: ['https://sepolia.blast.io'] },
-    public: { http: ['https://sepolia.blast.io'] },
+    default: { http: ['https://blast-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17'] },
+    public: { http: ['https://blast-sepolia.infura.io/v3/16891d887fb84344aba2718e69e33a17', 'https://sepolia.blast.io'] },
   },
   rpcEnvVar: 'VITE_BLAST_SEPOLIA_RPC',
   features: {
