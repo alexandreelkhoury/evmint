@@ -3,7 +3,6 @@ import { useState } from 'react'
 // Import chain icons from @web3icons/react
 import {
   NetworkEthereum,
-  NetworkBase,
   NetworkArbitrumOne,
   NetworkOptimism,
   NetworkPolygon,
@@ -41,9 +40,7 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       // Ethereum
       1: NetworkEthereum,
       11155111: NetworkEthereum,
-      // Base
-      8453: NetworkBase,
-      84532: NetworkBase,
+      // Base - using CDN instead (better icon quality)
       // Arbitrum
       42161: NetworkArbitrumOne,
       421614: NetworkArbitrumOne,
@@ -113,8 +110,8 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
         'https://cryptologos.cc/logos/ethereum-eth-logo.png',
       ],
       base: [
+        'https://avatars.githubusercontent.com/u/108554348',
         'https://avatars.githubusercontent.com/u/108554348?s=280&v=4',
-        'https://altcoinsbox.com/wp-content/uploads/2023/02/base-logo.png',
       ],
       arbitrum: [
         'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/64/arbitrum.png',
