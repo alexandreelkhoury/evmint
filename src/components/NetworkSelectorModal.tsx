@@ -28,7 +28,6 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
   const [searchQuery, setSearchQuery] = useState('')
   const [activeTab, setActiveTab] = useState<'mainnet' | 'testnet'>('mainnet')
   const [switchingTo, setSwitchingTo] = useState<number | null>(null)
-  const [previousChainId, setPreviousChainId] = useState<number | undefined>(currentChainId)
 
   // Detect when chain actually switches and close modal
   useEffect(() => {
@@ -39,13 +38,6 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
       setSwitchingTo(null)
     }
   }, [currentChainId, switchingTo, onClose])
-
-  // Update previous chain ID
-  useEffect(() => {
-    if (currentChainId !== previousChainId) {
-      setPreviousChainId(currentChainId)
-    }
-  }, [currentChainId, previousChainId])
 
   // Filter chains based on search and active tab
   const filteredChains = useMemo(() => {
@@ -91,10 +83,14 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
 
       // Note: Don't close modal here! The useEffect will close it when
       // currentChainId actually changes to the target chain
-    } catch (error) {
-      // User rejected or error occurred - keep modal open and reset state
-      loggers.network.error('Failed to switch chain:', error)
+    } catch (error: any) {
+      // User rejected or error occurred - remove loader and keep modal open
+      loggers.network.warn('Chain switch cancelled or failed:', error?.message || error)
+
+      // Remove the loader immediately when user rejects
       setSwitchingTo(null)
+
+      // Don't close modal - user can try again with another chain
     }
   }
 
