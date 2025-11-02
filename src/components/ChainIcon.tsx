@@ -166,6 +166,15 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
   const IconComponent = getWeb3IconComponent(chainId)
   const cdnName = getCdnIconName(chainId)
 
+  // Special positioning adjustments for specific chains
+  const getIconTransform = (id: number): string => {
+    // Avalanche needs to be pushed up slightly
+    if (id === 43114 || id === 43113) {
+      return 'translateY(-10%)'
+    }
+    return 'none'
+  }
+
   // Primary: Try to use @web3icons/react component (bundled, no CDN dependency!)
   if (IconComponent) {
     return (
@@ -174,6 +183,7 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
           width={size}
           height={size}
           className="rounded-full"
+          style={{ transform: getIconTransform(chainId) }}
         />
       </div>
     )
