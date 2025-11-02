@@ -24,7 +24,7 @@ export default function HeroSection() {
         <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-3xl flex items-center justify-center p-6 shadow-2xl shadow-blue-500/25 ring-1 ring-white/10">
           <img
             src="/LOGO.png"
-            alt="Base Token Creator Logo"
+            alt="EVMint Logo"
             className="w-full h-full object-contain"
           />
         </div>

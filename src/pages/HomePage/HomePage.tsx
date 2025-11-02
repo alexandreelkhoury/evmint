@@ -33,18 +33,18 @@ export default function HomePage() {
   const homePageStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Base Token Creator - #1 Cryptocurrency & Meme Coin Generator",
+    "name": "EVMint - #1 Cryptocurrency & Meme Coin Generator",
     "description": "Create ERC20 tokens, meme coins, and cryptocurrencies on Base blockchain instantly. No coding required, under $1 deployment, 10,000+ successful projects.",
-    "url": "https://base-token-creator.com",
+    "url": "https://evmint.io",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web Browser",
     "provider": {
       "@type": "Organization",
-      "name": "Base Token Creator",
-      "url": "https://base-token-creator.com",
+      "name": "EVMint",
+      "url": "https://evmint.io",
       "sameAs": [
         "https://twitter.com/BaseTokenCreator",
-        "https://github.com/base-token-creator"
+        "https://github.com/evmint"
       ]
     },
     "offers": {
@@ -81,8 +81,8 @@ export default function HomePage() {
       "Base Blockchain Tools"
     ],
     "keywords": "base token creator, meme coin creator, cryptocurrency generator, ERC20 tokens, Base blockchain, DeFi tools",
-    "installUrl": "https://base-token-creator.com/create",
-    "screenshot": "https://base-token-creator.com/og-image.png"
+    "installUrl": "https://evmint.io/create",
+    "screenshot": "https://evmint.io/og-image.png"
   }
 
   return (
@@ -95,7 +95,7 @@ export default function HomePage() {
       </div>
 
       <SEO
-        title="🚀 Base Token Creator - Launch Your Cryptocurrency in 5 Seconds | #1 Meme Coin Maker"
+        title="🚀 EVMint - Launch Your Cryptocurrency in 5 Seconds | #1 Meme Coin Maker"
         description="⚡ Create ERC20 tokens on Base blockchain instantly! No coding, <$1 fees, 10,000+ successful launches. Build your crypto empire: meme coins, utility tokens, DeFi projects. Join the Base revolution!"
         keywords="base token creator, meme coin creator, erc20 token generator, create cryptocurrency, base blockchain, no code crypto, token launcher, defi token maker, cryptocurrency creator, base layer 2, cheap token deployment, viral crypto projects, uniswap listing, basescan verification"
         canonical="/"

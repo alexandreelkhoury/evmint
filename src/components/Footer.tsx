@@ -8,16 +8,16 @@ export default function Footer() {
           <div className="sm:col-span-2 lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
               <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center">
-                <img 
-                  src="/LOGO.png" 
-                  alt="Base Token Creator Logo" 
+                <img
+                  src="/LOGO.png"
+                  alt="EVMint Logo"
                   className="h-6 w-6 sm:h-8 sm:w-8 object-contain"
                 />
               </div>
-              <span className="text-base sm:text-lg font-bold text-white">Base Token Creator</span>
+              <span className="text-base sm:text-lg font-bold text-white">EVMint</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-md">
-              The most advanced platform for creating and managing ERC20 tokens across 8+ EVM blockchains. Launch your project with 95% lower fees and lightning-fast transactions.
+              The most advanced platform for creating and managing ERC20 tokens across 15+ EVM blockchains. Launch your project with 95% lower fees and lightning-fast transactions.
             </p>
             <p className="text-gray-500 text-xs">
               No code required • 5-second deployment • Enterprise security
@@ -61,7 +61,7 @@ export default function Footer() {
         <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-700">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
             <p className="text-gray-400 text-xs sm:text-sm text-center sm:text-left">
-              © 2024 Base Token Creator. Built with ❤️ for the DeFi community.
+              © 2024 EVMint. Built with ❤️ for the DeFi community.
             </p>
             <div className="flex items-center space-x-4 sm:space-x-6">
               <Link to="/faq" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors">Support</Link>

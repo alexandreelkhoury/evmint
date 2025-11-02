@@ -33,7 +33,7 @@ export default function FAQPage() {
     "@type": "FAQPage",
     "name": "Base Token Creation FAQ",
     "description": "Frequently asked questions about creating ERC20 tokens on Base blockchain",
-    "url": "https://base-token-creator.com/faq",
+    "url": "https://evmint.io/faq",
     "mainEntity": faqs.map(faq => ({
       "@type": "Question",
       "name": faq.question,
@@ -367,7 +367,7 @@ export default function FAQPage() {
                 <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center p-3">
                   <img 
                     src="/LOGO.png" 
-                    alt="Base Token Creator Logo" 
+                    alt="EVMint Logo" 
                     className="w-full h-full object-contain"
                   />
                 </div>

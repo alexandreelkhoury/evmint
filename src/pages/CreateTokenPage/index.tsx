@@ -38,7 +38,7 @@ export default function CreateTokenPage() {
     "@type": "WebApplication",
     "name": "Multi-Chain Token Creator - ERC20 Token Generator",
     "description": "Create and deploy ERC20 tokens on any EVM blockchain in seconds. No coding required, ultra-low gas fees on Layer 2 networks.",
-    "url": "https://base-token-creator.com/create",
+    "url": "https://evmint.io/create",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Web Browser",
     "offers": {
@@ -50,11 +50,11 @@ export default function CreateTokenPage() {
     "provider": {
       "@type": "Organization",
       "name": "Multi-Chain Token Creator",
-      "url": "https://base-token-creator.com"
+      "url": "https://evmint.io"
     },
     "potentialAction": {
       "@type": "CreateAction",
-      "target": "https://base-token-creator.com/create",
+      "target": "https://evmint.io/create",
       "result": {
         "@type": "DigitalDocument",
         "name": "ERC20 Token Contract"

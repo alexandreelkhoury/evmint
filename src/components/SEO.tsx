@@ -10,16 +10,16 @@ interface SEOProps {
   structuredData?: object
 }
 
-export default function SEO({ 
-  title = "Base Token Creator - Launch ERC20 Tokens in 5 Seconds | 90% Lower Fees",
-  description = "🚀 Create ERC20 tokens on 8+ EVM blockchains instantly! No coding required. Deploy for <$3, add liquidity on DEXes, auto-verify. Support for Base, Arbitrum, Polygon, BSC & more. Start your crypto empire today!",
-  keywords = "base token creator, erc20 token generator, base blockchain, create cryptocurrency, meme coin creator, token launcher base, no code crypto, defi token maker, uniswap token, base layer 2, coinbase base, basescan token, crypto token generator, ethereum alternative, cheap token deployment",
+export default function SEO({
+  title = "EVMint - Multi-Chain EVM Token Launcher | Deploy on 15+ Chains",
+  description = "🚀 Create ERC20 tokens on 15+ EVM blockchains instantly! No coding required. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. Ultra-low fees. Auto-verify. Start your crypto project today!",
+  keywords = "evmint, evm token creator, multi-chain token launcher, erc20 token generator, create cryptocurrency, meme coin creator, no code crypto, defi token maker, ethereum token, base token, arbitrum token, polygon token, bsc token, multi-chain deployment, cheap token deployment",
   canonical,
   ogImage = "/og-image.png",
   noIndex = false,
   structuredData
 }: SEOProps) {
-  const siteUrl = "https://base-token-creator.com"
+  const siteUrl = "https://evmint.io"
   const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl
 
   return (
@@ -33,7 +33,7 @@ export default function SEO({
       <meta name="robots" content={noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"} />
       
       {/* Additional SEO Meta Tags */}
-      <meta name="author" content="Base Token Creator" />
+      <meta name="author" content="EVMint" />
       <meta name="language" content="English" />
       <meta name="revisit-after" content="7 days" />
       <meta name="distribution" content="global" />
@@ -60,26 +60,26 @@ export default function SEO({
       <meta property="og:image" content={`${siteUrl}${ogImage}`} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="Multi-Chain Token Creator - Launch ERC20 tokens on 8+ EVM blockchains" />
-      <meta property="og:site_name" content="Base Token Creator" />
+      <meta property="og:image:alt" content="EVMint - Launch ERC20 tokens on 15+ EVM blockchains" />
+      <meta property="og:site_name" content="EVMint" />
       <meta property="og:locale" content="en_US" />
       <meta property="fb:app_id" content="your-facebook-app-id" />
 
       {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@BaseTokenCreator" />
-      <meta name="twitter:creator" content="@BaseTokenCreator" />
+      <meta name="twitter:site" content="@evmint" />
+      <meta name="twitter:creator" content="@evmint" />
       <meta name="twitter:url" content={fullCanonical} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
-      <meta name="twitter:image:alt" content="Base Token Creator - Launch ERC20 tokens on Base blockchain" />
+      <meta name="twitter:image:alt" content="EVMint - Multi-chain EVM token launcher" />
       
       {/* Additional Social Meta */}
-      <meta property="article:publisher" content="https://twitter.com/BaseTokenCreator" />
-      <meta property="article:author" content="Base Token Creator Team" />
+      <meta property="article:publisher" content="https://twitter.com/evmint" />
+      <meta property="article:author" content="EVMint Team" />
       <meta property="article:section" content="Cryptocurrency" />
-      <meta property="article:tag" content="Base Blockchain" />
+      <meta property="article:tag" content="EVM Blockchains" />
       <meta property="article:tag" content="ERC20 Tokens" />
       <meta property="article:tag" content="DeFi" />
       <meta property="article:tag" content="Token Creator" />

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import WalletButton from './WalletButton'
 
 const navigation = [
-  { name: 'Home', href: '/', title: 'Base Token Creator - Create ERC20 Tokens on Base Blockchain', icon: '🏠' },
+  { name: 'Home', href: '/', title: 'EVMint - Create ERC20 Tokens on Base Blockchain', icon: '🏠' },
   { name: 'Create Token', href: '/create', title: 'Create Base Token - Deploy ERC20 Tokens in 5 Seconds', icon: '🚀' },
   // { name: 'My Tokens', href: '/tokens', title: 'My Base Tokens - Manage Your ERC20 Tokens', icon: '💎' },
   { name: 'Liquidity', href: '/liquidity', title: 'Base Liquidity Management - Uniswap V2 Integration', icon: '💧' },
@@ -40,12 +40,12 @@ export default function Header() {
                 >
                   <img 
                     src="/LOGO.png" 
-                    alt="Base Token Creator Logo" 
+                    alt="EVMint Logo" 
                     className="h-6 w-6 sm:h-10 sm:w-10 object-contain"
                   />
                 </motion.div>
                 <span className="text-lg sm:text-2xl font-bold text-white whitespace-nowrap truncate max-w-[120px] xs:max-w-[150px] sm:max-w-none">
-                  <span className="hidden sm:inline">Base Token Creator</span>
+                  <span className="hidden sm:inline">EVMint</span>
                   <span className="sm:hidden">Base Creator</span>
                 </span>
               </Link>

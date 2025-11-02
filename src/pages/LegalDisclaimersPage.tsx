@@ -15,8 +15,8 @@ export default function LegalDisclaimersPage() {
   return (
     <>
       <SEO 
-        title="Legal Disclaimers - Base Token Creator"
-        description="Important legal disclaimers for Base Token Creator. Understand our liability limitations and legal protections."
+        title="Legal Disclaimers - EVMint"
+        description="Important legal disclaimers for EVMint. Understand our liability limitations and legal protections."
         keywords="legal disclaimers, liability limitations, Web3 disclaimers, cryptocurrency disclaimers, Base blockchain legal"
         canonical="https://base-token-launcher.web.app/disclaimers"
       />
@@ -44,7 +44,7 @@ export default function LegalDisclaimersPage() {
             <section>
               <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>1. General Disclaimer</h2>
               <p className={`${typography.bodyText} mb-4`}>
-                The information and services provided by Base Token Creator ("Platform") are for general informational and educational purposes only. Nothing contained on this platform constitutes professional advice of any kind.
+                The information and services provided by EVMint ("Platform") are for general informational and educational purposes only. Nothing contained on this platform constitutes professional advice of any kind.
               </p>
               <p className={typography.bodyText}>
                 <strong>USE AT YOUR OWN RISK:</strong> By using this platform, you acknowledge and agree that you are solely responsible for your own decisions and actions.
@@ -254,7 +254,7 @@ export default function LegalDisclaimersPage() {
               <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>11. Indemnification</h2>
               <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-6">
                 <p className={`${typography.bodyText} mb-4`}>
-                  <strong>USER INDEMNIFICATION:</strong> By using the platform, you agree to indemnify and hold harmless Base Token Creator from:
+                  <strong>USER INDEMNIFICATION:</strong> By using the platform, you agree to indemnify and hold harmless EVMint from:
                 </p>
                 <ul className={`${typography.bodyText} space-y-2 ml-6`}>
                   <li>• Any claims arising from your use of the platform</li>
@@ -307,7 +307,7 @@ export default function LegalDisclaimersPage() {
 
             <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 mt-8">
               <p className={`${typography.bodyText} text-center font-medium`}>
-                <strong>ACKNOWLEDGMENT:</strong> By using Base Token Creator, you acknowledge that you have read, understood, and agree to these Legal Disclaimers.
+                <strong>ACKNOWLEDGMENT:</strong> By using EVMint, you acknowledge that you have read, understood, and agree to these Legal Disclaimers.
               </p>
             </div>
 
