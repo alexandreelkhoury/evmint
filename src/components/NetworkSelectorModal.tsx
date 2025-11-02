@@ -67,14 +67,14 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
         })
       }
 
+      // Wait for user to approve the network switch in their wallet
       await switchChain({ chainId: chain.id })
 
-      // Close modal after successful switch
-      setTimeout(() => {
-        onClose()
-        setSwitchingTo(null)
-      }, 500)
+      // Only close modal after successful switch (user approved in wallet)
+      onClose()
+      setSwitchingTo(null)
     } catch (error) {
+      // User rejected or error occurred - keep modal open
       loggers.network.error('Failed to switch chain:', error)
       setSwitchingTo(null)
     }
@@ -297,10 +297,10 @@ function ChainCard({
         isActive
           ? 'bg-gradient-to-r from-blue-600/40 to-purple-600/40 border-2 border-blue-500'
           : 'bg-gray-800/40 border border-gray-700/50 hover:border-blue-500/50 hover:bg-gray-800/60'
-      } ${isSwitching ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
+      } ${isSwitching ? 'cursor-wait' : 'cursor-pointer'}`}
     >
       {/* Active Badge */}
-      {isActive && (
+      {isActive && !isSwitching && (
         <div className="absolute -top-1 -right-1">
           <div className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-md">
             <span className="text-xs font-semibold text-white">Active</span>
@@ -308,15 +308,37 @@ function ChainCard({
         </div>
       )}
 
+      {/* Switching Badge */}
+      {isSwitching && (
+        <div className="absolute -top-1 -right-1">
+          <div className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full shadow-md animate-pulse">
+            <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+            <span className="text-xs font-semibold text-white">Switching...</span>
+          </div>
+        </div>
+      )}
+
       {/* Chain Info - Row Layout */}
       <div className="flex items-center gap-3">
         {/* Chain Icon */}
-        <ChainIcon chainId={chain.id} size={32} className="rounded-full ring-1 ring-white/10 flex-shrink-0" />
+        <div className="relative">
+          <ChainIcon chainId={chain.id} size={32} className="rounded-full ring-1 ring-white/10 flex-shrink-0" />
+          {isSwitching && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+            </div>
+          )}
+        </div>
 
         {/* Chain Name */}
-        <h3 className="font-medium text-white text-sm flex-1 truncate">
-          {chain.name}
-        </h3>
+        <div className="flex-1">
+          <h3 className="font-medium text-white text-sm truncate">
+            {chain.name}
+          </h3>
+          {isSwitching && (
+            <p className="text-xs text-yellow-400 mt-0.5">Approve in your wallet...</p>
+          )}
+        </div>
       </div>
 
     </button>
