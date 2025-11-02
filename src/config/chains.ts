@@ -28,7 +28,10 @@ import {
   celoAlfajores,
   gnosis,
   moonbeam,
-  moonbaseAlpha
+  moonbaseAlpha,
+  blast,
+  blastSepolia,
+  worldchain
 } from 'viem/chains'
 
 /**
@@ -322,6 +325,8 @@ export const optimismConfig: ChainConfig = {
   gradient: 'from-red-500 to-pink-500',
   weth: '0x4200000000000000000000000000000000000006',
   dex: {
+    uniswapV2Factory: '0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf',
+    uniswapV2Router: '0x4A7b5Da61326A6379179b40d00F57E5bbDC962c2',
     uniswapV3Factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
     uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
   },
@@ -338,7 +343,7 @@ export const optimismConfig: ChainConfig = {
   rpcEnvVar: 'VITE_OPTIMISM_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
+    uniswapV2: true, // Now has V2!
     uniswapV3: true,
     hasMultipleDex: false,
   },
@@ -704,6 +709,104 @@ export const moonbaseAlphaConfig: ChainConfig = {
 }
 
 // ============================================================================
+// WORLD CHAIN
+// ============================================================================
+
+export const worldchainConfig: ChainConfig = {
+  ...worldchain,
+  icon: '🌍',
+  color: '#000000',
+  gradient: 'from-gray-800 to-black',
+  weth: '0x4200000000000000000000000000000000000006', // WETH
+  dex: {
+    uniswapV2Factory: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
+    uniswapV2Router: '0x541aB7c31A119441eF3575F6973277DE0eF460bd',
+  },
+  explorer: {
+    name: 'World Scan',
+    url: 'https://worldscan.org',
+    apiUrl: 'https://api.worldscan.org/api',
+    apiKeyEnvVar: 'VITE_WORLDSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://worldchain-mainnet.g.alchemy.com/public'] },
+    public: { http: ['https://worldchain-mainnet.g.alchemy.com/public', 'https://rpc.worldchain.io'] },
+  },
+  rpcEnvVar: 'VITE_WORLDCHAIN_MAINNET_RPC',
+  features: {
+    tokenDeployment: true,
+    uniswapV2: true,
+    uniswapV3: true,
+    hasMultipleDex: false,
+  },
+  category: 'mainnet',
+  layer: 'L2',
+}
+
+// ============================================================================
+// BLAST
+// ============================================================================
+
+export const blastConfig: ChainConfig = {
+  ...blast,
+  icon: '💥',
+  color: '#FCFC03',
+  gradient: 'from-yellow-400 to-yellow-300',
+  weth: '0x4300000000000000000000000000000000000004', // WETH
+  dex: {
+    uniswapV2Factory: '0x5C346464d33F90bABaf70dB6388507CC889C1070',
+    uniswapV2Router: '0xBB66Eb1c5e875933D44DAe661dbD80e5D9B03035',
+  },
+  explorer: {
+    name: 'Blastscan',
+    url: 'https://blastscan.io',
+    apiUrl: 'https://api.blastscan.io/api',
+    apiKeyEnvVar: 'VITE_BLASTSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.blast.io'] },
+    public: { http: ['https://rpc.blast.io', 'https://blast.publicnode.com'] },
+  },
+  rpcEnvVar: 'VITE_BLAST_MAINNET_RPC',
+  features: {
+    tokenDeployment: true,
+    uniswapV2: true,
+    uniswapV3: true,
+    hasMultipleDex: false,
+  },
+  category: 'mainnet',
+  layer: 'L2',
+}
+
+export const blastSepoliaConfig: ChainConfig = {
+  ...blastSepolia,
+  icon: '💥',
+  color: '#FCFC03',
+  gradient: 'from-yellow-300 to-yellow-200',
+  weth: '0x4200000000000000000000000000000000000023', // WETH
+  dex: {},
+  explorer: {
+    name: 'Blastscan',
+    url: 'https://sepolia.blastscan.io',
+    apiUrl: 'https://api-sepolia.blastscan.io/api',
+    apiKeyEnvVar: 'VITE_BLASTSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://sepolia.blast.io'] },
+    public: { http: ['https://sepolia.blast.io'] },
+  },
+  rpcEnvVar: 'VITE_BLAST_SEPOLIA_RPC',
+  features: {
+    tokenDeployment: true,
+    uniswapV2: false,
+    uniswapV3: false,
+    hasMultipleDex: false,
+  },
+  category: 'testnet',
+  layer: 'L2',
+}
+
+// ============================================================================
 // CHAIN REGISTRY
 // ============================================================================
 
@@ -722,6 +825,8 @@ export const ALL_CHAINS: ChainConfig[] = [
   fantomConfig,
   gnosisConfig,
   moonbeamConfig,
+  worldchainConfig,
+  blastConfig,
 
   // Testnets
   sepoliaConfig,
@@ -732,6 +837,7 @@ export const ALL_CHAINS: ChainConfig[] = [
   bscTestnetConfig,
   avalancheFujiConfig,
   moonbaseAlphaConfig,
+  blastSepoliaConfig,
 ]
 
 /**
@@ -892,6 +998,8 @@ export const CHAIN_FEES: Record<number, string> = {
   8453: '0.02',      // Base Mainnet
   42161: '0.02',     // Arbitrum One
   10: '0.02',        // Optimism
+  480: '0.02',       // World Chain
+  81457: '0.02',     // Blast
 
   // BNB chain
   56: '0.075',       // BSC Mainnet
@@ -918,6 +1026,7 @@ export const CHAIN_FEES: Record<number, string> = {
   11155420: '0.001', // Optimism Sepolia
   80002: '1',        // Polygon Amoy (1 MATIC for testing)
   1287: '10',        // Moonbase Alpha (10 DEV for testing)
+  168587773: '0.001', // Blast Sepolia
 }
 
 /**
@@ -937,7 +1046,7 @@ export function getDeploymentFee(chainId: number): string {
 export function getDeploymentFeeUSD(chainId: number): number {
   // Approximate USD values (update periodically)
   const usdValues: Record<number, number> = {
-    1: 80, 8453: 80, 42161: 80, 10: 80,  // ETH chains
+    1: 80, 8453: 80, 42161: 80, 10: 80, 480: 80, 81457: 80,  // ETH chains
     56: 82.5,                             // BSC
     137: 80,                              // Polygon
     43114: 80,                            // Avalanche
@@ -945,7 +1054,7 @@ export function getDeploymentFeeUSD(chainId: number): number {
     100: 80,                              // Gnosis (xDAI)
     1284: 81,                             // Moonbeam
     // Testnets
-    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2, 1287: 1.8,
+    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2, 1287: 1.8, 168587773: 4,
   }
   return usdValues[chainId] || 80 // Default $80
 }
