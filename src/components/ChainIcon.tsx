@@ -74,11 +74,13 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
         'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
       ],
       optimism: [
-        'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/64/optimism.png',
+        'https://avatars.githubusercontent.com/u/38683283?s=200&v=4',
+        'https://optimism.mirror.xyz/87eaWY_TVu-NvXY7YJyNKIRjpgCbQEYjHl9YXJ4VKhI/thumbnail',
         'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
       ],
       polygon: [
-        'https://raw.githubusercontent.com/ErikThiart/cryptocurrency-icons/master/64/polygon.png',
+        'https://avatars.githubusercontent.com/u/52841242?s=200&v=4',
+        'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png',
         'https://cryptologos.cc/logos/polygon-matic-logo.png',
       ],
       binance: [
