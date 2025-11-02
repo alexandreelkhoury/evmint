@@ -778,8 +778,8 @@ export function getAllViemChains(): Chain[] {
  * ETH ≈ $4,000 → 0.02 ETH = $80
  * BNB ≈ $1,100 → 0.075 BNB = $82.50
  * MATIC ≈ $0.20 → 400 MATIC = $80
- * AVAX ≈ $25 → 3 AVAX = $75
- * FTM ≈ $0.50 → 150 FTM = $75
+ * AVAX ≈ $20 → 4 AVAX = $80
+ * FTM/S ≈ $0.15 → 500 FTM = $75
  *
  * Note: Adjust these periodically based on market conditions
  */
@@ -797,10 +797,10 @@ export const CHAIN_FEES: Record<number, string> = {
   137: '400',        // Polygon Mainnet
 
   // AVAX chain
-  43114: '3',        // Avalanche C-Chain
+  43114: '4',        // Avalanche C-Chain
 
-  // FTM chain
-  250: '150',        // Fantom Opera
+  // FTM chain (Sonic S)
+  250: '500',        // Fantom Opera
 
   // Testnets (much lower fees for testing)
   11155111: '0.001', // Sepolia
@@ -830,8 +830,8 @@ export function getDeploymentFeeUSD(chainId: number): number {
     1: 80, 8453: 80, 42161: 80, 10: 80,  // ETH chains
     56: 82.5,                             // BSC
     137: 80,                              // Polygon
-    43114: 75,                            // Avalanche
-    250: 75,                              // Fantom
+    43114: 80,                            // Avalanche
+    250: 75,                              // Fantom/Sonic
     // Testnets
     11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2,
   }

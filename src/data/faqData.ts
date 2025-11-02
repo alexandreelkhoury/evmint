@@ -1,7 +1,7 @@
 export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
-    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 3 AVAX on Avalanche, 150 FTM on Fantom) plus gas fees. Layer 2 networks offer up to 95% lower gas costs while maintaining full EVM compatibility.",
+    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom) plus gas fees. Layer 2 networks offer up to 95% lower gas costs while maintaining full EVM compatibility.",
     relatedGuide: "getting-started"
   },
   {
