@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react'
 import { colors } from '../styles/designSystem'
 import { useGlobalToasts } from '../App'
 import NetworkSelectorModal from './NetworkSelectorModal'
+import ChainIcon from './ChainIcon'
 
 export default function WalletButton() {
   const { ready, authenticated, user, login, logout } = usePrivy()
@@ -69,54 +70,74 @@ export default function WalletButton() {
     switch (numChainId) {
       // Base chains
       case 8453:
-        return { name: 'Base Mainnet', color: 'text-blue-400', isBase: true, icon: '🔵' }
+        return { name: 'Base Mainnet', color: 'text-blue-400', isBase: true, chainId: numChainId }
       case 84532:
-        return { name: 'Base Sepolia', color: 'text-blue-400', isBase: true, icon: '🔵' }
+        return { name: 'Base Sepolia', color: 'text-blue-400', isBase: true, chainId: numChainId }
 
       // Ethereum
       case 1:
-        return { name: 'Ethereum', color: 'text-purple-400', isBase: false, icon: '🔷' }
+        return { name: 'Ethereum', color: 'text-purple-400', isBase: false, chainId: numChainId }
       case 11155111:
-        return { name: 'Sepolia', color: 'text-purple-400', isBase: false, icon: '🔷' }
+        return { name: 'Sepolia', color: 'text-purple-400', isBase: false, chainId: numChainId }
 
       // Arbitrum
       case 42161:
-        return { name: 'Arbitrum One', color: 'text-cyan-400', isBase: false, icon: '🔷' }
+        return { name: 'Arbitrum One', color: 'text-cyan-400', isBase: false, chainId: numChainId }
       case 421614:
-        return { name: 'Arbitrum Sepolia', color: 'text-cyan-400', isBase: false, icon: '🔷' }
+        return { name: 'Arbitrum Sepolia', color: 'text-cyan-400', isBase: false, chainId: numChainId }
 
       // Optimism
       case 10:
-        return { name: 'Optimism', color: 'text-red-400', isBase: false, icon: '🔴' }
+        return { name: 'Optimism', color: 'text-red-400', isBase: false, chainId: numChainId }
       case 11155420:
-        return { name: 'OP Sepolia', color: 'text-red-400', isBase: false, icon: '🔴' }
+        return { name: 'OP Sepolia', color: 'text-red-400', isBase: false, chainId: numChainId }
 
       // Polygon
       case 137:
-        return { name: 'Polygon', color: 'text-purple-400', isBase: false, icon: '💜' }
+        return { name: 'Polygon', color: 'text-purple-400', isBase: false, chainId: numChainId }
       case 80002:
-        return { name: 'Polygon Amoy', color: 'text-purple-400', isBase: false, icon: '💜' }
+        return { name: 'Polygon Amoy', color: 'text-purple-400', isBase: false, chainId: numChainId }
 
       // Binance Smart Chain
       case 56:
-        return { name: 'BNB Smart Chain', color: 'text-yellow-400', isBase: false, icon: '🟡' }
+        return { name: 'BNB Smart Chain', color: 'text-yellow-400', isBase: false, chainId: numChainId }
       case 97:
-        return { name: 'BNB Testnet', color: 'text-yellow-400', isBase: false, icon: '🟡' }
+        return { name: 'BNB Testnet', color: 'text-yellow-400', isBase: false, chainId: numChainId }
 
       // Avalanche
       case 43114:
-        return { name: 'Avalanche', color: 'text-red-400', isBase: false, icon: '🔺' }
+        return { name: 'Avalanche', color: 'text-red-400', isBase: false, chainId: numChainId }
       case 43113:
-        return { name: 'Avalanche Fuji', color: 'text-red-400', isBase: false, icon: '🔺' }
+        return { name: 'Avalanche Fuji', color: 'text-red-400', isBase: false, chainId: numChainId }
 
       // Fantom
       case 250:
-        return { name: 'Fantom', color: 'text-blue-400', isBase: false, icon: '👻' }
+        return { name: 'Fantom', color: 'text-blue-400', isBase: false, chainId: numChainId }
       case 4002:
-        return { name: 'Fantom Testnet', color: 'text-blue-400', isBase: false, icon: '👻' }
+        return { name: 'Fantom Testnet', color: 'text-blue-400', isBase: false, chainId: numChainId }
+
+      // Gnosis
+      case 100:
+        return { name: 'Gnosis', color: 'text-teal-400', isBase: false, chainId: numChainId }
+
+      // Moonbeam
+      case 1284:
+        return { name: 'Moonbeam', color: 'text-pink-400', isBase: false, chainId: numChainId }
+      case 1287:
+        return { name: 'Moonbase Alpha', color: 'text-pink-400', isBase: false, chainId: numChainId }
+
+      // WorldChain
+      case 480:
+        return { name: 'WorldChain', color: 'text-orange-400', isBase: false, chainId: numChainId }
+
+      // Blast
+      case 81457:
+        return { name: 'Blast', color: 'text-yellow-400', isBase: false, chainId: numChainId }
+      case 168587773:
+        return { name: 'Blast Sepolia', color: 'text-yellow-400', isBase: false, chainId: numChainId }
 
       default:
-        return { name: numChainId ? `Chain ${numChainId}` : 'Unknown', color: 'text-gray-400', isBase: false, icon: '❓' }
+        return { name: numChainId ? `Chain ${numChainId}` : 'Unknown', color: 'text-gray-400', isBase: false, chainId: numChainId }
     }
   }
   
@@ -194,9 +215,9 @@ export default function WalletButton() {
             <span className="text-white font-medium text-sm truncate">
               {`${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
             </span>
-            {chainInfo && (
-              <span className={`text-xs flex items-center space-x-1 ${chainInfo.color}`}>
-                <span>{chainInfo.icon}</span>
+            {chainInfo && chainInfo.chainId && (
+              <span className={`text-xs flex items-center space-x-1.5 ${chainInfo.color}`}>
+                <ChainIcon chainId={chainInfo.chainId} size={14} />
                 <span className="truncate">{chainInfo.name}</span>
               </span>
             )}
@@ -263,14 +284,32 @@ export default function WalletButton() {
               </div>
 
               {/* Network Status */}
-              {chainInfo && (
+              {chainInfo && chainInfo.chainId && (
                 <div className="p-3 bg-black/20">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">{chainInfo.icon}</span>
-                    <div>
-                      <p className="text-white text-sm font-medium">Current Network</p>
-                      <p className={`text-xs ${chainInfo.color}`}>{chainInfo.name}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2.5">
+                      <ChainIcon chainId={chainInfo.chainId} size={28} />
+                      <div>
+                        <p className="text-white text-sm font-medium">Current Network</p>
+                        <p className={`text-xs ${chainInfo.color}`}>{chainInfo.name}</p>
+                      </div>
                     </div>
+                    {/* Change Network Icon */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsNetworkModalOpen(true)
+                        setIsDropdownOpen(false)
+                      }}
+                      className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                      title="Change Network"
+                    >
+                      <svg className="w-4 h-4 text-gray-400 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                      </svg>
+                    </motion.button>
                   </div>
                 </div>
               )}
