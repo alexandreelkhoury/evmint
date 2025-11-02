@@ -606,6 +606,104 @@ export const fantomConfig: ChainConfig = {
 }
 
 // ============================================================================
+// GNOSIS (xDAI)
+// ============================================================================
+
+export const gnosisConfig: ChainConfig = {
+  ...gnosis,
+  icon: '🟢',
+  color: '#04795B',
+  gradient: 'from-green-600 to-teal-500',
+  weth: '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d', // WXDAI
+  dex: {
+    sushiswapFactory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
+    sushiswapRouter: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
+  },
+  explorer: {
+    name: 'Gnosisscan',
+    url: 'https://gnosisscan.io',
+    apiUrl: 'https://api.gnosisscan.io/api',
+    apiKeyEnvVar: 'VITE_GNOSISSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.gnosischain.com'] },
+    public: { http: ['https://rpc.gnosischain.com', 'https://gnosis.publicnode.com'] },
+  },
+  rpcEnvVar: 'VITE_GNOSIS_MAINNET_RPC',
+  features: {
+    tokenDeployment: true,
+    uniswapV2: true, // Via SushiSwap V2
+    uniswapV3: false,
+    hasMultipleDex: true,
+  },
+  category: 'mainnet',
+  layer: 'sidechain',
+}
+
+// ============================================================================
+// MOONBEAM
+// ============================================================================
+
+export const moonbeamConfig: ChainConfig = {
+  ...moonbeam,
+  icon: '🌙',
+  color: '#53CBC9',
+  gradient: 'from-teal-400 to-cyan-500',
+  weth: '0xAcc15dC74880C9944775448304B263D191c6077F', // WGLMR
+  dex: {
+    sushiswapFactory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
+    sushiswapRouter: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
+  },
+  explorer: {
+    name: 'Moonscan',
+    url: 'https://moonscan.io',
+    apiUrl: 'https://api-moonbeam.moonscan.io/api',
+    apiKeyEnvVar: 'VITE_MOONSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.api.moonbeam.network'] },
+    public: { http: ['https://rpc.api.moonbeam.network', 'https://moonbeam.publicnode.com'] },
+  },
+  rpcEnvVar: 'VITE_MOONBEAM_MAINNET_RPC',
+  features: {
+    tokenDeployment: true,
+    uniswapV2: true, // Via SushiSwap V2
+    uniswapV3: false,
+    hasMultipleDex: true,
+  },
+  category: 'mainnet',
+  layer: 'parachain',
+}
+
+export const moonbaseAlphaConfig: ChainConfig = {
+  ...moonbaseAlpha,
+  icon: '🌙',
+  color: '#53CBC9',
+  gradient: 'from-teal-300 to-cyan-400',
+  weth: '0xD909178CC99d318e4D46e7E66a972955859670E1', // WDEV
+  dex: {},
+  explorer: {
+    name: 'Moonscan',
+    url: 'https://moonbase.moonscan.io',
+    apiUrl: 'https://api-moonbase.moonscan.io/api',
+    apiKeyEnvVar: 'VITE_MOONSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.api.moonbase.moonbeam.network'] },
+    public: { http: ['https://rpc.api.moonbase.moonbeam.network'] },
+  },
+  rpcEnvVar: 'VITE_MOONBASE_ALPHA_RPC',
+  features: {
+    tokenDeployment: true,
+    uniswapV2: false,
+    uniswapV3: false,
+    hasMultipleDex: false,
+  },
+  category: 'testnet',
+  layer: 'parachain',
+}
+
+// ============================================================================
 // CHAIN REGISTRY
 // ============================================================================
 
@@ -622,6 +720,8 @@ export const ALL_CHAINS: ChainConfig[] = [
   bscConfig,
   avalancheConfig,
   fantomConfig,
+  gnosisConfig,
+  moonbeamConfig,
 
   // Testnets
   sepoliaConfig,
@@ -631,6 +731,7 @@ export const ALL_CHAINS: ChainConfig[] = [
   polygonAmoyConfig,
   bscTestnetConfig,
   avalancheFujiConfig,
+  moonbaseAlphaConfig,
 ]
 
 /**
@@ -780,6 +881,8 @@ export function getAllViemChains(): Chain[] {
  * MATIC ≈ $0.20 → 400 MATIC = $80
  * AVAX ≈ $20 → 4 AVAX = $80
  * FTM/S ≈ $0.15 → 500 FTM = $75
+ * xDAI ≈ $1.00 → 80 xDAI = $80
+ * GLMR ≈ $0.18 → 450 GLMR = $81
  *
  * Note: Adjust these periodically based on market conditions
  */
@@ -802,12 +905,19 @@ export const CHAIN_FEES: Record<number, string> = {
   // FTM chain (Sonic S)
   250: '500',        // Fantom Opera
 
+  // Gnosis chain (xDAI)
+  100: '80',         // Gnosis (xDAI)
+
+  // Moonbeam chain (GLMR)
+  1284: '450',       // Moonbeam
+
   // Testnets (much lower fees for testing)
   11155111: '0.001', // Sepolia
   84532: '0.001',    // Base Sepolia
   421614: '0.001',   // Arbitrum Sepolia
   11155420: '0.001', // Optimism Sepolia
   80002: '1',        // Polygon Amoy (1 MATIC for testing)
+  1287: '10',        // Moonbase Alpha (10 DEV for testing)
 }
 
 /**
@@ -832,8 +942,10 @@ export function getDeploymentFeeUSD(chainId: number): number {
     137: 80,                              // Polygon
     43114: 80,                            // Avalanche
     250: 75,                              // Fantom/Sonic
+    100: 80,                              // Gnosis (xDAI)
+    1284: 81,                             // Moonbeam
     // Testnets
-    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2,
+    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2, 1287: 1.8,
   }
   return usdValues[chainId] || 80 // Default $80
 }

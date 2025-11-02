@@ -1,12 +1,12 @@
 export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
-    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom) plus gas fees. Layer 2 networks offer up to 95% lower gas costs while maintaining full EVM compatibility.",
+    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam) plus gas fees. Layer 2 networks offer up to 95% lower gas costs while maintaining full EVM compatibility.",
     relatedGuide: "getting-started"
   },
   {
     question: "Which blockchain should I choose for token creation?",
-    answer: "Choose based on your needs: Base (Coinbase integration, low fees), Ethereum (largest ecosystem), Arbitrum (fastest L2), Optimism (developer-friendly), Polygon (wide adoption), BSC (trading volume). All EVM chains offer fast transactions and low fees compared to Ethereum mainnet.",
+    answer: "Choose based on your needs: Base (Coinbase integration, low fees), Ethereum (largest ecosystem), Arbitrum (fastest L2), Optimism (developer-friendly), Polygon (wide adoption), BSC (trading volume), Gnosis (stable USD fees with xDAI), Moonbeam (Polkadot connectivity). All EVM chains offer fast transactions and low fees compared to Ethereum mainnet.",
     relatedGuide: "getting-started"
   },
   {
