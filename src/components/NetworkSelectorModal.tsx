@@ -80,6 +80,15 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
     }
   }
 
+  // Prevent closing modal while switching networks
+  const handleClose = () => {
+    if (switchingTo !== null) {
+      // Don't allow closing while switching
+      return
+    }
+    onClose()
+  }
+
   const modalContent = (
     <AnimatePresence mode="wait">
       {isOpen && (
@@ -89,7 +98,7 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9998]"
           />
 
@@ -106,8 +115,14 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
             <div className="flex-shrink-0 relative bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 border-b border-gray-700/50 p-3">
               {/* Close Button */}
               <button
-                onClick={onClose}
-                className="absolute top-2 right-2 p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded-md transition-all duration-200"
+                onClick={handleClose}
+                disabled={switchingTo !== null}
+                className={`absolute top-2 right-2 p-1 rounded-md transition-all duration-200 ${
+                  switchingTo !== null
+                    ? 'text-gray-600 cursor-not-allowed'
+                    : 'text-gray-400 hover:text-white hover:bg-white/10'
+                }`}
+                title={switchingTo !== null ? 'Please wait for network switch to complete' : 'Close'}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -116,9 +131,18 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
 
               {/* Title */}
               <div className="text-center mb-3">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 text-transparent bg-clip-text">
-                  Select Network
-                </h2>
+                {switchingTo !== null ? (
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 text-transparent bg-clip-text">
+                      Switching Network...
+                    </h2>
+                    <p className="text-xs text-yellow-400/80">Please approve in your wallet</p>
+                  </div>
+                ) : (
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 text-transparent bg-clip-text">
+                    Select Network
+                  </h2>
+                )}
               </div>
 
               {/* Search Bar */}
