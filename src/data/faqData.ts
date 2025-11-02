@@ -1,7 +1,7 @@
 export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
-    answer: "Token creation costs vary by chain: Layer 2 networks (Base, Arbitrum, Optimism) cost 0.02 ETH fee plus $1-3 gas. Ethereum mainnet costs $50-200 in gas. BSC and Polygon cost $1-5. Layer 2 networks offer up to 95% lower transaction costs while maintaining full EVM compatibility.",
+    answer: "Token creation has a fixed ~$50 USD platform fee (amount varies by chain's native token: 0.017 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 100 MATIC on Polygon, 1.43 AVAX on Avalanche, 125 FTM on Fantom) plus network gas fees ($1-3 on L2s, $50-200 on Ethereum mainnet). Layer 2 networks offer up to 95% lower gas costs while maintaining full EVM compatibility.",
     relatedGuide: "getting-started"
   },
   {
@@ -63,7 +63,7 @@ export const faqs = [
   },
   {
     question: "What are gas fees across different blockchains?",
-    answer: "Gas fees vary by chain: L2s (Base, Arbitrum, Optimism) offer 90-95% savings vs Ethereum. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation costs 0.02 ETH + $1-3 gas on L2s, $50-200 on Ethereum. Fees fluctuate with network congestion.",
+    answer: "Gas fees vary by chain: L2s (Base, Arbitrum, Optimism) offer 90-95% savings vs Ethereum. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation has a ~$50 platform fee (in native tokens) plus $1-3 gas on L2s, or $50-200 gas on Ethereum. Fees fluctuate with network congestion.",
     relatedGuide: "getting-started"
   },
   {

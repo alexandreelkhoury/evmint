@@ -49,9 +49,9 @@ export default function HomePage() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "0.02",
-      "@priceCurrency": "ETH",
-      "description": "Token deployment on Base blockchain",
+      "price": "50",
+      "priceCurrency": "USD",
+      "description": "Token deployment on multi-chain EVM networks",
       "priceValidUntil": "2025-12-31"
     },
     "aggregateRating": {

@@ -43,9 +43,9 @@ export default function CreateTokenPage() {
     "operatingSystem": "Web Browser",
     "offers": {
       "@type": "Offer",
-      "price": "0.02",
-      "priceCurrency": "ETH",
-      "description": "Token deployment fee on EVM blockchains"
+      "price": "50",
+      "priceCurrency": "USD",
+      "description": "Token deployment fee on EVM blockchains (varies by network)"
     },
     "provider": {
       "@type": "Organization",

@@ -627,7 +627,7 @@ pragma solidity ^0.8.30;
 
 
 contract MyERC20 is ERC20 {
-    uint256 public constant FEE = 0.02 ether;
+    uint256 public immutable FEE; // Changed from constant to immutable for chain-specific fees
     address payable public constant feeRecipient =
         payable(0x160788647f13271dF554aA3640025CA1560ecdE8);
 
@@ -637,8 +637,10 @@ contract MyERC20 is ERC20 {
         string memory name_,
         string memory symbol_,
         uint256 initialSupply_,
-        uint8 decimals_
+        uint8 decimals_,
+        uint256 fee_ // NEW: Chain-specific fee parameter
     ) payable ERC20(name_, symbol_) {
+        FEE = fee_; // Set fee from constructor parameter
         require(msg.value >= FEE, "Insufficient fee");
         require(decimals_ <= 18, "Too many decimals"); // limite pour rester standard
 

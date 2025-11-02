@@ -60,7 +60,7 @@ const guidesData: Record<string, GuideData> = {
     description: 'Complete beginner\'s guide to creating your own ERC20 token on Base blockchain using our launcher - no coding required!',
     difficulty: 'Beginner',
     time: '5 minutes',
-    cost: '0.02 ETH + gas',
+    cost: '~$50 + gas',
     steps: [
       {
         number: '01',
@@ -92,7 +92,7 @@ const guidesData: Record<string, GuideData> = {
         description: 'Final check and deployment to Base blockchain',
         details: [
           'Review all token parameters carefully',
-          'Check the deployment fee (0.02 ETH)',
+          'Check the deployment fee (varies by network, ~$50 USD)',
           'Click "Create Token" to start deployment',
           'Approve the transaction in your wallet'
         ],
@@ -249,7 +249,7 @@ const guidesData: Record<string, GuideData> = {
         title: 'Understanding Our Fee System',
         description: 'How our platform fee collection works',
         details: [
-          'Each token deployment costs 0.02 ETH',
+          'Token deployment fee varies by network (~$50 USD equivalent)',
           'Fees support platform development and maintenance',
           'No ongoing fees after deployment',
           'Your token contract is completely independent'

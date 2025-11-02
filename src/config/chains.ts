@@ -766,3 +766,74 @@ export function getRpcUrl(chainId: number): string {
 export function getAllViemChains(): Chain[] {
   return ALL_CHAINS
 }
+
+// ============================================================================
+// DEPLOYMENT FEE CONFIGURATION (Chain-Specific)
+// ============================================================================
+
+/**
+ * Deployment fees per chain (in native token)
+ * Targeting ~$50 USD equivalent based on current market prices
+ *
+ * ETH ≈ $3,000 → 0.017 ETH ≈ $51
+ * BNB ≈ $650 → 0.075 BNB ≈ $48.75
+ * MATIC ≈ $0.50 → 100 MATIC ≈ $50
+ * AVAX ≈ $35 → 1.43 AVAX ≈ $50
+ * FTM ≈ $0.40 → 125 FTM ≈ $50
+ *
+ * Note: Adjust these periodically based on market conditions
+ */
+export const CHAIN_FEES: Record<number, string> = {
+  // ETH-based chains (ETH as gas token)
+  1: '0.017',        // Ethereum Mainnet
+  8453: '0.017',     // Base Mainnet
+  42161: '0.017',    // Arbitrum One
+  10: '0.017',       // Optimism
+
+  // BNB chain
+  56: '0.075',       // BSC Mainnet (user specified)
+
+  // MATIC chain
+  137: '100',        // Polygon Mainnet
+
+  // AVAX chain
+  43114: '1.43',     // Avalanche C-Chain
+
+  // FTM chain
+  250: '125',        // Fantom Opera
+
+  // Testnets (much lower fees for testing)
+  11155111: '0.001', // Sepolia
+  84532: '0.001',    // Base Sepolia
+  421614: '0.001',   // Arbitrum Sepolia
+  11155420: '0.001', // Optimism Sepolia
+  80002: '0.1',      // Polygon Amoy (10 MATIC for testing)
+}
+
+/**
+ * Get deployment fee for a specific chain
+ * @param chainId - Chain ID
+ * @returns Fee amount as string (in native token units)
+ */
+export function getDeploymentFee(chainId: number): string {
+  return CHAIN_FEES[chainId] || '0.02' // Default fallback
+}
+
+/**
+ * Get deployment fee in USD (approximate)
+ * @param chainId - Chain ID
+ * @returns Approximate USD value
+ */
+export function getDeploymentFeeUSD(chainId: number): number {
+  // Approximate USD values (update periodically)
+  const usdValues: Record<number, number> = {
+    1: 51, 8453: 51, 42161: 51, 10: 51,  // ETH chains
+    56: 48.75,                             // BSC
+    137: 50,                               // Polygon
+    43114: 50,                             // Avalanche
+    250: 50,                               // Fantom
+    // Testnets
+    11155111: 3, 84532: 3, 421614: 3, 11155420: 3, 80002: 0.05,
+  }
+  return usdValues[chainId] || 50 // Default $50
+}

@@ -20,6 +20,7 @@ import type { VerificationResult } from './types'
  * @param symbol - Token symbol
  * @param initialSupply - Initial token supply (before decimals adjustment)
  * @param decimals - Number of decimal places
+ * @param fee - Deployment fee in wei
  * @param chainId - Chain ID where the contract is deployed
  * @returns Promise with verification result
  */
@@ -29,11 +30,12 @@ export async function verifyContractWithEtherscan(
   symbol: string,
   initialSupply: bigint,
   decimals: number,
+  fee: bigint,
   chainId: number
 ): Promise<VerificationResult> {
   const sourceCode = getMyERC20SourceCode()
   const compilerVersion = MYERC20_COMPILER_VERSION
-  const constructorArguments = encodeConstructorArguments(name, symbol, initialSupply, decimals)
+  const constructorArguments = encodeConstructorArguments(name, symbol, initialSupply, decimals, fee)
 
   return await verifyContract({
     contractAddress,

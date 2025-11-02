@@ -1,5 +1,5 @@
 // MyERC20 Contract Artifacts
-// UPDATED - 2025-10-19T18:30:27.585Z
+// UPDATED - 2025-01-02 (Multi-chain fee support)
 // Solidity 0.8.30 with optimization runs=200
 
 export const MY_ERC20_ABI = [
@@ -24,6 +24,11 @@ export const MY_ERC20_ABI = [
         "internalType": "uint8",
         "name": "decimals_",
         "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee_",
+        "type": "uint256"
       }
     ],
     "stateMutability": "payable",

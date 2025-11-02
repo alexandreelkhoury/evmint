@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAccount, useChainId, useSwitchChain, useDeployContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
 import { parseEther } from 'viem'
-import { isChainSupported, baseConfig } from '../config/chains'
+import { isChainSupported, baseConfig, getDeploymentFee } from '../config/chains'
 import { MY_ERC20_ABI, MY_ERC20_BYTECODE, FEE_RECIPIENT } from '../contracts/MyERC20Artifacts'
 import {
   verifyContractWithEtherscan,
@@ -287,6 +287,7 @@ export function useOpenZeppelinTokenDeployment() {
         tokenData.symbol,
         BigInt(tokenData.totalSupply),
         tokenData.decimals,
+        feeInWei,
         chainId
       )
 
@@ -442,6 +443,10 @@ export function useOpenZeppelinTokenDeployment() {
         decimals: sanitizedTokenData.decimals
       })
       
+      // Get chain-specific deployment fee
+      const deploymentFee = getDeploymentFee(chainId)
+      const feeInWei = parseEther(deploymentFee)
+
       deployContract({
         bytecode: MY_ERC20_BYTECODE,
         abi: MY_ERC20_ABI,
@@ -449,9 +454,10 @@ export function useOpenZeppelinTokenDeployment() {
           sanitizedTokenData.name,
           sanitizedTokenData.symbol,
           BigInt(sanitizedTokenData.totalSupply),
-          sanitizedTokenData.decimals
+          sanitizedTokenData.decimals,
+          feeInWei // NEW: Pass fee as 5th parameter for chain-specific pricing
         ],
-        value: parseEther(FEES.DEPLOYMENT_FEE.toString()), // 0.02 ETH - matches contract FEE constant
+        value: feeInWei, // Send exact fee amount required for this chain
       })
 
       // What happens after clicking "Confirm" in MetaMask:
@@ -485,7 +491,7 @@ export function useOpenZeppelinTokenDeployment() {
     isVerifying,
     verificationStatus,
     verificationMethod,
-    feeAmount: '0.02', // For UI display
+    feeAmount: getDeploymentFee(chainId), // Chain-specific fee for UI display
     feeRecipient: FEE_RECIPIENT,
   }
 }

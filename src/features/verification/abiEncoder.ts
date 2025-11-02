@@ -12,17 +12,19 @@ export function encodeConstructorArguments(
   name: string,
   symbol: string,
   initialSupply: bigint,
-  decimals: number
+  decimals: number,
+  fee: bigint
 ): string {
   try {
     const types = [
       { type: 'string', name: 'name' },
       { type: 'string', name: 'symbol' },
       { type: 'uint256', name: 'initialSupply' },
-      { type: 'uint8', name: 'decimals' }
+      { type: 'uint8', name: 'decimals' },
+      { type: 'uint256', name: 'fee' }
     ]
 
-    const values = [name, symbol, initialSupply, decimals]
+    const values = [name, symbol, initialSupply, decimals, fee]
     const encoded = encodeAbiParameters(types, values)
 
     // Remove 0x prefix as expected by block explorer APIs
