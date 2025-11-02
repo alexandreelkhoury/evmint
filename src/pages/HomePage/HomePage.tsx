@@ -49,7 +49,7 @@ export default function HomePage() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "50",
+      "price": "75-100",
       "priceCurrency": "USD",
       "description": "Token deployment on multi-chain EVM networks",
       "priceValidUntil": "2025-12-31"

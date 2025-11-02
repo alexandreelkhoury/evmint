@@ -773,41 +773,41 @@ export function getAllViemChains(): Chain[] {
 
 /**
  * Deployment fees per chain (in native token)
- * Targeting ~$50 USD equivalent based on current market prices
+ * Targeting $75-100 USD equivalent based on current market prices
  *
- * ETH ≈ $3,000 → 0.017 ETH ≈ $51
- * BNB ≈ $650 → 0.075 BNB ≈ $48.75
- * MATIC ≈ $0.50 → 100 MATIC ≈ $50
- * AVAX ≈ $35 → 1.43 AVAX ≈ $50
- * FTM ≈ $0.40 → 125 FTM ≈ $50
+ * ETH ≈ $4,000 → 0.02 ETH = $80
+ * BNB ≈ $1,100 → 0.075 BNB = $82.50
+ * MATIC ≈ $0.20 → 400 MATIC = $80
+ * AVAX ≈ $25 → 3 AVAX = $75
+ * FTM ≈ $0.50 → 150 FTM = $75
  *
  * Note: Adjust these periodically based on market conditions
  */
 export const CHAIN_FEES: Record<number, string> = {
   // ETH-based chains (ETH as gas token)
-  1: '0.017',        // Ethereum Mainnet
-  8453: '0.017',     // Base Mainnet
-  42161: '0.017',    // Arbitrum One
-  10: '0.017',       // Optimism
+  1: '0.02',         // Ethereum Mainnet
+  8453: '0.02',      // Base Mainnet
+  42161: '0.02',     // Arbitrum One
+  10: '0.02',        // Optimism
 
   // BNB chain
-  56: '0.075',       // BSC Mainnet (user specified)
+  56: '0.075',       // BSC Mainnet
 
   // MATIC chain
-  137: '100',        // Polygon Mainnet
+  137: '400',        // Polygon Mainnet
 
   // AVAX chain
-  43114: '1.43',     // Avalanche C-Chain
+  43114: '3',        // Avalanche C-Chain
 
   // FTM chain
-  250: '125',        // Fantom Opera
+  250: '150',        // Fantom Opera
 
   // Testnets (much lower fees for testing)
   11155111: '0.001', // Sepolia
   84532: '0.001',    // Base Sepolia
   421614: '0.001',   // Arbitrum Sepolia
   11155420: '0.001', // Optimism Sepolia
-  80002: '0.1',      // Polygon Amoy (10 MATIC for testing)
+  80002: '1',        // Polygon Amoy (1 MATIC for testing)
 }
 
 /**
@@ -827,13 +827,13 @@ export function getDeploymentFee(chainId: number): string {
 export function getDeploymentFeeUSD(chainId: number): number {
   // Approximate USD values (update periodically)
   const usdValues: Record<number, number> = {
-    1: 51, 8453: 51, 42161: 51, 10: 51,  // ETH chains
-    56: 48.75,                             // BSC
-    137: 50,                               // Polygon
-    43114: 50,                             // Avalanche
-    250: 50,                               // Fantom
+    1: 80, 8453: 80, 42161: 80, 10: 80,  // ETH chains
+    56: 82.5,                             // BSC
+    137: 80,                              // Polygon
+    43114: 75,                            // Avalanche
+    250: 75,                              // Fantom
     // Testnets
-    11155111: 3, 84532: 3, 421614: 3, 11155420: 3, 80002: 0.05,
+    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2,
   }
-  return usdValues[chainId] || 50 // Default $50
+  return usdValues[chainId] || 80 // Default $80
 }
