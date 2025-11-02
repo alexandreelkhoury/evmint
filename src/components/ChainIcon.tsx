@@ -40,6 +40,17 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       43113: 'avalanche',
       // Fantom
       250: 'fantom',
+      4002: 'fantom',
+      // Gnosis (xDai)
+      100: 'gnosis',
+      // Moonbeam
+      1284: 'moonbeam',
+      1287: 'moonbeam',
+      // WorldChain
+      480: 'worldchain',
+      // Blast
+      81457: 'blast',
+      168587773: 'blast',
     }
     return chainNames[id] || null
   }
