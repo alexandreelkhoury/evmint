@@ -14,21 +14,6 @@ export default function HeroSection() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1.0 }}
     >
-      {/* Logo + Brand */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5, rotateY: 180 }}
-        animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-        transition={{ duration: 1.2, delay: 0.1, type: "spring", stiffness: 100 }}
-        className="mb-12"
-      >
-        <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 rounded-3xl flex items-center justify-center p-6 shadow-2xl shadow-blue-500/25 ring-1 ring-white/10">
-          <img
-            src="/LOGO.png"
-            alt="EVMint Logo"
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </motion.div>
 
       {/* Main Headline */}
       <motion.div
@@ -66,7 +51,7 @@ export default function HeroSection() {
       >
         The most <span className="text-blue-400 font-semibold">powerful</span> and <span className="text-purple-400 font-semibold">user-friendly</span> way to launch ERC20 tokens across multiple EVM blockchains.
         <br />
-        <span className="text-xl text-gray-400 mt-4 block">No coding skills required. Support for 8+ chains including Base, Arbitrum, Polygon & more.</span>
+        <span className="text-xl text-gray-400 mt-4 block">No coding skills required. Support for 13+ chains including Base, Monad, Arbitrum & more.</span>
       </motion.p>
 
       {/* Action Buttons */}

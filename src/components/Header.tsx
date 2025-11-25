@@ -2,11 +2,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import WalletButton from './WalletButton'
+import HexagonStackLogo from './HexagonStackLogo'
 
 const navigation = [
   { name: 'Home', href: '/', title: 'EVMint - Create ERC20 Tokens on Base Blockchain', icon: '🏠' },
   { name: 'Create Token', href: '/create', title: 'Create Base Token - Deploy ERC20 Tokens in 5 Seconds', icon: '🚀' },
-  // { name: 'My Tokens', href: '/tokens', title: 'My Base Tokens - Manage Your ERC20 Tokens', icon: '💎' },
+  { name: 'My Tokens', href: '/tokens', title: 'My Base Tokens - Manage Your ERC20 Tokens', icon: '💎' },
   { name: 'Liquidity', href: '/liquidity', title: 'Base Liquidity Management - Uniswap V2 Integration', icon: '💧' },
   { name: 'Guides', href: '/guides', title: 'Base Token Creation Guides - Step-by-Step Tutorials', icon: '📚' },
   { name: 'FAQ', href: '/faq', title: 'Base Token FAQ - Frequently Asked Questions', icon: '❓' },
@@ -33,17 +34,13 @@ export default function Header() {
               transition={{ duration: 0.2 }}
             >
               <Link to="/" className="flex items-center space-x-2 sm:space-x-4">
-                <motion.div 
-                  className="h-8 w-8 sm:h-12 sm:w-12 flex items-center justify-center flex-shrink-0"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <img 
-                    src="/LOGO.png" 
-                    alt="EVMint Logo" 
-                    className="h-6 w-6 sm:h-10 sm:w-10 object-contain"
+                <div className="flex items-center justify-center flex-shrink-0">
+                  <HexagonStackLogo
+                    size={40}
+                    animated={true}
+                    className="scale-75 sm:scale-100"
                   />
-                </motion.div>
+                </div>
                 <span className="text-lg sm:text-2xl font-bold text-white whitespace-nowrap truncate max-w-[120px] xs:max-w-[150px] sm:max-w-none">
                   <span className="hidden sm:inline">EVMint</span>
                   <span className="sm:hidden">Base Creator</span>

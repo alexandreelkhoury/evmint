@@ -98,6 +98,7 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       480: 'worldchain',
       81457: 'blast',
       168587773: 'blast',
+      143: 'monad',
     }
     return chainNames[id] || null
   }
@@ -154,6 +155,10 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       blast: [
         'https://avatars.githubusercontent.com/u/154318375?s=200&v=4',
         'https://pbs.twimg.com/profile_images/1725648163638861824/xPb8c3Sh_400x400.jpg',
+      ],
+      monad: [
+        'https://monadscan.com/assets/monad/images/svg/logos/chain-light.svg',
+        'https://monadscan.com/assets/monad/images/svg/logos/chain-dark.svg',
       ],
     }
 

@@ -1,9 +1,13 @@
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import SEO from '../components/SEO'
 import TokenSelectModal from '../components/liquidity/TokenSelectModal'
 import SuccessModal from '../components/liquidity/SuccessModal'
 import TransactionProgressModal from '../components/liquidity/TransactionProgressModal'
-import { layout, typography } from '../styles/designSystem'
+import NetworkSelectorModal from '../components/NetworkSelectorModal'
+import StandardPageHeader from '../components/StandardPageHeader'
+import CTACard from '../components/CTACard'
+import { layout } from '../styles/designSystem'
 import { loggers } from '../utils/logger'
 import AddLiquidityForm from './LiquidityPage/components/AddLiquidityForm'
 import RemoveLiquidityForm from './LiquidityPage/components/RemoveLiquidityForm'
@@ -11,6 +15,7 @@ import NoDexWarning from './LiquidityPage/components/NoDexWarning'
 import { useLiquidityPageLogic } from './LiquidityPage/hooks/useLiquidityPageLogic'
 
 export default function LiquidityPage() {
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
   const {
     // State
     ready,
@@ -106,45 +111,21 @@ export default function LiquidityPage() {
 
       <div className={`relative z-10 ${layout.pageContainer}`}>
         {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 mb-8"
-          >
-            <span className="text-sm font-medium text-blue-400">💧 Liquidity Provider</span>
-          </motion.div>
-
-          <motion.h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-              Liquidity Management
-            </span>
-            <br />
-            <span className={typography.pageTitleWhite}>on Uniswap V2</span>
-          </motion.h1>
-
-          <motion.p
-            className={`${typography.subtitle} max-w-3xl mx-auto text-lg sm:text-xl`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            Add liquidity to earn trading fees or withdraw your existing positions.
-          </motion.p>
-
-          <NoDexWarning isV2Available={isV2Available} />
-        </motion.div>
+        <StandardPageHeader
+          badgeIcon="💧"
+          badgeText="Liquidity Provider"
+          titleGradient="Liquidity Management"
+          titleWhite="on Uniswap V2"
+          subtitle="Add liquidity to earn trading fees or withdraw your existing positions."
+          stats={[
+            { value: 'Uniswap V2', label: 'Protocol', color: 'blue' },
+            { value: 'Earn Fees', label: 'Trading', color: 'purple' },
+            { value: 'Multi-Chain', label: 'Support', color: 'cyan' }
+          ]}
+          chainId={currentChainId}
+          onNetworkClick={() => setIsNetworkModalOpen(true)}
+          warningContent={!isV2Available ? <NoDexWarning isV2Available={isV2Available} /> : undefined}
+        />
 
         {/* Main Content */}
         <div className="max-w-4xl mx-auto mb-24">
@@ -219,6 +200,68 @@ export default function LiquidityPage() {
             />
           )}
         </div>
+
+        {/* Getting Started CTA */}
+        <CTACard
+          title={
+            <>
+              Need help getting <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">started</span>?
+            </>
+          }
+          subtitle="Check out our comprehensive guides and FAQ section!"
+          buttons={[
+            {
+              text: 'Read Guides',
+              icon: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              ),
+              href: '/guides',
+              variant: 'secondary'
+            },
+            {
+              text: 'Get Help',
+              icon: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              href: '/faq',
+              variant: 'primary'
+            }
+          ]}
+          trustIndicators={[
+            {
+              icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              ),
+              text: 'Instant',
+              color: 'text-blue-400'
+            },
+            {
+              icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              ),
+              text: 'Secure',
+              color: 'text-purple-400'
+            },
+            {
+              icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+              ),
+              text: 'Low Fees',
+              color: 'text-green-400'
+            }
+          ]}
+          gradientColors="from-blue-600/20 via-purple-600/20 to-cyan-600/20"
+        />
       </div>
 
       {/* Modals */}
@@ -334,6 +377,12 @@ export default function LiquidityPage() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Network Selector Modal */}
+      <NetworkSelectorModal
+        isOpen={isNetworkModalOpen}
+        onClose={() => setIsNetworkModalOpen(false)}
+      />
     </div>
   )
 }

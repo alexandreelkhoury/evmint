@@ -1,0 +1,53 @@
+# Security Policy for EVMint
+# Multi-Chain EVM Token Launcher
+
+Contact: https://github.com/anthropics/claude-code/issues
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://evmint.io/.well-known/security.txt
+
+# Security Disclosure Policy
+
+We take security seriously. If you discover a security vulnerability,
+please report it responsibly through our GitHub issues.
+
+# Scope
+
+This security policy applies to:
+- Web application (evmint.io)
+- Smart contract interactions
+- User authentication and wallet connections
+- Data handling and privacy
+
+# Out of Scope
+
+- Third-party services (Privy, WalletConnect, RPC providers)
+- Blockchain protocols themselves
+- User wallet security
+
+# Reporting Guidelines
+
+When reporting a vulnerability, please include:
+1. Description of the vulnerability
+2. Steps to reproduce
+3. Potential impact
+4. Suggested fix (if applicable)
+
+# Response Timeline
+
+- Acknowledgment: Within 48 hours
+- Initial assessment: Within 7 days
+- Fix deployment: Based on severity
+
+# Recognition
+
+We appreciate security researchers who help keep our platform safe.
+Responsible disclosures will be acknowledged in our security hall of fame.
+
+# Additional Information
+
+- Bug Bounty Program: Not currently available
+- Encryption: PGP key not yet available
+- Policy: https://evmint.io/terms
+
+Thank you for helping keep EVMint and our users safe!

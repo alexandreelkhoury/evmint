@@ -14,6 +14,8 @@ import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDep
 import { useTokenDetails } from '../hooks/useTokenDetails'
 import { animations, typography, colors } from '../styles/designSystem'
 import { getChainById } from '../config/chains'
+import StandardPageHeader from '../components/StandardPageHeader'
+import NetworkSelectorModal from '../components/NetworkSelectorModal'
 
 interface TokenCardProps {
   tokenData: {
@@ -193,6 +195,7 @@ export default function TokensPage() {
   const { ready, authenticated, user } = usePrivy()
   const chainId = useChainId()
   const { userTokens, refetchUserTokens, isCorrectChain, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
 
   useEffect(() => {
     trackPageView(analytics, 'tokens')
@@ -216,56 +219,23 @@ export default function TokensPage() {
           canonical="/tokens"
         />
         
-        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20`}>
+        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20`}>
           {/* Modern Token Dashboard Header */}
-          <motion.div 
-            className="text-center mb-20 pt-20"
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Hero badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 mb-8"
-            >
-              <span className="text-sm font-medium text-purple-400">💎 Token Portfolio</span>
-            </motion.div>
-
-            <motion.h1 
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Your Tokens
-              </span>
-              <br />
-              <span className="text-white">Dashboard</span>
-            </motion.h1>
-            
-            <motion.p
-              className="text-gray-300 max-w-4xl mx-auto text-xl sm:text-2xl mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              Monitor and manage your ERC20 tokens across multiple EVM blockchains
-            </motion.p>
-
-            {/* Loading message */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-blue-300 text-lg mb-8"
-            >
-              Loading your portfolio...
-            </motion.div>
-          </motion.div>
+          <StandardPageHeader
+            badgeIcon="💎"
+            badgeText="Token Portfolio"
+            badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
+            titleGradient="Your Tokens"
+            titleWhite="Dashboard"
+            subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
+            stats={[
+              { value: '...', label: 'Loading', color: 'purple' },
+              { value: '...', label: 'Loading', color: 'blue' },
+              { value: '...', label: 'Loading', color: 'cyan' }
+            ]}
+            chainId={chainId}
+            onNetworkClick={() => setIsNetworkModalOpen(true)}
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -294,56 +264,23 @@ export default function TokensPage() {
           canonical="/tokens"
         />
         
-        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20`}>
+        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20`}>
           {/* Modern Token Dashboard Header */}
-          <motion.div 
-            className="text-center mb-20 pt-20"
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Hero badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 mb-8"
-            >
-              <span className="text-sm font-medium text-purple-400">💎 Token Portfolio</span>
-            </motion.div>
-
-            <motion.h1 
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Your Tokens
-              </span>
-              <br />
-              <span className="text-white">Dashboard</span>
-            </motion.h1>
-            
-            <motion.p
-              className="text-gray-300 max-w-4xl mx-auto text-xl sm:text-2xl mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              Monitor and manage your ERC20 tokens across multiple EVM blockchains
-            </motion.p>
-
-            {/* Connect wallet message */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-blue-300 text-lg mb-8"
-            >
-              Connect your wallet to access your portfolio
-            </motion.div>
-          </motion.div>
+          <StandardPageHeader
+            badgeIcon="💎"
+            badgeText="Token Portfolio"
+            badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
+            titleGradient="Your Tokens"
+            titleWhite="Dashboard"
+            subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
+            stats={[
+              { value: '0', label: 'Tokens', color: 'purple' },
+              { value: 'Connect', label: 'Wallet', color: 'blue' },
+              { value: 'Get Started', label: 'Now', color: 'cyan' }
+            ]}
+            chainId={chainId}
+            onNetworkClick={() => setIsNetworkModalOpen(true)}
+          />
 
           {/* Connect Wallet Section */}
           <motion.div
@@ -410,92 +347,30 @@ export default function TokensPage() {
         canonical="/tokens"
       />
       
-      <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20`}>
+      <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20`}>
         {/* Modern Token Dashboard Header */}
-        <motion.div 
-          className="text-center mb-20 pt-20"
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Hero badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 mb-8"
-          >
-            <span className="text-sm font-medium text-purple-400">💎 Token Portfolio</span>
-          </motion.div>
-
-          <motion.h1 
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Your Tokens
-            </span>
-            <br />
-            <span className="text-white">Dashboard</span>
-          </motion.h1>
-          
-          <motion.p 
-            className="text-gray-300 max-w-4xl mx-auto text-xl sm:text-2xl mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            Monitor and manage your ERC20 tokens created on Base blockchain
-          </motion.p>
-
-          {/* User info */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="text-blue-300 text-lg mb-8"
-          >
-            Welcome back, {user?.wallet?.address ? 
-              `${user.wallet.address.slice(0, 6)}...${user.wallet.address.slice(-4)}` :
-              user?.email?.address || 'User'
-            }
-          </motion.div>
-
-          {/* Stats bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex justify-center items-center space-x-8 mt-12"
-          >
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-400">{userTokens.length}</div>
-              <div className="text-sm text-gray-400">Created Tokens</div>
+        <StandardPageHeader
+          badgeIcon="💎"
+          badgeText="Token Portfolio"
+          badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
+          titleGradient="Your Tokens"
+          titleWhite="Dashboard"
+          subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
+          stats={[
+            { value: userTokens.length, label: userTokens.length === 1 ? 'Token' : 'Tokens', color: 'purple' },
+            { value: getChainById(chainId)?.name.split(' ')[0] || 'EVM', label: 'Network', color: 'blue' },
+            { value: 'Live', label: 'Portfolio', color: 'cyan' }
+          ]}
+          chainId={chainId}
+          onNetworkClick={() => setIsNetworkModalOpen(true)}
+          warningContent={!isCorrectChain ? (
+            <div className="bg-orange-900/20 rounded-lg border border-orange-500/20 p-4">
+              <p className="text-sm text-orange-200 text-center">
+                ⚠️ Please switch to a supported EVM network to view your tokens.
+              </p>
             </div>
-            <div className="w-px h-8 bg-gray-700"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">
-                {getChainById(chainId)?.name.split(' ')[0] || 'EVM'}
-              </div>
-              <div className="text-sm text-gray-400">Network</div>
-            </div>
-            <div className="w-px h-8 bg-gray-700"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-cyan-400">Live</div>
-              <div className="text-sm text-gray-400">Portfolio</div>
-            </div>
-          </motion.div>
-        </motion.div>
-
-      {!isCorrectChain && (
-        <div className="mb-8 p-4 bg-orange-900/20 rounded-lg border border-orange-500/20">
-          <p className="text-sm text-orange-200 text-center">
-            ⚠️ Please switch to a supported EVM network to view your tokens.
-          </p>
-        </div>
-      )}
+          ) : undefined}
+        />
 
       {isInitialLoading ? (
         <div className="space-y-8">
@@ -603,6 +478,12 @@ export default function TokensPage() {
         </div>
       )}
       </div>
+
+      {/* Network Selector Modal */}
+      <NetworkSelectorModal
+        isOpen={isNetworkModalOpen}
+        onClose={() => setIsNetworkModalOpen(false)}
+      />
     </div>
   )
 }

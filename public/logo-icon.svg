@@ -1,0 +1,31 @@
+<svg width="60" height="40" viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="icon-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0891B2" stop-opacity="0.95" />
+    </linearGradient>
+    <linearGradient id="icon-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A855F7" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#9333EA" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="icon-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <!-- Cyan hexagon (top) -->
+  <g transform="translate(50, 0) scale(1)">
+    <path d="M50 0 L93.3 25 L93.3 75 L50 100 L6.7 75 L6.7 25 Z" fill="url(#icon-cyan)" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />
+  </g>
+
+  <!-- Purple hexagon (bottom left) -->
+  <g transform="translate(10, 40) scale(0.9)">
+    <path d="M50 0 L93.3 25 L93.3 75 L50 100 L6.7 75 L6.7 25 Z" fill="url(#icon-purple)" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />
+  </g>
+
+  <!-- Blue hexagon (bottom right) -->
+  <g transform="translate(90, 40) scale(0.9)">
+    <path d="M50 0 L93.3 25 L93.3 75 L50 100 L6.7 75 L6.7 25 Z" fill="url(#icon-blue)" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />
+  </g>
+</svg>

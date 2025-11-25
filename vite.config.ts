@@ -24,8 +24,38 @@ export default defineConfig({
       plugins: [],
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          motion: ['framer-motion'],
+          // Core React libraries
+          'vendor-react': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
+
+          // Web3 and wallet libraries (largest bundle)
+          'vendor-web3': [
+            'wagmi',
+            'viem',
+            '@privy-io/react-auth',
+            '@privy-io/wagmi',
+            '@tanstack/react-query',
+            'ethers'
+          ],
+
+          // UI and animation libraries
+          'vendor-ui': [
+            'framer-motion',
+            '@heroicons/react',
+            '@web3icons/react'
+          ],
+
+          // Firebase Analytics
+          'vendor-firebase': [
+            'firebase/app',
+            'firebase/analytics'
+          ],
+
+          // Utilities and validation
+          'vendor-utils': [
+            'zod',
+            'dompurify',
+            'validator'
+          ]
         }
       },
       onwarn(warning, warn) {
@@ -35,6 +65,13 @@ export default defineConfig({
         }
         warn(warning)
       }
-    }
+    },
+    // Increase chunk size warning limit for web3 libraries
+    chunkSizeWarningLimit: 600,
+    // Disable source maps for smaller bundle
+    sourcemap: false,
+    // Use esbuild for minification (faster than terser, included with Vite)
+    minify: 'esbuild',
+    target: 'es2020'
   }
 })

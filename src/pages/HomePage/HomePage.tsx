@@ -33,8 +33,8 @@ export default function HomePage() {
   const homePageStructuredData = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "EVMint - #1 Cryptocurrency & Meme Coin Generator",
-    "description": "Create ERC20 tokens, meme coins, and cryptocurrencies on Base blockchain instantly. No coding required, under $1 deployment, 10,000+ successful projects.",
+    "name": "EVMint - #1 Multi-Chain Cryptocurrency & Meme Coin Generator",
+    "description": "Create ERC20 tokens, meme coins, and cryptocurrencies on 15+ EVM blockchains instantly. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. No coding required, ultra-low fees, 10,000+ successful projects.",
     "url": "https://evmint.io",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web Browser",
@@ -43,7 +43,7 @@ export default function HomePage() {
       "name": "EVMint",
       "url": "https://evmint.io",
       "sameAs": [
-        "https://twitter.com/BaseTokenCreator",
+        "https://twitter.com/evmint",
         "https://github.com/evmint"
       ]
     },
@@ -51,7 +51,7 @@ export default function HomePage() {
       "@type": "Offer",
       "price": "75-100",
       "priceCurrency": "USD",
-      "description": "Token deployment on multi-chain EVM networks",
+      "description": "Multi-chain token deployment on 15+ EVM networks including Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Fantom, Gnosis, Moonbeam, Blast, and Worldchain",
       "priceValidUntil": "2025-12-31"
     },
     "aggregateRating": {
@@ -63,24 +63,26 @@ export default function HomePage() {
     },
     "featureList": [
       "🚀 5-second token deployment",
-      "💰 Under $1 gas fees (90% cheaper than Ethereum)",
+      "🌐 15+ EVM blockchains supported",
+      "💰 Ultra-low gas fees on Layer 2 networks",
       "🎯 No coding skills required",
       "🔥 Meme coin & cryptocurrency creation",
-      "⚡ Base Layer 2 blockchain (Coinbase)",
-      "🦄 Instant Uniswap liquidity",
-      "✅ Auto-verification on BaseScan",
+      "⚡ Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more",
+      "🦄 Multi-DEX liquidity support (Uniswap, SushiSwap, PancakeSwap)",
+      "✅ Auto-verification on all block explorers",
       "📱 Mobile-friendly interface",
-      "🔒 Secure smart contracts",
-      "💎 10,000+ successful launches"
+      "🔒 Secure audited smart contracts",
+      "💎 10,000+ successful launches across all chains"
     ],
     "applicationSubCategory": [
-      "Token Creator",
+      "Multi-Chain Token Creator",
+      "EVM Token Launcher",
       "Meme Coin Generator",
       "DeFi Tools",
       "Cryptocurrency Platform",
-      "Base Blockchain Tools"
+      "ERC20 Token Deployer"
     ],
-    "keywords": "base token creator, meme coin creator, cryptocurrency generator, ERC20 tokens, Base blockchain, DeFi tools",
+    "keywords": "multi-chain token creator, evm token launcher, meme coin creator, cryptocurrency generator, ERC20 tokens, ethereum token, base token, arbitrum token, polygon token, bsc token, no code crypto, token launcher, defi token maker, multi-chain deployment, layer 2 tokens",
     "installUrl": "https://evmint.io/create",
     "screenshot": "https://evmint.io/og-image.png"
   }
@@ -95,9 +97,9 @@ export default function HomePage() {
       </div>
 
       <SEO
-        title="🚀 EVMint - Launch Your Cryptocurrency in 5 Seconds | #1 Meme Coin Maker"
-        description="⚡ Create ERC20 tokens on Base blockchain instantly! No coding, <$1 fees, 10,000+ successful launches. Build your crypto empire: meme coins, utility tokens, DeFi projects. Join the Base revolution!"
-        keywords="base token creator, meme coin creator, erc20 token generator, create cryptocurrency, base blockchain, no code crypto, token launcher, defi token maker, cryptocurrency creator, base layer 2, cheap token deployment, viral crypto projects, uniswap listing, basescan verification"
+        title="🚀 EVMint - Multi-Chain Token Creator | Deploy on 15+ EVM Blockchains in 5 Seconds"
+        description="⚡ Create ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC & 10+ more EVM chains! No coding required, ultra-low fees, instant deployment. Launch meme coins, utility tokens, DeFi projects across multiple blockchains. 10,000+ successful launches!"
+        keywords="multi-chain token creator, evm token launcher, meme coin creator, erc20 token generator, create cryptocurrency, ethereum token, base token, arbitrum token, polygon token, bsc token, no code crypto, multi-chain deployment, defi token maker, layer 2 tokens, cross-chain token creator"
         canonical="/"
         structuredData={homePageStructuredData}
       />

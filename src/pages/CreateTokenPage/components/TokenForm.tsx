@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { typography, colors } from '../../../styles/designSystem'
-import ChainBadge from '../../../components/ChainBadge'
 
 interface TokenFormProps {
   formData: {
@@ -18,21 +17,13 @@ interface TokenFormProps {
   }
   handleInputChange: (field: string, value: string | number) => void
   getFieldValidation: (field: string) => { hasError: boolean }
-  chainId: number | undefined
-  chainName: string
-  isSupported: boolean
-  hasDex: boolean
 }
 
 export default function TokenForm({
   formData,
   formErrors,
   handleInputChange,
-  getFieldValidation,
-  chainId,
-  chainName,
-  isSupported,
-  hasDex
+  getFieldValidation
 }: TokenFormProps) {
   return (
     <>
@@ -45,25 +36,6 @@ export default function TokenForm({
           Fill in the details for your new ERC20 token
         </p>
 
-        {/* Chain Indicator */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="text-sm text-gray-400">Deploying on:</span>
-          <ChainBadge chainId={chainId} size="md" />
-          {hasDex && (
-            <span className="text-xs px-2 py-1 bg-green-500/10 text-green-400 rounded border border-green-500/20">
-              ✓ DEX Available
-            </span>
-          )}
-        </div>
-
-        {!isSupported && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
-            <p className="text-sm text-red-300">
-              ⚠️ Unsupported network. Please switch to a supported chain to deploy tokens.
-            </p>
-          </div>
-        )}
-
         {/* See Your Created Tokens Link */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -73,7 +45,7 @@ export default function TokenForm({
         >
           <Link
             to="/tokens"
-            className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 text-sm font-medium underline decoration-blue-400/50 hover:decoration-blue-300 underline-offset-2 transition-all duration-300 group"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-600/10 border border-blue-500/30 text-blue-400 hover:bg-blue-600/20 hover:border-blue-400 text-sm font-medium transition-all duration-300 group"
           >
             <span>See your created tokens</span>
             <motion.svg
@@ -169,6 +141,7 @@ export default function TokenForm({
           <label className={`block ${typography.label} mb-3`}>
             Decimals
           </label>
+
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,6 +152,7 @@ export default function TokenForm({
               type="number"
               min={0}
               max={18}
+              placeholder="18"
               value={formData.decimals}
               onChange={(e) => handleInputChange('decimals', parseInt(e.target.value) || 18)}
               className={`${colors.input} pl-12 py-4 text-lg rounded-2xl w-full`}
@@ -187,7 +161,7 @@ export default function TokenForm({
           {getFieldValidation('decimals').hasError && (
             <p className={`mt-2 text-sm ${typography.error}`}>{formErrors.decimals}</p>
           )}
-          <p className="mt-2 text-sm text-gray-500">Number of decimal places (typically 18)</p>
+          <p className="mt-2 text-sm text-gray-500">Most tokens use 18 decimals (same as ETH)</p>
         </motion.div>
 
         {/* Total Supply */}
@@ -199,6 +173,7 @@ export default function TokenForm({
           <label className={`block ${typography.label} mb-3`}>
             Total Supply *
           </label>
+
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +182,7 @@ export default function TokenForm({
             </div>
             <input
               type="text"
-              placeholder="e.g., 1000000"
+              placeholder="1000000000"
               value={formData.totalSupply}
               onChange={(e) => handleInputChange('totalSupply', e.target.value)}
               className={`${colors.input} pl-12 py-4 text-lg rounded-2xl w-full`}
@@ -217,7 +192,7 @@ export default function TokenForm({
           {getFieldValidation('totalSupply').hasError && (
             <p className={`mt-2 text-sm ${typography.error}`}>{formErrors.totalSupply}</p>
           )}
-          <p className="mt-2 text-sm text-gray-500">Total number of tokens to create</p>
+          <p className="mt-2 text-sm text-gray-500">Most tokens have a supply of 1B</p>
         </motion.div>
       </div>
     </>

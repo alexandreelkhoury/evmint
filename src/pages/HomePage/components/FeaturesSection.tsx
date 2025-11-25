@@ -82,7 +82,7 @@ export default function FeaturesSection() {
               </svg>
             </div>
             <h3 className={`${typography.cardTitle} text-xl mb-4`}>Secure & Reliable</h3>
-            <p className={typography.bodyText}>Built on Base blockchain with audited smart contracts and proven security.</p>
+            <p className={typography.bodyText}>Built with audited OpenZeppelin smart contracts and proven security across all EVM chains.</p>
           </motion.div>
         </div>
       </div>

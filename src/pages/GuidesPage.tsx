@@ -4,14 +4,15 @@ import { Link } from 'react-router-dom'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import SEO from '../components/SEO'
-import { 
-  BookOpenIcon, 
-  CurrencyDollarIcon, 
+import StandardPageHeader from '../components/StandardPageHeader'
+import {
+  BookOpenIcon,
+  CurrencyDollarIcon,
   SparklesIcon,
   ChartBarIcon,
   BoltIcon,
   ShieldCheckIcon,
-  ClockIcon 
+  ClockIcon
 } from '@heroicons/react/24/outline'
 
 // Modern animation variants
@@ -48,30 +49,30 @@ export default function GuidesPage() {
   const guides = [
     {
       id: "create-base-token",
-      title: "How to Create Base Token: No Code, 4 Steps [2025]",
-      description: "Complete beginner's guide to creating your own ERC20 token on Base blockchain using our launcher - no coding required!",
+      title: "How to Create ERC20 Token: No Code, 4 Steps [2025]",
+      description: "Complete beginner's guide to creating your own ERC20 token on any EVM blockchain using our launcher - no coding required!",
       difficulty: "Beginner",
       time: "5 minutes",
       icon: SparklesIcon,
       path: "/guides/create-base-token",
-      keywords: "create base token, ERC20 token, no code token creation"
+      keywords: "create erc20 token, ERC20 token, no code token creation, evm"
     },
     {
       id: "add-liquidity",
-      title: "How to Add Liquidity to Your Base Token [2025 Guide]",
-      description: "Step-by-step tutorial on adding liquidity to Uniswap V2 pools using our built-in liquidity tools.",
-      difficulty: "Intermediate", 
+      title: "How to Add Liquidity to Your Token [2025 Guide]",
+      description: "Step-by-step tutorial on adding liquidity to DEX pools using our built-in liquidity tools.",
+      difficulty: "Intermediate",
       time: "10 minutes",
       icon: CurrencyDollarIcon,
       path: "/guides/add-liquidity",
-      keywords: "add liquidity, Uniswap, DEX, token trading"
+      keywords: "add liquidity, DEX, token trading, uniswap"
     },
     {
       id: "token-security",
-      title: "Token Security Best Practices for Base",
+      title: "Token Security Best Practices",
       description: "Learn how to secure your token deployment, verify contracts, and protect against common vulnerabilities.",
       difficulty: "Intermediate",
-      time: "7 minutes", 
+      time: "7 minutes",
       icon: ShieldCheckIcon,
       path: "/guides/token-security",
       keywords: "token security, contract verification, best practices"
@@ -100,23 +101,23 @@ export default function GuidesPage() {
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Base Token Creation Guides",
-    "description": "Comprehensive guides for creating, managing, and optimizing Base tokens",
-    "url": "https://base-token-launcher.web.app/guides",
+    "name": "ERC20 Token Creation Guides",
+    "description": "Comprehensive guides for creating, managing, and optimizing ERC20 tokens on EVM blockchains",
+    "url": "https://evmint.io/guides",
     "mainEntity": {
       "@type": "HowTo",
-      "name": "How to Create Base Token",
-      "description": "Step-by-step tutorial to create your own Base ERC20 token without coding",
+      "name": "How to Create ERC20 Token",
+      "description": "Step-by-step tutorial to create your own ERC20 token without coding",
       "totalTime": "PT5M"
     }
   }
 
   return (
     <>
-      <SEO 
-        title="Base Token Creation Guides & Tutorials [2025]"
-        description="Learn how to create, manage, and optimize your Base tokens. Step-by-step tutorials for beginners to advanced users."
-        keywords="base token creation, ERC20 token guide, how to create base token, token launcher tutorial, base blockchain"
+      <SEO
+        title="ERC20 Token Creation Guides & Tutorials [2025]"
+        description="Learn how to create, manage, and optimize your ERC20 tokens on any EVM blockchain. Step-by-step tutorials for beginners to advanced users."
+        keywords="erc20 token creation, ERC20 token guide, how to create token, token launcher tutorial, evm blockchain"
         canonical="/guides"
         structuredData={schemaData}
       />
@@ -127,24 +128,20 @@ export default function GuidesPage() {
         transition={{ duration: 0.8 }}
       >
       {/* SEO Header */}
-      <div className="text-center mb-16 px-4">
-        <motion.h1 
-          className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-violet-500 to-purple-600 text-transparent bg-clip-text mb-6"
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6 }}
-        >
-          Base Token Creation Guides
-        </motion.h1>
-        <motion.p 
-          className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed"
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          Learn how to create, manage, and optimize your Base tokens with our Token Launcher. 
-          Step-by-step tutorials for beginners to advanced users.
-        </motion.p>
+      <div className="px-4">
+        <StandardPageHeader
+          badgeIcon="📚"
+          badgeText="Learning Center"
+          badgeColors="from-cyan-500/10 to-purple-500/10 border-cyan-500/20"
+          titleGradient="Token Creation"
+          titleWhite="Guides"
+          subtitle="Learn how to create, manage, and optimize your ERC20 tokens on any EVM blockchain with our Token Launcher. Step-by-step tutorials for beginners to advanced users."
+          stats={[
+            { value: guides.length, label: 'Guides', color: 'blue' },
+            { value: 'Step by Step', label: 'Tutorials', color: 'purple' },
+            { value: 'Free', label: 'Access', color: 'cyan' }
+          ]}
+        />
       </div>
 
       {/* Guides Grid */}
@@ -208,7 +205,7 @@ export default function GuidesPage() {
         >
           <div className="bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-white mb-4">Ready to Create Your Token?</h2>
-            <p className="text-gray-300 mb-6">Use our Token Launcher to create your Base token in minutes - no coding required!</p>
+            <p className="text-gray-300 mb-6">Use our Token Launcher to create your ERC20 token on any EVM chain in minutes - no coding required!</p>
             <Link 
               to="/create"
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-violet-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-violet-600 transition-all duration-300 transform hover:scale-105"

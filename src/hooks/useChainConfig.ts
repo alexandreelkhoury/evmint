@@ -196,18 +196,24 @@ export function useChainConfig() {
    * Get native token name (ETH, BNB, AVAX, etc.)
    */
   const getNativeTokenName = (): string => {
+    // Use chain config's native currency symbol if available
+    if (config?.nativeCurrency?.symbol) {
+      return config.nativeCurrency.symbol
+    }
+
+    // Fallback to hardcoded values
     switch (chainId) {
       case 1: // Ethereum
       case 11155111: // Sepolia
-        return 'ETH'
       case 8453: // Base
       case 84532: // Base Sepolia
-        return 'ETH'
       case 42161: // Arbitrum
       case 421614: // Arbitrum Sepolia
-        return 'ETH'
       case 10: // Optimism
       case 11155420: // Optimism Sepolia
+      case 480: // World Chain
+      case 81457: // Blast
+      case 168587773: // Blast Sepolia
         return 'ETH'
       case 137: // Polygon
       case 80002: // Polygon Amoy
@@ -221,6 +227,13 @@ export function useChainConfig() {
       case 250: // Fantom
       case 4002: // Fantom Testnet
         return 'FTM'
+      case 100: // Gnosis
+        return 'xDAI'
+      case 1284: // Moonbeam
+      case 1287: // Moonbase Alpha
+        return 'GLMR'
+      case 143: // Monad
+        return 'MON'
       default:
         return 'ETH'
     }

@@ -174,12 +174,12 @@ export function useLiquidityPageLogic() {
   }, [liquidityMode, amountA, amountB, selectedLpToken, lpTokenAmount])
 
   // Memoized computed values
-  const isFormValid = useMemo(() => {
+  const isFormValid = useMemo((): boolean => {
     if (liquidityMode === 'add') {
-      return tokenA && tokenB && amountA && amountB &&
-             isValidAmount(amountA) && isValidAmount(amountB)
+      return !!(tokenA && tokenB && amountA && amountB &&
+             isValidAmount(amountA) && isValidAmount(amountB))
     } else {
-      return selectedLpToken && lpTokenAmount && isValidAmount(lpTokenAmount)
+      return !!(selectedLpToken && lpTokenAmount && isValidAmount(lpTokenAmount))
     }
   }, [liquidityMode, tokenA, tokenB, amountA, amountB, selectedLpToken, lpTokenAmount])
 

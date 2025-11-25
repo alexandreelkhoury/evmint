@@ -1,16 +1,19 @@
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 import SEO from '../../components/SEO'
 import { layout, colors } from '../../styles/designSystem'
 import { useTokenCreationLogic } from './hooks/useTokenCreationLogic'
-import PageHeader from './components/PageHeader'
+import StandardPageHeader from '../../components/StandardPageHeader'
 import TokenForm from './components/TokenForm'
 import FeeDisclosure from './components/FeeDisclosure'
 import SubmitButton from './components/SubmitButton'
 import SuccessModal from './components/SuccessModal'
 import ErrorDisplay from './components/ErrorDisplay'
 import GettingStartedCTA from './components/GettingStartedCTA'
+import NetworkSelectorModal from '../../components/NetworkSelectorModal'
 
 export default function CreateTokenPage() {
+  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
   const {
     ready,
     authenticated,
@@ -103,7 +106,35 @@ export default function CreateTokenPage() {
 
       <div className={`relative z-10 ${layout.pageContainer}`}>
         {/* Page Header */}
-        <PageHeader />
+        <StandardPageHeader
+          badgeIcon="🚀"
+          badgeText="Token Creator"
+          titleGradient="Create Your Token"
+          titleWhite="on Any EVM Chain"
+          subtitle="Deploy your own ERC20 token on any EVM blockchain in seconds. No coding experience required! Ultra-low gas fees on Layer 2 networks."
+          stats={[
+            { value: '15+ Chains', label: 'Supported', color: 'blue' },
+            { value: 'Instant', label: 'Deployment', color: 'purple' },
+            { value: `$${feeAmount}`, label: 'Fee', color: 'cyan' }
+          ]}
+          chainId={chainId}
+          onNetworkClick={() => setIsNetworkModalOpen(true)}
+          warningContent={!isSupported ? (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
+              <div className="flex items-center space-x-3">
+                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <div className="text-red-300 font-semibold">Unsupported Network</div>
+                  <div className="text-red-200 text-sm">
+                    Please switch to a supported chain to deploy tokens.
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : undefined}
+        />
 
         {/* Token Creation Form */}
         <div className="max-w-4xl mx-auto mb-24">
@@ -119,10 +150,6 @@ export default function CreateTokenPage() {
                 formErrors={formErrors}
                 handleInputChange={handleInputChange}
                 getFieldValidation={getFieldValidation}
-                chainId={chainId}
-                chainName={chainName}
-                isSupported={isSupported}
-                hasDex={hasDex}
               />
 
               <FeeDisclosure
@@ -150,6 +177,9 @@ export default function CreateTokenPage() {
                   <SuccessModal
                     tokenAddress={createdTokenAddress}
                     chainName={chainName}
+                    tokenName={formData.name}
+                    tokenSymbol={formData.symbol}
+                    totalSupply={formData.totalSupply}
                   />
                 )}
 
@@ -162,6 +192,12 @@ export default function CreateTokenPage() {
         {/* Getting Started CTA */}
         <GettingStartedCTA />
       </div>
+
+      {/* Network Selector Modal */}
+      <NetworkSelectorModal
+        isOpen={isNetworkModalOpen}
+        onClose={() => setIsNetworkModalOpen(false)}
+      />
     </div>
   )
 }

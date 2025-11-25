@@ -1,4 +1,5 @@
 import { useSpecificChainConfig } from '../hooks/useChainConfig'
+import ChainIconComponent from './ChainIcon'
 
 interface ChainBadgeProps {
   chainId: number
@@ -12,19 +13,19 @@ interface ChainBadgeProps {
  * Displays a visual indicator for a specific blockchain
  *
  * Features:
- * - Chain icon (emoji)
+ * - Chain icon (actual logo, not emoji)
  * - Optional chain name
  * - Multiple sizes
  * - Color-coded by chain
  * - Tooltip on hover
  */
 export default function ChainBadge({ chainId, size = 'md', showName = true, className = '' }: ChainBadgeProps) {
-  const { name, icon, color, isTestnet, isSupported } = useSpecificChainConfig(chainId)
+  const { name, color, isTestnet, isSupported } = useSpecificChainConfig(chainId)
 
   if (!isSupported) {
     return (
-      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-700 text-gray-400 text-xs ${className}`}>
-        <span>⛓️</span>
+      <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-gray-700 text-gray-400 text-xs ${className}`}>
+        <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center text-[10px]">?</div>
         {showName && <span>Unknown Chain</span>}
       </span>
     )
@@ -32,15 +33,15 @@ export default function ChainBadge({ chainId, size = 'md', showName = true, clas
 
   // Size configurations
   const sizeClasses = {
-    sm: 'px-1.5 py-0.5 text-xs gap-1',
-    md: 'px-2 py-1 text-sm gap-1.5',
-    lg: 'px-3 py-1.5 text-base gap-2',
+    sm: 'px-1.5 py-0.5 text-xs gap-1.5',
+    md: 'px-2 py-1 text-sm gap-2',
+    lg: 'px-3 py-1.5 text-base gap-2.5',
   }
 
-  const iconSizes = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-lg',
+  const iconSizesPx = {
+    sm: 16,
+    md: 20,
+    lg: 24,
   }
 
   // Chain-specific styling
@@ -56,7 +57,7 @@ export default function ChainBadge({ chainId, size = 'md', showName = true, clas
       style={badgeStyle}
       title={`${name}${isTestnet ? ' (Testnet)' : ''}`}
     >
-      <span className={iconSizes[size]}>{icon}</span>
+      <ChainIconComponent chainId={chainId} size={iconSizesPx[size]} />
       {showName && (
         <span className="font-medium whitespace-nowrap">
           {name}
@@ -82,22 +83,22 @@ export function ChainIcon({ chainId, size = 'md', className = '' }: Omit<ChainBa
  * More prominent visual style
  */
 export function ChainBadgeGradient({ chainId, size = 'md', showName = true, className = '' }: ChainBadgeProps) {
-  const { name, icon, gradient, isTestnet, isSupported } = useSpecificChainConfig(chainId)
+  const { name, gradient, isTestnet, isSupported } = useSpecificChainConfig(chainId)
 
   if (!isSupported) {
     return <ChainBadge chainId={chainId} size={size} showName={showName} className={className} />
   }
 
   const sizeClasses = {
-    sm: 'px-2 py-1 text-xs gap-1',
-    md: 'px-3 py-1.5 text-sm gap-1.5',
-    lg: 'px-4 py-2 text-base gap-2',
+    sm: 'px-2 py-1 text-xs gap-1.5',
+    md: 'px-3 py-1.5 text-sm gap-2',
+    lg: 'px-4 py-2 text-base gap-2.5',
   }
 
-  const iconSizes = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-lg',
+  const iconSizesPx = {
+    sm: 16,
+    md: 20,
+    lg: 24,
   }
 
   return (
@@ -105,7 +106,7 @@ export function ChainBadgeGradient({ chainId, size = 'md', showName = true, clas
       className={`inline-flex items-center rounded-full bg-gradient-to-r ${gradient} text-white font-semibold shadow-lg ${sizeClasses[size]} ${className}`}
       title={`${name}${isTestnet ? ' (Testnet)' : ''}`}
     >
-      <span className={iconSizes[size]}>{icon}</span>
+      <ChainIconComponent chainId={chainId} size={iconSizesPx[size]} />
       {showName && (
         <span className="whitespace-nowrap">
           {name}

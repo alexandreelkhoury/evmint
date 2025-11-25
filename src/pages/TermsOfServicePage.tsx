@@ -1,9 +1,7 @@
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import { useEffect } from 'react'
-import { motion } from 'framer-motion'
 import SEO from '../components/SEO'
-import { layout, typography, colors } from '../styles/designSystem'
 
 export default function TermsOfServicePage() {
   const analytics = useFirebaseAnalytics()
@@ -14,256 +12,119 @@ export default function TermsOfServicePage() {
 
   return (
     <>
-      <SEO 
-        title="Terms of Service - Base Token Creator"
-        description="Terms of Service for Base Token Creator. Understand your rights and responsibilities when using our Web3 token creation platform."
-        keywords="terms of service, user agreement, Web3 terms, Base blockchain terms, token creator terms"
-        canonical="https://base-token-launcher.web.app/terms"
+      <SEO
+        title="Terms of Service - EVMint"
+        description="Terms of service for EVMint token creator platform."
+        canonical="/terms"
       />
 
-      <div className={`${layout.pageContainer} py-12`}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto"
-        >
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className={`${typography.pageTitle} mb-6`}>
-              Terms of Service
-            </h1>
-            <p className={`${typography.subtitle} text-xl`}>
-              Last updated: {new Date().toLocaleDateString()}
-            </p>
+      <div className="min-h-screen bg-gray-900 text-gray-300 py-16 px-4">
+        <div className="max-w-3xl mx-auto">
+
+          <div className="mb-12">
+            <h1 className="text-3xl font-bold text-white mb-2">Terms of Service</h1>
+            <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
           </div>
 
-          {/* Content */}
-          <div className={`${colors.glassCard} rounded-3xl p-8 lg:p-12 space-y-8`}>
-            
+          <div className="space-y-8 text-sm leading-relaxed">
+
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>1. Agreement to Terms</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                By accessing or using Base Token Creator ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
-              </p>
-              <p className={typography.bodyText}>
-                <strong className="text-red-400">WARNING:</strong> This Service involves blockchain technology, cryptocurrency transactions, and DeFi protocols. Use at your own risk and only with funds you can afford to lose.
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">1. Acceptance of Terms</h2>
+              <p>By accessing and using EVMint, you accept and agree to be bound by these Terms of Service. If you do not agree, do not use our service.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>2. Description of Service</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                Base Token Creator is a Web3 application that allows users to:
-              </p>
-              <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                <li>• Create ERC-20 tokens on the Base blockchain</li>
-                <li>• Add liquidity to Uniswap V3 pools</li>
-                <li>• Manage token liquidity and trading pairs</li>
-                <li>• Access blockchain analytics and token management tools</li>
-              </ul>
-              <p className={`${typography.bodyText} mt-4`}>
-                The Service is provided "as-is" without warranties of any kind.
-              </p>
-            </section>
-
-            <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>3. Eligibility</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                To use this Service, you must:
-              </p>
-              <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                <li>• Be at least 18 years old</li>
-                <li>• Have the legal capacity to enter into contracts</li>
-                <li>• Not be prohibited from using cryptocurrency services in your jurisdiction</li>
-                <li>• Comply with all applicable laws and regulations</li>
-                <li>• Not be located in a jurisdiction where the Service is prohibited</li>
+              <h2 className="text-lg font-semibold text-white mb-3">2. Description of Service</h2>
+              <p className="mb-3">EVMint provides a platform to deploy ERC20 tokens on EVM-compatible blockchains. Our service includes:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Token deployment interface</li>
+                <li>Smart contract generation using OpenZeppelin standards</li>
+                <li>Optional liquidity management tools</li>
               </ul>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>4. User Responsibilities</h2>
-              
-              <h3 className={`${typography.sectionTitle} text-xl mb-3 text-blue-400`}>4.1 Account Security</h3>
-              <ul className={`${typography.bodyText} space-y-2 ml-6 mb-4`}>
-                <li>• You are solely responsible for your wallet security and private keys</li>
-                <li>• We do not store, have access to, or can recover your private keys</li>
-                <li>• Loss of private keys may result in permanent loss of access to funds</li>
-              </ul>
-
-              <h3 className={`${typography.sectionTitle} text-xl mb-3 text-blue-400`}>4.2 Compliance</h3>
-              <ul className={`${typography.bodyText} space-y-2 ml-6 mb-4`}>
-                <li>• Comply with all applicable laws and regulations</li>
-                <li>• Not use the Service for illegal activities</li>
-                <li>• Not create tokens that violate intellectual property rights</li>
-                <li>• Not engage in market manipulation or fraudulent activities</li>
-              </ul>
-
-              <h3 className={`${typography.sectionTitle} text-xl mb-3 text-blue-400`}>4.3 Token Creation</h3>
-              <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                <li>• Ensure you have rights to create tokens with chosen names/symbols</li>
-                <li>• Understand that token creation involves irreversible blockchain transactions</li>
-                <li>• Accept responsibility for token economics and functionality</li>
-                <li>• Comply with securities laws if your token qualifies as a security</li>
+              <h2 className="text-lg font-semibold text-white mb-3">3. User Responsibilities</h2>
+              <p className="mb-3">You are responsible for:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Maintaining the security of your wallet and private keys</li>
+                <li>All transactions made through your wallet</li>
+                <li>Compliance with applicable laws and regulations</li>
+                <li>Ensuring your token does not violate intellectual property rights</li>
+                <li>Payment of all blockchain gas fees and platform fees</li>
               </ul>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>5. Prohibited Uses</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                You may not use the Service to:
-              </p>
-              <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                <li>• Create tokens for fraudulent or deceptive purposes</li>
-                <li>• Violate any laws, regulations, or third-party rights</li>
-                <li>• Engage in money laundering or terrorist financing</li>
-                <li>• Create tokens that infringe on trademarks or copyrights</li>
-                <li>• Manipulate markets or engage in wash trading</li>
-                <li>• Create securities without proper registration</li>
-                <li>• Spam, harass, or harm other users</li>
-                <li>• Interfere with the Service's operation or security</li>
+              <h2 className="text-lg font-semibold text-white mb-3">4. Fees</h2>
+              <p className="mb-3">Platform fees are displayed before each transaction. Fees are non-refundable. You are also responsible for:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Blockchain gas fees (paid to network validators)</li>
+                <li>Platform deployment fees (paid to EVMint)</li>
+                <li>Any third-party service fees</li>
               </ul>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>6. Financial Risks and Disclaimers</h2>
-              
-              <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-6 mb-6">
-                <h3 className={`${typography.sectionTitle} text-xl mb-3 text-red-400`}>⚠️ HIGH RISK WARNING</h3>
-                <p className={`${typography.bodyText} mb-3`}>
-                  Cryptocurrency and DeFi activities involve significant financial risk:
-                </p>
-                <ul className={`${typography.bodyText} space-y-1 ml-6 text-sm`}>
-                  <li>• Total loss of funds is possible</li>
-                  <li>• High volatility and unpredictable market conditions</li>
-                  <li>• Smart contract risks and potential bugs</li>
-                  <li>• Regulatory risks and changing legal landscape</li>
-                  <li>• Liquidity risks and impermanent loss</li>
-                  <li>• Gas fees and transaction costs</li>
-                </ul>
-              </div>
-
-              <p className={typography.bodyText}>
-                <strong>YOU ACKNOWLEDGE AND ACCEPT ALL RISKS.</strong> Never invest more than you can afford to lose completely.
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">5. No Financial Advice</h2>
+              <p>EVMint does not provide financial, investment, or legal advice. Creating a token does not constitute an investment recommendation. You are solely responsible for your financial decisions.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>7. Fees and Costs</h2>
-              <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                <li>• The Service itself is currently free to use</li>
-                <li>• You are responsible for all blockchain gas fees</li>
-                <li>• Uniswap protocol fees apply to liquidity operations</li>
-                <li>• Network fees and transaction costs are your responsibility</li>
-                <li>• We reserve the right to introduce service fees with notice</li>
+              <h2 className="text-lg font-semibold text-white mb-3">6. Prohibited Uses</h2>
+              <p className="mb-3">You may not use EVMint to:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Create tokens for illegal purposes</li>
+                <li>Engage in fraud, scams, or deceptive practices</li>
+                <li>Violate intellectual property rights</li>
+                <li>Create securities without proper registration</li>
+                <li>Engage in money laundering or terrorist financing</li>
               </ul>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>8. Intellectual Property</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                The Service and its original content, features, and functionality are owned by Base Token Creator and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.
-              </p>
-              <p className={typography.bodyText}>
-                You retain ownership of tokens you create, subject to compliance with these Terms.
-              </p>
-            </section>
-
-            <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>9. Limitation of Liability</h2>
-              <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-6">
-                <p className={`${typography.bodyText} mb-4 font-semibold`}>
-                  TO THE MAXIMUM EXTENT PERMITTED BY LAW:
-                </p>
-                <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                  <li>• WE ARE NOT LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES</li>
-                  <li>• OUR TOTAL LIABILITY SHALL NOT EXCEED $100 USD</li>
-                  <li>• WE ARE NOT RESPONSIBLE FOR BLOCKCHAIN NETWORK ISSUES</li>
-                  <li>• WE ARE NOT LIABLE FOR SMART CONTRACT BUGS OR FAILURES</li>
-                  <li>• WE ARE NOT RESPONSIBLE FOR THIRD-PARTY ACTIONS</li>
-                </ul>
-              </div>
-            </section>
-
-            <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>10. Indemnification</h2>
-              <p className={typography.bodyText}>
-                You agree to indemnify and hold harmless Base Token Creator from any claims, damages, losses, or expenses arising from your use of the Service, violation of these Terms, or violation of any rights of a third party.
-              </p>
-            </section>
-
-            <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>11. Service Availability</h2>
-              <ul className={`${typography.bodyText} space-y-2 ml-6`}>
-                <li>• We do not guarantee uninterrupted service availability</li>
-                <li>• Maintenance and updates may cause temporary downtime</li>
-                <li>• Blockchain network congestion may affect functionality</li>
-                <li>• We may suspend service for legal or security reasons</li>
-                <li>• We reserve the right to discontinue the Service with notice</li>
+              <h2 className="text-lg font-semibold text-white mb-3">7. Disclaimers</h2>
+              <p className="mb-3">EVMint is provided "AS IS" without warranties of any kind. We do not guarantee:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Uninterrupted or error-free service</li>
+                <li>Security of your transactions or funds</li>
+                <li>Success or profitability of your token</li>
+                <li>Compatibility with future blockchain upgrades</li>
               </ul>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>12. Privacy and Data</h2>
-              <p className={typography.bodyText}>
-                Your privacy is important to us. Please review our <a href="/privacy" className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</a> to understand how we collect, use, and protect your information.
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">8. Limitation of Liability</h2>
+              <p>To the maximum extent permitted by law, EVMint and its operators shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, or cryptocurrency.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>13. Termination</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                We may terminate or suspend your access immediately, without prior notice, for any reason, including breach of these Terms.
-              </p>
-              <p className={typography.bodyText}>
-                You may discontinue use at any time. Upon termination, your right to use the Service ceases immediately.
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">9. Indemnification</h2>
+              <p>You agree to indemnify and hold harmless EVMint from any claims, damages, or expenses arising from your use of the service or violation of these terms.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>14. Governing Law</h2>
-              <p className={typography.bodyText}>
-                These Terms shall be governed by and construed in accordance with the laws of [JURISDICTION], without regard to conflict of law provisions. Any disputes shall be resolved in the courts of [JURISDICTION].
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">10. Termination</h2>
+              <p>We reserve the right to terminate or suspend access to our service at any time, without prior notice, for conduct that we believe violates these Terms or is harmful to other users or our business.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>15. Changes to Terms</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                We reserve the right to modify these Terms at any time. Material changes will be notified through the Service or by email. Your continued use after changes constitutes acceptance.
-              </p>
-              <p className={typography.bodyText}>
-                We recommend reviewing these Terms periodically.
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">11. Governing Law</h2>
+              <p>These Terms shall be governed by and construed in accordance with applicable laws. Any disputes shall be resolved through binding arbitration.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>16. Severability</h2>
-              <p className={typography.bodyText}>
-                If any provision of these Terms is held to be unenforceable or invalid, such provision will be changed and interpreted to accomplish the objectives of such provision to the greatest extent possible under applicable law.
-              </p>
+              <h2 className="text-lg font-semibold text-white mb-3">12. Changes to Terms</h2>
+              <p>We may modify these Terms at any time. Continued use of the service after changes constitutes acceptance of the new Terms.</p>
             </section>
 
             <section>
-              <h2 className={`${typography.sectionTitle} text-2xl mb-4`}>17. Contact Information</h2>
-              <p className={`${typography.bodyText} mb-4`}>
-                For questions about these Terms of Service, please contact us:
-              </p>
-              <div className={`${typography.bodyText} space-y-2`}>
-                <p>Email: <a href="mailto:legal@base-token-launcher.com" className="text-blue-400 hover:text-blue-300">legal@base-token-launcher.com</a></p>
-                <p>Website: <a href="https://base-token-launcher.web.app" className="text-blue-400 hover:text-blue-300">base-token-launcher.web.app</a></p>
-              </div>
+              <h2 className="text-lg font-semibold text-white mb-3">13. Contact</h2>
+              <p>For questions about these Terms, please contact us through our platform.</p>
             </section>
-
-            <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 mt-8">
-              <p className={`${typography.bodyText} text-center font-medium`}>
-                By using Base Token Creator, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
-              </p>
-            </div>
 
           </div>
-
-        </motion.div>
+        </div>
       </div>
     </>
   )

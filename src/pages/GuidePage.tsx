@@ -56,8 +56,8 @@ const guideSequence = [
 const guidesData: Record<string, GuideData> = {
   'create-base-token': {
     id: 'create-base-token',
-    title: 'How to Create Base Token: No Code, 4 Steps [2025]',
-    description: 'Complete beginner\'s guide to creating your own ERC20 token on Base blockchain using our launcher - no coding required!',
+    title: 'How to Create ERC20 Token: No Code, 4 Steps [2025]',
+    description: 'Complete beginner\'s guide to creating your own ERC20 token on any EVM blockchain using our launcher - no coding required!',
     difficulty: 'Beginner',
     time: '5 minutes',
     cost: '$75-100 + gas',
@@ -65,14 +65,14 @@ const guidesData: Record<string, GuideData> = {
       {
         number: '01',
         title: 'Connect Your Wallet',
-        description: 'Connect your Base-compatible wallet to get started',
+        description: 'Connect your wallet to get started',
         details: [
           'Click "Connect Wallet" in the top navigation',
-          'Choose your preferred wallet (MetaMask, Coinbase Wallet, etc.)',
-          'Make sure you\'re connected to Base network',
-          'Ensure you have some ETH for gas fees (usually ~$1 worth)'
+          'Choose your preferred wallet (MetaMask, Rainbow, WalletConnect, etc.)',
+          'Select your preferred blockchain network',
+          'Ensure you have native tokens for gas fees (usually ~$1 worth)'
         ],
-        tip: '💡 Need ETH on Base? Send directly from Binance or other CEX (easiest) or bridge from Ethereum mainnet!'
+        tip: '💡 Need native tokens? Send directly from a CEX or bridge from Ethereum mainnet!'
       },
       {
         number: '02',
@@ -89,21 +89,21 @@ const guidesData: Record<string, GuideData> = {
       {
         number: '03',
         title: 'Review & Deploy',
-        description: 'Final check and deployment to Base blockchain',
+        description: 'Final check and deployment to the blockchain',
         details: [
           'Review all token parameters carefully',
           'Check the deployment fee (varies by network, $75-100 USD)',
           'Click "Create Token" to start deployment',
           'Approve the transaction in your wallet'
         ],
-        tip: '🚀 Your token will be live on Base blockchain within seconds!'
+        tip: '🚀 Your token will be live on the blockchain within seconds!'
       },
       {
         number: '04',
         title: 'Verify & Manage',
         description: 'Contract verification and post-deployment steps',
         details: [
-          'Contract is automatically verified on BaseScan',
+          'Contract is automatically verified on the block explorer',
           'Your token appears in the "My Tokens" section',
           'Share your token address with your community',
           {
@@ -114,24 +114,24 @@ const guidesData: Record<string, GuideData> = {
             }
           }
         ],
-        tip: '✅ Congratulations! Your token is now live on Base blockchain!'
+        tip: '✅ Congratulations! Your token is now live on the blockchain!'
       }
     ]
   },
   'add-liquidity': {
     id: 'add-liquidity',
-    title: 'How to Add Liquidity to Your Base Token [2025 Guide]',
-    description: 'Step-by-step tutorial on adding liquidity to Uniswap V2 pools using our built-in liquidity tools.',
+    title: 'How to Add Liquidity to Your Token [2025 Guide]',
+    description: 'Step-by-step tutorial on adding liquidity to DEX pools using our built-in liquidity tools.',
     difficulty: 'Intermediate',
     time: '10 minutes',
-    cost: 'Your tokens + ETH for pair',
+    cost: 'Your tokens + native tokens for pair',
     poolTypes: [
       {
-        title: 'Uniswap V2 Pool (Recommended)',
-        description: 'Standard automated market maker on Base',
-        pros: ['Battle-tested protocol', 'High liquidity potential', 'Wide adoption', 'Easy integration'],
+        title: 'DEX Pool (Recommended)',
+        description: 'Standard automated market maker pools on your chosen network',
+        pros: ['Battle-tested protocols', 'High liquidity potential', 'Wide adoption', 'Easy integration'],
         cons: ['Impermanent loss risk', 'Gas costs for transactions'],
-        bestFor: 'Most tokens - recommended choice for Base'
+        bestFor: 'Most tokens - recommended choice for EVM chains'
       }
     ],
     warnings: [
@@ -149,10 +149,10 @@ const guidesData: Record<string, GuideData> = {
         details: [
           'Go to the "Liquidity" page from the main navigation',
           'Connect your wallet if not already connected',
-          'Ensure you have both your token and ETH in your wallet',
+          'Ensure you have both your token and native tokens in your wallet',
           'Select your token from the dropdown list'
         ],
-        tip: '💡 You need both your token and ETH to create a trading pair!'
+        tip: '💡 You need both your token and native tokens to create a trading pair!'
       },
       {
         number: '02',
@@ -160,7 +160,7 @@ const guidesData: Record<string, GuideData> = {
         description: 'Define how much liquidity to provide',
         details: [
           'Enter the amount of your tokens to add (e.g., 100,000 tokens)',
-          'Enter corresponding ETH amount (determines initial price)',
+          'Enter corresponding native token amount (determines initial price)',
           'Review the calculated price per token',
           'Consider starting with 10-20% of your token supply'
         ],
@@ -176,7 +176,7 @@ const guidesData: Record<string, GuideData> = {
           'Click "Add Liquidity" to create the pool',
           'Confirm the transaction in your wallet'
         ],
-        tip: '🚀 Your pool will be live on Uniswap within minutes!'
+        tip: '🚀 Your pool will be live on the DEX within minutes!'
       },
       {
         number: '04',
@@ -194,7 +194,7 @@ const guidesData: Record<string, GuideData> = {
   },
   'token-security': {
     id: 'token-security',
-    title: 'Token Security Best Practices for Base',
+    title: 'Token Security Best Practices',
     description: 'Learn how to secure your token deployment, verify contracts, and protect against common vulnerabilities.',
     difficulty: 'Intermediate',
     time: '7 minutes',
@@ -204,7 +204,7 @@ const guidesData: Record<string, GuideData> = {
         title: 'Contract Verification',
         description: 'Ensure your contract is verified and transparent',
         details: [
-          'Our platform automatically verifies contracts on BaseScan',
+          'Our platform automatically verifies contracts on block explorers',
           'Verified contracts show their source code publicly',
           'Users can inspect the contract before interacting',
           'Verification builds trust with your community'
@@ -338,9 +338,9 @@ export default function GuidePage() {
       transition={{ duration: 0.8 }}
     >
       <SEO
-        title={`${guide.title} | Base Token Creation Guide`}
+        title={`${guide.title} | Token Creation Guide`}
         description={guide.description}
-        keywords={`base token, ${guide.id}, tutorial, guide, blockchain`}
+        keywords={`erc20 token, ${guide.id}, tutorial, guide, blockchain, evm`}
         canonical={`/guides/${guide.id}`}
       />
 

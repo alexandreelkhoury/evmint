@@ -1,10 +1,10 @@
-# Base Token Creator - Optimized for Maximum SEO Revenue 🚀
+# EVMint - Multi-Chain Token Creator - Optimized for Maximum SEO Revenue 🚀
 User-agent: *
 Allow: /
 
 # HIGH-VALUE PAGES - Index these first for revenue
-Allow: /create          # Main revenue page - token creation
-Allow: /tokens          # User engagement - portfolio management  
+Allow: /create          # Main revenue page - multi-chain token creation
+Allow: /tokens          # User engagement - portfolio management
 Allow: /liquidity       # Revenue expansion - liquidity services
 Allow: /guides          # SEO content - educational traffic
 Allow: /faq             # Support content - reduces bounce rate
@@ -19,7 +19,7 @@ Disallow: /*.map$
 Disallow: /api/internal/
 
 # Sitemap for maximum crawl efficiency
-Sitemap: https://base-token-creator.com/sitemap.xml
+Sitemap: https://evmint.io/sitemap.xml
 
 # Optimized crawl settings for revenue pages
 Crawl-delay: 0.5

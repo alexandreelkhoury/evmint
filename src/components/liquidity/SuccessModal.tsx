@@ -21,26 +21,72 @@ interface SuccessModalProps {
 
 export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdrawal = false }: SuccessModalProps) {
   const [isCopied, setIsCopied] = useState(false)
-  
+  const [shareMessageCopied, setShareMessageCopied] = useState(false)
+
   if (!isOpen) return null
 
   const isMainnet = chainId === 8453
   const explorerUrl = isMainnet ? 'https://basescan.org' : 'https://sepolia.basescan.org'
   const dexscreenerUrl = `https://dexscreener.com/base/${pool.tokenAddress}`
+  const uniswapUrl = `https://app.uniswap.org/swap?outputCurrency=${pool.tokenAddress}&chain=base`
 
   const handleCopyAddress = async () => {
     if (!pool.lpTokenAddress) return
-    
+
     try {
       await navigator.clipboard.writeText(pool.lpTokenAddress)
       setIsCopied(true)
-      
+
       // Reset after 2 seconds
       setTimeout(() => {
         setIsCopied(false)
       }, 2000)
     } catch (error) {
       console.error('Failed to copy address:', error)
+    }
+  }
+
+  // MAIN VIRAL SHARE - After liquidity (token is NOW tradable!)
+  const tweetText = `🚀 $${pool.tokenSymbol} is NOW LIVE on Base!
+
+💧 Liquidity added on Uniswap V2
+💎 ${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ETH
+
+🔥 BUY NOW:
+${uniswapUrl}
+
+📊 Chart: ${dexscreenerUrl}
+
+#${pool.tokenSymbol} #Base #DeFi #crypto`
+
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
+
+  const handleCopyShareMessage = async () => {
+    const shareMessage = `🚀 $${pool.tokenSymbol} is NOW LIVE on Base!
+
+Liquidity added on Uniswap V2
+${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ETH
+
+BUY NOW: ${uniswapUrl}
+Chart: ${dexscreenerUrl}
+Contract: ${pool.tokenAddress}`
+
+    try {
+      await navigator.clipboard.writeText(shareMessage)
+      setShareMessageCopied(true)
+      setTimeout(() => setShareMessageCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+    }
+  }
+
+  const trackShare = (platform: string) => {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'share', {
+        method: platform,
+        content_type: 'liquidity_added',
+        item_id: pool.tokenAddress
+      })
     }
   }
   
@@ -152,6 +198,97 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
               </div>
             )}
           </div>
+        )}
+
+        {/* MAIN VIRAL SHARE SECTION - Only after adding liquidity */}
+        {!isWithdrawal && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mb-6 bg-gradient-to-br from-green-500/20 via-cyan-500/20 to-blue-500/20 border-2 border-green-500/40 rounded-2xl p-6"
+          >
+            <div className="text-center mb-4">
+              <h3 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+                <span>🎉</span>
+                <span>Your Token is NOW Tradable!</span>
+                <span>🚀</span>
+              </h3>
+              <p className="text-sm text-gray-300">
+                Share with your community so they can buy ${ pool.tokenSymbol}!
+              </p>
+            </div>
+
+            {/* Share Buttons */}
+            <div className="space-y-3">
+              {/* Twitter Share - PRIMARY CTA */}
+              <motion.a
+                href={twitterShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackShare('twitter')}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-all"
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                <span>Share on Twitter/X</span>
+                <motion.span
+                  className="text-xs bg-white/20 px-2 py-1 rounded-full"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  Get buyers!
+                </motion.span>
+              </motion.a>
+
+              {/* Copy Share Message - SECONDARY */}
+              <motion.button
+                onClick={() => {
+                  handleCopyShareMessage()
+                  trackShare('copy_message')
+                }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all ${
+                  shareMessageCopied
+                    ? 'bg-green-500/20 border-2 border-green-500/50 text-green-300'
+                    : 'bg-gray-800/50 border-2 border-gray-700/50 text-gray-300 hover:border-cyan-500/50 hover:bg-gray-800'
+                }`}
+              >
+                {shareMessageCopied ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Copied! Paste in Telegram/Discord</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Copy Message for Telegram/Discord</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+
+            {/* Share Benefit */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl"
+            >
+              <p className="text-xs text-gray-300 text-center">
+                💰 <strong className="text-green-300">More buyers = More volume = Higher price!</strong> Share now!
+              </p>
+            </motion.div>
+          </motion.div>
         )}
 
         {/* Action Buttons */}

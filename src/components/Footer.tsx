@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { HexagonStackIcon } from './HexagonStackLogo'
 
 export default function Footer() {
   return (
@@ -7,11 +8,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-8">
           <div className="sm:col-span-2 lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center">
-                <img
-                  src="/LOGO.png"
-                  alt="EVMint Logo"
-                  className="h-6 w-6 sm:h-8 sm:w-8 object-contain"
+              <div className="flex items-center justify-center">
+                <HexagonStackIcon
+                  size={32}
+                  className="scale-75 sm:scale-100"
                 />
               </div>
               <span className="text-base sm:text-lg font-bold text-white">EVMint</span>
@@ -39,10 +39,9 @@ export default function Footer() {
             <h4 className="text-sm sm:text-base font-semibold text-white mb-3">Resources</h4>
             <ul className="space-y-2">
               <li><Link to="/guides" className="text-gray-400 hover:text-white text-sm transition-colors block">Documentation</Link></li>
-              <li><a href="https://docs.base.org" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors block">Base Docs</a></li>
-              <li><a href="https://basescan.org" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors block">BaseScan</a></li>
-              <li><a href="https://uniswap.org" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors block">Uniswap</a></li>
-              <li><a href="https://coinbase.com/wallet" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors block">Coinbase Wallet</a></li>
+              <li><a href="https://ethereum.org" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors block">Ethereum</a></li>
+              <li><a href="https://docs.openzeppelin.com/contracts/5.x/erc20" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors block">OpenZeppelin</a></li>
+              <li><Link to="/faq" className="text-gray-400 hover:text-white text-sm transition-colors block">FAQ</Link></li>
             </ul>
           </div>
           
@@ -51,8 +50,6 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link to="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors block">Privacy Policy</Link></li>
               <li><Link to="/terms" className="text-gray-400 hover:text-white text-sm transition-colors block">Terms of Service</Link></li>
-              <li><Link to="/cookies" className="text-gray-400 hover:text-white text-sm transition-colors block">Cookie Policy</Link></li>
-              <li><Link to="/risks" className="text-gray-400 hover:text-white text-sm transition-colors text-red-300 block">Risk Disclosure</Link></li>
               <li><Link to="/disclaimers" className="text-gray-400 hover:text-white text-sm transition-colors block">Disclaimers</Link></li>
             </ul>
           </div>
@@ -67,7 +64,6 @@ export default function Footer() {
               <Link to="/faq" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors">Support</Link>
               <Link to="/privacy" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors">Privacy</Link>
               <Link to="/terms" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors">Terms</Link>
-              <Link to="/risks" className="text-gray-400 hover:text-white text-xs sm:text-sm transition-colors text-red-300">Risks</Link>
             </div>
           </div>
         </div>

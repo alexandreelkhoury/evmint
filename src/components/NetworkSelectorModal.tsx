@@ -7,6 +7,7 @@ import { ALL_CHAINS, MAINNET_CHAINS, TESTNET_CHAINS, type ChainConfig } from '..
 import ChainIcon from './ChainIcon'
 import { useFirebaseAnalytics } from './FirebaseProvider'
 import { logEvent as firebaseLogEvent } from 'firebase/analytics'
+import { colors, typography } from '../styles/designSystem'
 
 interface NetworkSelectorModalProps {
   isOpen: boolean
@@ -38,6 +39,15 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
       setSwitchingTo(null)
     }
   }, [currentChainId, switchingTo, onClose])
+
+  // Reset switching state when wagmi reports no longer pending
+  useEffect(() => {
+    if (switchingTo !== null && !isPending && currentChainId !== switchingTo) {
+      // Wagmi finished but chain didn't change = user rejected or error
+      loggers.network.warn('Network switch rejected or failed - resetting UI')
+      setSwitchingTo(null)
+    }
+  }, [isPending, switchingTo, currentChainId])
 
   // Filter chains based on search and active tab
   const filteredChains = useMemo(() => {
@@ -123,10 +133,10 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.5 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative z-[9999] w-full max-w-sm my-auto bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border-2 border-gray-600/80 rounded-xl shadow-2xl flex flex-col max-h-[60vh]"
+            className="relative z-[9999] w-full max-w-md my-auto bg-gray-900 border border-white/20 rounded-2xl shadow-2xl flex flex-col max-h-[70vh]"
           >
             {/* Header */}
-            <div className="flex-shrink-0 relative bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-600/20 border-b border-gray-700/50 p-3">
+            <div className="flex-shrink-0 relative bg-gray-800/50 border-b border-white/10 p-4 rounded-t-2xl">
               {/* Close Button */}
               <button
                 onClick={handleClose}
@@ -144,16 +154,16 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
               </button>
 
               {/* Title */}
-              <div className="text-center mb-3">
+              <div className="text-center mb-4">
                 {switchingTo !== null ? (
                   <div className="space-y-1">
-                    <h2 className="text-xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-yellow-400 text-transparent bg-clip-text">
+                    <h2 className="text-xl font-bold text-yellow-400">
                       Switching Network...
                     </h2>
-                    <p className="text-xs text-yellow-400/80">Please approve in your wallet</p>
+                    <p className="text-sm text-gray-400">Please approve in your wallet</p>
                   </div>
                 ) : (
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 text-transparent bg-clip-text">
+                  <h2 className="text-xl font-bold text-white">
                     Select Network
                   </h2>
                 )}
@@ -166,7 +176,7 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
                   placeholder="Search networks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-lg px-3 py-2 pl-9 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 pl-10 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
                 />
                 <svg
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"
@@ -195,12 +205,11 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
 
               {/* Tabs - Show testnets only in development */}
               {isDevelopment && (
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-4">
                   <TabButton
                     active={activeTab === 'mainnet'}
                     onClick={() => setActiveTab('mainnet')}
                     count={MAINNET_CHAINS.length}
-                    icon="🌐"
                   >
                     Mainnets
                   </TabButton>
@@ -208,7 +217,6 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
                     active={activeTab === 'testnet'}
                     onClick={() => setActiveTab('testnet')}
                     count={TESTNET_CHAINS.length}
-                    icon="🧪"
                   >
                     Testnets
                   </TabButton>
@@ -217,7 +225,7 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
             </div>
 
             {/* Chain List */}
-            <div className="flex-1 overflow-y-auto p-3 custom-scrollbar min-h-0">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar min-h-0">
               {filteredChains.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -248,18 +256,21 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
             </div>
 
             {/* Footer */}
-            <div className="flex-shrink-0 border-t border-gray-700/50 bg-gray-900/50 backdrop-blur-sm p-3">
+            <div className="flex-shrink-0 border-t border-white/10 bg-gray-800/50 backdrop-blur-sm p-4 rounded-b-2xl">
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-gray-400">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                  <span>
-                    Connected to{' '}
-                    <span className="text-white font-semibold">
+                <div className="flex items-center gap-2 text-gray-300">
+                  <div className="relative flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    <div className="absolute w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
+                  </div>
+                  <span className="text-gray-400">
+                    Connected:{' '}
+                    <span className="font-semibold text-white">
                       {ALL_CHAINS.find(c => c.id === currentChainId)?.name || 'Unknown'}
                     </span>
                   </span>
                 </div>
-                <div className="text-gray-500">
+                <div className="px-2 py-1 rounded-md bg-blue-600/20 text-blue-400 border border-blue-600/30 text-xs font-medium">
                   {filteredChains.length} {filteredChains.length === 1 ? 'network' : 'networks'}
                 </div>
               </div>
@@ -281,30 +292,27 @@ function TabButton({
   onClick,
   children,
   count,
-  icon,
 }: {
   active: boolean
   onClick: () => void
   children: React.ReactNode
   count: number
-  icon: string
 }) {
   return (
     <motion.button
       onClick={onClick}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className={`flex-1 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+      className={`flex-1 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
         active
-          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30'
-          : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-800 border border-gray-700'
+          ? 'bg-blue-600 text-white'
+          : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700/50 border border-white/10'
       }`}
     >
       <div className="flex items-center justify-center gap-2">
-        <span className="text-lg">{icon}</span>
         <span>{children}</span>
-        <span className={`ml-1 px-2 py-0.5 rounded-full text-xs ${
-          active ? 'bg-white/20' : 'bg-gray-700'
+        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+          active ? 'bg-white/20' : 'bg-white/10'
         }`}>
           {count}
         </span>
@@ -331,27 +339,27 @@ function ChainCard({
     <button
       onClick={onClick}
       disabled={isSwitching}
-      className={`relative w-full p-2.5 rounded-lg transition-colors duration-150 text-left ${
+      className={`relative w-full p-3 rounded-lg transition-all duration-200 text-left ${
         isActive
-          ? 'bg-gradient-to-r from-blue-600/40 to-purple-600/40 border-2 border-blue-500'
-          : 'bg-gray-800/40 border border-gray-700/50 hover:border-blue-500/50 hover:bg-gray-800/60'
+          ? 'bg-blue-600/20 border border-blue-500'
+          : 'bg-white/5 border border-white/10 hover:border-blue-400/50 hover:bg-white/10'
       } ${isSwitching ? 'cursor-wait' : 'cursor-pointer'}`}
     >
       {/* Active Badge */}
       {isActive && !isSwitching && (
-        <div className="absolute -top-1 -right-1">
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full shadow-md">
-            <span className="text-xs font-semibold text-white">Active</span>
+        <div className="absolute -top-2 -right-2">
+          <div className="flex items-center gap-1 px-2 py-1 bg-blue-600 rounded-md shadow-md">
+            <span className="text-xs font-medium text-white">Active</span>
           </div>
         </div>
       )}
 
       {/* Switching Badge */}
       {isSwitching && (
-        <div className="absolute -top-1 -right-1">
-          <div className="flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full shadow-md animate-pulse">
+        <div className="absolute -top-2 -right-2">
+          <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500 rounded-md shadow-md animate-pulse">
             <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
-            <span className="text-xs font-semibold text-white">Switching...</span>
+            <span className="text-xs font-medium text-white">Switching...</span>
           </div>
         </div>
       )}
@@ -370,11 +378,11 @@ function ChainCard({
 
         {/* Chain Name */}
         <div className="flex-1">
-          <h3 className="font-medium text-white text-sm truncate">
+          <h3 className="font-semibold text-white text-base truncate">
             {chain.name}
           </h3>
           {isSwitching && (
-            <p className="text-xs text-yellow-400 mt-0.5">Approve in your wallet...</p>
+            <p className="text-xs text-yellow-400 mt-1">Approve in your wallet...</p>
           )}
         </div>
       </div>

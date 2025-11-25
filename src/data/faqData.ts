@@ -1,12 +1,12 @@
 export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
-    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam) plus gas fees. Layer 2 networks offer up to 95% lower gas costs while maintaining full EVM compatibility.",
+    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam, 2000 MON on Monad) plus gas fees. Layer 2 networks and high-performance L1s like Monad offer up to 95% lower gas costs while maintaining full EVM compatibility.",
     relatedGuide: "getting-started"
   },
   {
     question: "Which blockchain should I choose for token creation?",
-    answer: "Choose based on your needs: Base (Coinbase integration, low fees), Ethereum (largest ecosystem), Arbitrum (fastest L2), Optimism (developer-friendly), Polygon (wide adoption), BSC (trading volume), Gnosis (stable USD fees with xDAI), Moonbeam (Polkadot connectivity). All EVM chains offer fast transactions and low fees compared to Ethereum mainnet.",
+    answer: "Choose based on your needs: Ethereum (largest ecosystem), Monad (ultra-fast 10,000 TPS, low fees), Layer 2s like Arbitrum (fast, low fees), Optimism (developer-friendly), Base (Coinbase ecosystem), Polygon (wide adoption), BSC (trading volume), Gnosis (stable USD fees with xDAI), Moonbeam (Polkadot connectivity). All EVM chains offer fast transactions and lower fees compared to Ethereum mainnet.",
     relatedGuide: "getting-started"
   },
   {
@@ -39,13 +39,13 @@ export const faqs = [
     answer: "Yes! Create deflationary tokens with automatic burn mechanisms, reflection tokens that reward holders, or tokens with custom taxation on any EVM blockchain. Our advanced token templates support burn functions, fee redistribution, and tokenomics customization."
   },
   {
-    question: "What happens if I lose my Base wallet private key?",
+    question: "What happens if I lose my wallet private key?",
     answer: "Losing your private key means permanent loss of token admin access. Always backup seed phrases securely, use hardware wallets for valuable projects, and consider multi-signature wallets for team projects to prevent single points of failure.",
     relatedGuide: "security-best-practices"
   },
   {
     question: "How to verify token contract on block explorers?",
-    answer: "Verify your token contract by visiting the explorer (BaseScan, Etherscan, Arbiscan, etc.), clicking 'Contract' tab, selecting 'Verify and Publish', uploading your Solidity source code, and matching compilation settings. Verified contracts show green checkmarks and build user trust.",
+    answer: "Verify your token contract by visiting your network's block explorer (Etherscan, Arbiscan, Polygonscan, etc.), clicking 'Contract' tab, selecting 'Verify and Publish', uploading your Solidity source code, and matching compilation settings. Verified contracts show green checkmarks and build user trust.",
     relatedGuide: "token-listing-branding"
   },
   {
@@ -54,7 +54,7 @@ export const faqs = [
     relatedGuide: "token-creation"
   },
   {
-    question: "Can I burn Base tokens to reduce supply?",
+    question: "Can I burn tokens to reduce supply?",
     answer: "Yes! Implement token burning by sending tokens to the zero address (0x000...000) or create burn functions in your contract. Token burning permanently reduces circulating supply, potentially increasing token value through scarcity mechanics."
   },
   {
@@ -63,7 +63,7 @@ export const faqs = [
   },
   {
     question: "What are gas fees across different blockchains?",
-    answer: "Gas fees vary by chain: L2s (Base, Arbitrum, Optimism) offer 90-95% savings vs Ethereum. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation has a $75-100 platform fee (in native tokens) plus gas fees. Fees fluctuate with network congestion.",
+    answer: "Gas fees vary by chain: Layer 2s (Arbitrum, Optimism) offer 90-95% savings vs Ethereum mainnet. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation has a $75-100 platform fee (in native tokens) plus gas fees. Fees fluctuate with network congestion.",
     relatedGuide: "getting-started"
   },
   {
@@ -72,7 +72,7 @@ export const faqs = [
   },
   {
     question: "Best multi-signature wallets for token management?",
-    answer: "Use Gnosis Safe (most popular), Coinbase Prime, or BitGo for multi-sig management across EVM chains. Multi-sig wallets require 2-of-3 or 3-of-5 signatures for token operations, preventing single points of failure and enhancing security.",
+    answer: "Use Gnosis Safe (most popular) or BitGo for multi-sig management across EVM chains. Multi-sig wallets require 2-of-3 or 3-of-5 signatures for token operations, preventing single points of failure and enhancing security.",
     relatedGuide: "security-best-practices"
   },
   {
@@ -80,8 +80,8 @@ export const faqs = [
     answer: "Implement token vesting using time-locked contracts that release tokens gradually (cliff vesting, linear vesting, or milestone-based). Popular solutions include TokenVest, Sablier streaming, or custom vesting smart contracts compatible across EVM chains."
   },
   {
-    question: "How to add tokens to MetaMask and Coinbase Wallet?",
-    answer: "Add tokens to MetaMask by switching to the correct network, clicking 'Import tokens', entering contract address, symbol, and decimals. For Coinbase Wallet, ensure the network is enabled and the token appears automatically after receiving transactions.",
+    question: "How to add tokens to wallets like MetaMask?",
+    answer: "Add tokens to MetaMask by switching to the correct network, clicking 'Import tokens', entering contract address, symbol, and decimals. Most wallets automatically display tokens after receiving transactions.",
     relatedGuide: "token-listing-branding"
   },
   {
@@ -90,12 +90,12 @@ export const faqs = [
   },
   {
     question: "Which EVM chain is best for token creation?",
-    answer: "L2 chains (Base, Arbitrum, Optimism) offer faster transactions and 90% lower fees vs Ethereum mainnet. Ethereum has the largest ecosystem. BSC/Polygon offer wide adoption. Choose based on your priority: cost (L2), liquidity (Ethereum), or user base (BSC/Polygon).",
+    answer: "Layer 2 chains (Arbitrum, Optimism, Base) and high-performance L1s like Monad offer faster transactions and 90% lower fees vs Ethereum mainnet. Ethereum has the largest ecosystem. BSC/Polygon offer wide adoption. Monad delivers 10,000 TPS with sub-second finality. Choose based on your priority: speed (Monad), cost (L2s), liquidity (Ethereum), or user base (BSC/Polygon).",
     relatedGuide: "getting-started"
   },
   {
     question: "How do I bridge tokens between chains?",
-    answer: "Bridge tokens between chains using official bridges (Base Bridge, Arbitrum Bridge, etc.) or third-party bridges (Hop, Stargate). The process involves locking tokens on the source chain and minting equivalent tokens on the destination chain."
+    answer: "Bridge tokens between chains using official bridges (Arbitrum Bridge, Optimism Bridge, etc.) or third-party bridges (Hop, Stargate). The process involves locking tokens on the source chain and minting equivalent tokens on the destination chain."
   },
   {
     question: "Can I create governance tokens?",
@@ -129,7 +129,7 @@ export const faqs = [
   },
   {
     question: "What wallets support EVM networks?",
-    answer: "Major EVM-compatible wallets include MetaMask, Coinbase Wallet, Rainbow, Frame, Trust Wallet, and most Ethereum wallets. Users can add any EVM network by entering chain details (RPC, Chain ID) to access their tokens."
+    answer: "Major EVM-compatible wallets include MetaMask, Rainbow, Frame, Trust Wallet, and most Ethereum wallets. Users can add any EVM network by entering chain details (RPC, Chain ID) to access their tokens."
   },
   {
     question: "How do I add a custom logo to my token?",
@@ -153,7 +153,7 @@ export const faqs = [
   },
   {
     question: "What's the difference between DEX and CEX listings?",
-    answer: "DEX listings (Uniswap V3, SushiSwap) require adding liquidity pools - instant and permissionless. CEX listings (Coinbase, Binance) require applications, compliance checks, and fees ranging from $50,000-500,000. Most tokens start on DEXs first.",
+    answer: "DEX listings (Uniswap, SushiSwap) require adding liquidity pools - instant and permissionless. CEX listings (Binance, OKX, etc.) require applications, compliance checks, and fees ranging from $50,000-500,000. Most tokens start on DEXs first.",
     relatedGuide: "liquidity-management"
   }
 ]

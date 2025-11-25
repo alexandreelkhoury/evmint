@@ -280,7 +280,11 @@ export function useOpenZeppelinTokenDeployment() {
           return
         }
       }
-      
+
+      // Calculate the fee that was used during deployment
+      const deploymentFee = getDeploymentFee(chainId)
+      const feeInWei = parseEther(deploymentFee)
+
       const verificationResult = await verifyContractWithEtherscan(
         contractAddress,
         tokenData.name,

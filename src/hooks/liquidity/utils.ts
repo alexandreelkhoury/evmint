@@ -42,21 +42,6 @@ export function applySlippage(amount: bigint, slippageTolerance: number): bigint
 }
 
 // ============================================================================
-// LP TOKEN PARSING
-// ============================================================================
-
-/**
- * Parse LP token address from transaction receipt logs
- * Looks for PairCreated or Mint events
- */
-export function parseLPTokenAddress(receipt: any): string | null {
-  // TODO: Implement LP token address parsing from receipt logs
-  // Look for Mint event or PairCreated event
-  // Extract pair address from logs
-  return null
-}
-
-// ============================================================================
 // ERROR HELPERS
 // ============================================================================
 

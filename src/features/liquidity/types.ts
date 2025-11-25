@@ -40,7 +40,7 @@ export type TransactionStep = 'approve' | 'add' | 'remove_approve' | 'remove_liq
 export interface ContractAddresses {
   factory: string | null
   router: string | null
-  weth: string
+  weth: string | null
   chainName: string
   hasV2Support: boolean
 }
