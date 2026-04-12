@@ -102,6 +102,8 @@ temp/
 # Firebase (if used)
 .firebase/
 
-# Web3 and blockchain specific (optional)
-# artifacts/
-# cache/
+# Web3 and blockchain specific
+compiled/
+artifacts/
+cache/
+typechain-types/

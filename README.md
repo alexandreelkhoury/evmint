@@ -1,383 +1,202 @@
-# 🚀 EVMint - Multi-Chain Token Creator
+# EVMint
 
-**Deploy ERC20 tokens on 15+ EVM blockchains in 5 seconds. No coding required.**
+**Deploy ERC20 tokens on 15+ EVM blockchains in seconds. No coding required.**
 
 [![Live App](https://img.shields.io/badge/Live-evmint.io-blue?style=for-the-badge)](https://evmint.io)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 ---
 
-## 🌟 Features
+## Features
 
-- 🌐 **Multi-Chain Support** - Deploy on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Fantom, Gnosis, Moonbeam, Blast, Worldchain + testnets
-- ⚡ **5-Second Deployment** - Instant token creation with automatic verification
-- 💰 **Ultra-Low Fees** - $75-100 platform fee + minimal gas on Layer 2s
-- 🎯 **No Code Required** - User-friendly interface for everyone
-- 🦄 **Multi-DEX Liquidity** - Add/remove liquidity on Uniswap, SushiSwap, PancakeSwap, and more
-- ✅ **Auto-Verification** - Contracts automatically verified on all block explorers
-- 🔒 **Secure** - Built with audited OpenZeppelin contracts
-- 📱 **Mobile-Friendly** - Responsive design for all devices
+- **Multi-Chain Deployment** — Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Fantom, Gnosis, Moonbeam, Blast, Worldchain, Monad, MegaETH + testnets
+- **Instant Verification** — Contracts automatically verified on Etherscan, Basescan, Arbiscan, and all major explorers
+- **DEX Liquidity** — Add and remove liquidity on Uniswap V2/V3, SushiSwap, PancakeSwap, QuickSwap, TraderJoe, SpookySwap
+- **No Code Required** — Intuitive UI handles everything from deployment to verification
+- **Secure** — Built on audited OpenZeppelin v5 contracts, XSS protection, input validation
+- **Mobile-Friendly** — Fully responsive with glassmorphism design and Framer Motion animations
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS + Framer Motion
-- **Web3**: Wagmi v2 + Viem + Privy (wallet connection)
-- **State Management**: TanStack React Query
-- **Analytics**: Firebase Analytics
-- **Hosting**: Firebase Hosting
+| Layer | Technology |
+|---|---|
+| **Framework** | React 18 · TypeScript · Vite |
+| **Styling** | Tailwind CSS · Framer Motion |
+| **Web3** | Wagmi v2 · Viem · Privy |
+| **State** | TanStack React Query · React Context |
+| **Contracts** | Solidity 0.8.30 · OpenZeppelin v5.4 · Hardhat |
+| **Analytics** | Firebase Analytics |
+| **Hosting** | Firebase Hosting |
 
 ---
 
-## 🚀 Quick Start
+## Prerequisites
 
-### Prerequisites
+- Node.js 18+
+- npm or yarn
+- [Privy](https://dashboard.privy.io/) account (wallet authentication)
+- [Etherscan](https://etherscan.io/myapikey) API key (contract verification)
+- Firebase project (optional — analytics)
 
-- Node.js 18+ and npm
-- A Privy account (for wallet connection)
-- Firebase project (for analytics - optional)
+---
 
-### Installation
+## Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/evmint/react-token-launcher.git
-cd react-token-launcher
-
-# Install dependencies
+git clone https://github.com/alexandreelkhoury/evmint.git
+cd evmint/react-token-launcher
 npm install
-
-# Create environment file
 cp .env.example .env
-
-# Add your Privy App ID to .env
-# VITE_PRIVY_APP_ID=your_privy_app_id_here
-
-# Start development server
+# Fill in your env vars (see below)
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app runs at `http://localhost:5173`.
+
+### Environment Variables
+
+Copy `.env.example` and fill in your values:
+
+| Variable | Required | Description |
+|---|---|---|
+| `VITE_PRIVY_APP_ID` | Yes | Privy app ID for wallet connection |
+| `VITE_ETHERSCAN_API_KEY` | Yes | Etherscan V2 unified API key (works for all chains) |
+| `VITE_FIREBASE_API_KEY` | No | Firebase Analytics API key |
+| `VITE_FIREBASE_PROJECT_ID` | No | Firebase project ID |
+| `VITE_*_RPC` | No | Custom RPC endpoints per chain for better performance |
+
+See `.env.example` for the full list with descriptions.
 
 ---
 
-## 📝 Environment Variables
+## Scripts
 
-Create a `.env` file in the root directory:
-
-```env
-# Required: Privy App ID for wallet connection
-VITE_PRIVY_APP_ID=your_privy_app_id
-
-# Optional: Firebase configuration (for analytics)
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
-VITE_FIREBASE_APP_ID=1:123456789:web:abcdef
-VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
-```
-
-### Getting Your Privy App ID:
-
-1. Go to [Privy Dashboard](https://dashboard.privy.io/)
-2. Create a new app or select existing one
-3. Copy your App ID from the settings
-4. Paste it in your `.env` file
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server with hot reload |
+| `npm run build` | Production build |
+| `npm run build:prerender` | Build with static page prerendering |
+| `npm run preview` | Preview production build locally |
+| `npm run firebase:deploy` | Deploy to Firebase |
+| `npm run firebase:build` | Build + deploy hosting |
+| `npm run firebase:emulators` | Start local Firebase emulators |
 
 ---
 
-## 🛠️ Available Scripts
-
-```bash
-# Development server with hot reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build locally
-npm run preview
-
-# Deploy to Firebase Hosting
-npm run firebase:deploy
-```
-
----
-
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 react-token-launcher/
 ├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── Header.tsx       # Main navigation
-│   │   ├── Footer.tsx       # Footer with links
-│   │   ├── WalletButton.tsx # Wallet connection
-│   │   ├── NetworkManager.tsx # Network handling
-│   │   └── ...
+│   ├── components/           # Reusable UI components
+│   │   ├── Header.tsx        # Navigation bar
+│   │   ├── WalletButton.tsx  # Wallet connection
+│   │   ├── NetworkManager.tsx# Network switching
+│   │   └── liquidity/        # Liquidity-specific UI
 │   │
-│   ├── pages/               # Route-based pages
-│   │   ├── HomePage/        # Landing page
-│   │   ├── CreateTokenPage/ # Token creation
-│   │   ├── TokensPage/      # User's tokens
-│   │   ├── LiquidityPage/   # Liquidity management
-│   │   ├── GuidesPage/      # Documentation
-│   │   └── FAQPage/         # Help section
+│   ├── pages/                # Route-based pages
+│   │   ├── HomePage/         # Landing page sections
+│   │   ├── CreateTokenPage/  # Token creation form
+│   │   ├── TokensPage.tsx    # User's deployed tokens
+│   │   ├── TokenDetailPage/  # Token stats & swap
+│   │   ├── LiquidityPage/    # Add/remove liquidity
+│   │   └── ...               # Guide, FAQ, Blog, legal pages
 │   │
-│   ├── features/            # Feature modules
-│   │   ├── liquidity/       # DEX liquidity logic
-│   │   └── verification/    # Contract verification
+│   ├── features/             # Feature modules
+│   │   ├── liquidity/        # DEX interaction hooks
+│   │   └── verification/     # Contract verification logic
 │   │
-│   ├── hooks/               # Custom React hooks
+│   ├── hooks/                # Custom React hooks
 │   │   ├── useOpenZeppelinTokenDeployment.ts
 │   │   ├── useChainConfig.ts
-│   │   └── ...
+│   │   └── liquidity/        # Liquidity management hooks
 │   │
-│   ├── config/              # Configuration
-│   │   ├── chains.ts        # Multi-chain configuration
-│   │   ├── web3.ts          # Wagmi setup
-│   │   ├── firebase.ts      # Analytics
-│   │   └── constants.ts     # App constants
+│   ├── config/               # App configuration
+│   │   ├── chains.ts         # Multi-chain definitions (20+ chains)
+│   │   ├── web3.ts           # Wagmi + Privy setup
+│   │   └── firebase.ts       # Analytics config
 │   │
-│   ├── utils/               # Utility functions
-│   │   ├── validation.ts    # Form validation
-│   │   └── analytics.ts     # Analytics helpers
-│   │
-│   ├── styles/              # Design system
-│   │   └── designSystem.ts  # Colors, typography, animations
-│   │
-│   └── App.tsx              # Main app component
+│   ├── contracts/            # Compiled contract ABI + bytecode
+│   ├── contexts/             # React context providers
+│   ├── services/             # External API integrations
+│   ├── utils/                # Validation, analytics, logging
+│   └── styles/               # Design system tokens
 │
-├── public/                  # Static assets
-│   ├── sitemap.xml          # SEO sitemap
-│   ├── robots.txt           # Search engine config
-│   └── ...
-│
-├── CLAUDE.md                # Project documentation for AI
-├── COMPREHENSIVE_ANALYSIS_REPORT.md # Full app audit
-└── README.md                # This file
+├── contracts/                # Solidity source files
+├── public/                   # Static assets, sitemap, robots.txt
+└── dist/                     # Build output (gitignored)
 ```
 
 ---
 
-## 🎨 Key Features Explained
+## Architecture
 
-### Multi-Chain Token Deployment
+```
+PrivyProvider (auth)
+  → QueryClientProvider (async state)
+    → WagmiProvider (Web3)
+      → React Router (navigation)
+```
 
-Deploy tokens on 15+ EVM chains with a single interface:
+**Token deployment flow:** User fills form → selects chain → wallet signs tx → contract deployed → auto-verified on explorer → success modal with links.
 
-**Mainnets:**
-- Ethereum
-- Base
-- Arbitrum
-- Optimism
-- Polygon
-- BSC (Binance Smart Chain)
-- Avalanche
-- Fantom
-- Gnosis
-- Moonbeam
-- Blast
-- Worldchain
-
-**Testnets:**
-- Sepolia (Ethereum)
-- Base Sepolia
-- Arbitrum Sepolia
-- Optimism Sepolia
-- Polygon Amoy
-- BSC Testnet
-- Avalanche Fuji
-- Moonbase Alpha
-- Blast Sepolia
-
-### Liquidity Management
-
-Add and remove liquidity on multiple DEXes:
-- Uniswap V2/V3
-- SushiSwap
-- PancakeSwap
-- QuickSwap
-- TraderJoe
-- SpookySwap
-
-### Automatic Verification
-
-Contracts are automatically verified on:
-- Etherscan (Ethereum)
-- Basescan (Base)
-- Arbiscan (Arbitrum)
-- Optimistic Etherscan
-- Polygonscan
-- BSCScan
-- Snowtrace (Avalanche)
-- FTMScan (Fantom)
-- Gnosisscan
-- Moonscan
+**Liquidity flow:** Select token pair → approve tokens → add/remove liquidity via chain-specific DEX router → LP tokens tracked in localStorage.
 
 ---
 
-## 🔧 Configuration
+## Supported Chains
 
-### Adding a New Chain
+**Mainnets:** Ethereum · Base · Arbitrum · Optimism · Polygon · BSC · Avalanche · Fantom · Gnosis · Moonbeam · Blast · Worldchain · Monad · MegaETH
 
-To add support for a new EVM chain, edit `src/config/chains.ts`:
+**Testnets:** Sepolia · Base Sepolia · Arbitrum Sepolia · Optimism Sepolia · Polygon Amoy · BSC Testnet · Avalanche Fuji · Moonbase Alpha · Blast Sepolia
+
+---
+
+## Adding a New Chain
+
+Edit `src/config/chains.ts`:
 
 ```typescript
 export const YOUR_CHAIN: ChainConfig = {
-  ...yourChain, // Import from viem/chains
-  icon: '/icons/yourchain.svg',
-  color: '#yourcolor',
-  gradient: 'from-your-500 to-chain-600',
-  weth: '0xWrappedNativeTokenAddress',
-  dex: {
-    uniswapV2Router: '0xRouterAddress',
-    uniswapV2Factory: '0xFactoryAddress',
-  },
-  explorer: {
-    name: 'YourScan',
-    url: 'https://yourscan.io',
-    apiUrl: 'https://api.yourscan.io/api',
-  },
-  features: {
-    tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: false,
-    hasMultipleDex: false,
-  },
+  ...yourChain,             // from viem/chains
+  icon: '/icons/chain.svg',
+  weth: '0x...',            // wrapped native token
+  dex: { uniswapV2Router: '0x...', uniswapV2Factory: '0x...' },
+  explorer: { name: 'YourScan', url: '...', apiUrl: '...' },
+  features: { tokenDeployment: true, uniswapV2: true },
   category: 'mainnet',
-  layer: 'L1' // or 'L2', 'sidechain'
+  layer: 'L2',
 }
 ```
 
-Then add to `ALL_CHAINS` array and update Wagmi config in `src/config/web3.ts`.
+Then add to `ALL_CHAINS` and update `src/config/web3.ts`.
 
 ---
 
-## 📊 Analytics
-
-The app tracks user interactions via Firebase Analytics:
-
-**Events Tracked:**
-- `page_view` - Page navigation
-- `token_created` - Successful token deployment
-- `liquidity_added` - Liquidity addition
-- `liquidity_removed` - Liquidity removal
-- `wallet_connected` - Wallet connections
-- `network_switched` - Network changes
-- `error_occurred` - Error tracking
-
-See `src/utils/analytics.ts` for all tracked events.
-
----
-
-## 🔐 Security
-
-- **Smart Contracts**: Built with audited OpenZeppelin v5.4.0
-- **Wallet Security**: Privy handles authentication
-- **No Private Keys Stored**: All transactions signed in user's wallet
-- **Input Validation**: Comprehensive form validation
-- **XSS Protection**: DOMPurify sanitization
-- **HTTPS Only**: Enforced in production
-
----
-
-## 🚢 Deployment
-
-### Firebase Hosting
+## Deployment
 
 ```bash
-# Build the app
 npm run build
-
-# Deploy to Firebase
 npm run firebase:deploy
-
-# Or deploy hosting only
-firebase deploy --only hosting
 ```
 
-### Other Platforms
-
-The app is a static site and can be deployed to:
-- Vercel
-- Netlify
-- Cloudflare Pages
-- GitHub Pages
-- Any static hosting
-
-Just run `npm run build` and deploy the `dist/` folder.
+Also works with Vercel, Netlify, Cloudflare Pages, or any static host — just deploy the `dist/` folder.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please follow these steps:
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m 'Add your feature'`)
+4. Push and open a Pull Request
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Style
-
-- Use TypeScript for all new code
-- Follow existing component patterns
-- Add JSDoc comments for functions
-- Keep components under 300 lines
-- Use custom hooks for business logic
+Use TypeScript for all new code. Follow existing component patterns.
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🆘 Support
-
-- **Documentation**: [evmint.io/guides](https://evmint.io/guides)
-- **FAQ**: [evmint.io/faq](https://evmint.io/faq)
-- **Issues**: [GitHub Issues](https://github.com/evmint/react-token-launcher/issues)
-- **Email**: support@evmint.io
-
----
-
-## 🙏 Acknowledgments
-
-- [OpenZeppelin](https://openzeppelin.com/) - Smart contract library
-- [Privy](https://privy.io/) - Wallet authentication
-- [Wagmi](https://wagmi.sh/) - React hooks for Ethereum
-- [Viem](https://viem.sh/) - TypeScript Ethereum library
-- [Uniswap](https://uniswap.org/) - DEX protocol
-
----
-
-## 📈 Roadmap
-
-- [ ] Token vesting/locking features
-- [ ] Multi-signature wallet support
-- [ ] Bulk token airdrop tool
-- [ ] Token analytics dashboard
-- [ ] Cross-chain bridge integration
-- [ ] NFT metadata generator
-- [ ] Governance token templates
-- [ ] Automated market maker pools
-
----
-
-## 🌟 Star History
-
-If you find this project useful, please give it a star! ⭐
-
----
-
-**Built with ❤️ by the EVMint Team**
-
-[Website](https://evmint.io) • [Twitter](https://twitter.com/evmint) • [GitHub](https://github.com/evmint)
+MIT
