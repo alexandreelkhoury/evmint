@@ -99,6 +99,8 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       81457: 'blast',
       168587773: 'blast',
       143: 'monad',
+      4326: 'megaeth',
+      6342: 'megaeth',
     }
     return chainNames[id] || null
   }
@@ -159,6 +161,10 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       monad: [
         'https://monadscan.com/assets/monad/images/svg/logos/chain-light.svg',
         'https://monadscan.com/assets/monad/images/svg/logos/chain-dark.svg',
+      ],
+      megaeth: [
+        'https://megaeth.com/favicon.svg',
+        'https://l2beat.com/icons/megaeth.png',
       ],
     }
 
