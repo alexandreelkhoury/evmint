@@ -5,67 +5,55 @@ interface LoadingSpinnerProps {
   message?: string
 }
 
+function LogoMark({ width = 64 }: { width?: number }) {
+  const height = width * (140 / 180)
+  return (
+    <svg viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg" width={width} height={height} style={{ filter: 'drop-shadow(0 0 20px rgba(59,130,246,0.3))' }}>
+      <g transform="translate(50,0)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#06B6D4" opacity=".9"/></g>
+      <g transform="translate(10,40) scale(.9)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#A855F7" opacity=".85"/></g>
+      <g transform="translate(90,40) scale(.9)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#3B82F6" opacity=".9"/></g>
+    </svg>
+  )
+}
+
 export default function LoadingSpinner({
   size = 'medium',
-  message = 'Loading...'
+  message,
 }: LoadingSpinnerProps) {
-  const sizeClasses = {
-    small: 'w-8 h-8',
-    medium: 'w-12 h-12',
-    large: 'w-16 h-16'
-  }
+  const logoWidth = { small: 40, medium: 56, large: 72 }[size]
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-[400px] gap-4"
+      className="flex flex-col items-center justify-center min-h-[60vh] gap-7"
       role="status"
       aria-live="polite"
-      aria-label={message}
+      aria-label={message || 'Loading'}
     >
-      {/* Clean, Professional Spinner */}
-      <div className="relative">
-        {/* Outer ring */}
-        <motion.div
-          className={`${sizeClasses[size]} rounded-full border-3 border-gray-700`}
-          style={{
-            borderTopColor: 'transparent',
-            borderRightColor: '#06B6D4',
-            borderBottomColor: 'transparent',
-            borderLeftColor: '#3B82F6',
-            borderWidth: '3px'
-          }}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 1.2,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <LogoMark width={logoWidth} />
+      </motion.div>
 
-        {/* Inner pulse */}
+      {/* Sliding bar — matches HTML splash */}
+      <div className="w-40 h-[3px] bg-gray-800 rounded-full overflow-hidden">
         <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.5, 0.8, 0.5]
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-400" />
-        </motion.div>
+          className="h-full w-[40%] rounded-full"
+          style={{ background: 'linear-gradient(90deg,#06B6D4,#3B82F6,#A855F7)' }}
+          animate={{ x: ['-100%', '350%'] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </div>
 
-      {/* Loading Text */}
+      {/* Message fades in after a delay so fast loads never flash text */}
       {message && (
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-gray-400 text-sm font-medium tracking-wide"
+          animate={{ opacity: 0.6 }}
+          transition={{ delay: 0.6, duration: 0.4 }}
+          className="text-gray-500 text-xs font-medium tracking-widest uppercase"
         >
           {message}
         </motion.p>
@@ -80,89 +68,13 @@ export function InlineSpinner({ className = '' }: { className?: string }) {
     <motion.div
       className={`inline-block w-4 h-4 border-2 border-gray-700 rounded-full ${className}`}
       style={{
-        borderTopColor: '#06B6D4',
-        borderRightColor: 'transparent'
+        borderTopColor: '#3B82F6',
+        borderRightColor: 'transparent',
       }}
       animate={{ rotate: 360 }}
-      transition={{
-        duration: 0.8,
-        repeat: Infinity,
-        ease: "linear"
-      }}
+      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
       role="status"
       aria-label="Loading"
     />
-  )
-}
-
-// Alternative: Modern Progress Bar Loader
-export function ProgressLoader({
-  message = 'Loading...'
-}: { message?: string }) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center min-h-[400px] gap-6"
-      role="status"
-      aria-live="polite"
-      aria-label={message}
-    >
-      {/* Progress bar container */}
-      <div className="w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
-        <motion.div
-          className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500"
-          initial={{ x: '-100%' }}
-          animate={{ x: '100%' }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </div>
-
-      {/* Loading Text */}
-      {message && (
-        <p className="text-gray-400 text-sm font-medium tracking-wide">
-          {message}
-        </p>
-      )}
-    </div>
-  )
-}
-
-// Alternative: Skeleton Loader (Most Professional)
-export function SkeletonLoader() {
-  return (
-    <div className="flex flex-col min-h-[400px] p-8 gap-6 max-w-4xl mx-auto">
-      {/* Header skeleton */}
-      <div className="space-y-3">
-        <motion.div
-          className="h-8 bg-gray-800 rounded-lg w-1/3"
-          animate={{ opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        />
-        <motion.div
-          className="h-4 bg-gray-800 rounded w-2/3"
-          animate={{ opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: 0.1 }}
-        />
-      </div>
-
-      {/* Content skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[1, 2, 3, 4].map((i) => (
-          <motion.div
-            key={i}
-            className="h-32 bg-gray-800 rounded-xl"
-            animate={{ opacity: [0.5, 0.8, 0.5] }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              delay: i * 0.1
-            }}
-          />
-        ))}
-      </div>
-    </div>
   )
 }

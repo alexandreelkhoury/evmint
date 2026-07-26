@@ -121,9 +121,9 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
           </span>
           <motion.button
             onClick={handleCopyAddress}
-            className={`ml-2 px-3 py-1 rounded transition-all duration-300 flex items-center space-x-1 ${
-              isCopied 
-                ? 'bg-green-600/20 text-green-400' 
+            className={`ml-2 px-3 min-h-[44px] min-w-[44px] rounded transition-all duration-300 flex items-center justify-center space-x-1 cursor-pointer ${
+              isCopied
+                ? 'bg-green-600/20 text-green-400'
                 : 'hover:bg-blue-600/20 text-blue-400'
             }`}
             title={isCopied ? "Copied!" : "Copy address"}
@@ -165,12 +165,22 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
       <div className="flex space-x-3">
         <Link
           to="/liquidity"
-          className={`flex-1 px-4 py-2 ${colors.tertiaryButton} hover:bg-gradient-to-r hover:from-green-600/20 hover:to-blue-600/20 text-sm rounded-lg flex items-center justify-center space-x-2 transition-all duration-300`}
+          className={`flex-1 px-4 min-h-[44px] ${colors.tertiaryButton} hover:bg-gradient-to-r hover:from-green-600/20 hover:to-blue-600/20 text-sm rounded-lg flex items-center justify-center space-x-2 transition-all duration-300 cursor-pointer`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
           </svg>
-          <span>Add Liquidity</span>
+          <span>Liquidity</span>
+        </Link>
+        <Link
+          to={`/token/${tokenData.address}?chain=${chainId}`}
+          className={`flex-1 px-4 min-h-[44px] ${colors.primaryButton} text-sm rounded-lg flex items-center justify-center space-x-2 cursor-pointer`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+          <span>Trade</span>
         </Link>
         <button
           onClick={() => {
@@ -178,12 +188,13 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
             const explorerUrl = chainConfig?.explorer.url || 'https://basescan.org'
             window.open(`${explorerUrl}/token/${tokenData.address}`, '_blank')
           }}
-          className={`flex-1 px-4 py-2 ${colors.primaryButton} text-sm rounded-lg flex items-center justify-center space-x-2`}
+          className={`px-3 min-h-[44px] min-w-[44px] ${colors.tertiaryButton} text-sm rounded-lg flex items-center justify-center cursor-pointer`}
+          title="View on block explorer"
+          aria-label="View on block explorer"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
-          <span>View</span>
         </button>
       </div>
     </motion.div>
@@ -214,7 +225,7 @@ export default function TokensPage() {
 
         <SEO
           title="My ERC20 Tokens - Manage Multi-Chain Token Portfolio"
-          description="View and manage all your created ERC20 tokens across multiple EVM blockchains. Track token performance, manage liquidity, and monitor your crypto projects on Base, Ethereum, Arbitrum, and more."
+          description="View and manage all your created ERC20 tokens across 15+ EVM blockchains. Track token performance, manage liquidity, and monitor your crypto projects on Ethereum, Arbitrum, Polygon, and more."
           keywords="multi-chain tokens management, erc20 token dashboard, blockchain portfolio, token management interface, base ethereum arbitrum polygon"
           canonical="/tokens"
         />
@@ -259,7 +270,7 @@ export default function TokensPage() {
 
         <SEO
           title="My ERC20 Tokens - Manage Multi-Chain Token Portfolio"
-          description="View and manage all your created ERC20 tokens across multiple EVM blockchains. Track token performance, manage liquidity, and monitor your crypto projects on Base, Ethereum, Arbitrum, and more."
+          description="View and manage all your created ERC20 tokens across 15+ EVM blockchains. Track token performance, manage liquidity, and monitor your crypto projects on Ethereum, Arbitrum, Polygon, and more."
           keywords="multi-chain tokens management, erc20 token dashboard, blockchain portfolio, token management interface, base ethereum arbitrum polygon"
           canonical="/tokens"
         />
@@ -304,9 +315,11 @@ export default function TokensPage() {
                 Connect your wallet to view and manage your created tokens across multiple EVM blockchains.
                 Track their performance, manage liquidity, and monitor your crypto portfolio.
               </p>
-              <WalletButton />
+              <div className="flex justify-center">
+                <WalletButton />
+              </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
               <div className="bg-black/20 rounded-lg p-4">
                 <div className="text-blue-400 mb-2">💎</div>
@@ -341,8 +354,8 @@ export default function TokensPage() {
       </div>
 
       <SEO
-        title="My Base Tokens - Manage Your ERC20 Tokens | Base Token Creator"
-        description="View and manage all your created ERC20 tokens on Base blockchain. Track token performance, manage liquidity, and monitor your crypto projects."
+        title="My Tokens - Manage Your ERC20 Tokens | EVMint"
+        description="View and manage all your created ERC20 tokens across 15+ EVM chains. Track token performance, manage liquidity, and monitor your crypto projects."
         keywords="base tokens management, my base tokens, erc20 token dashboard, base blockchain portfolio, token management interface"
         canonical="/tokens"
       />
@@ -405,7 +418,7 @@ export default function TokensPage() {
             <motion.div {...animations.buttonHover}>
               <Link
                 to="/create"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300 cursor-pointer"
               >
                 🚀 Create Your First Token
               </Link>
@@ -428,10 +441,10 @@ export default function TokensPage() {
                 disabled={isRefreshing}
                 whileHover={!isRefreshing ? { scale: 1.05 } : {}}
                 whileTap={!isRefreshing ? { scale: 0.95 } : {}}
-                className={`flex items-center space-x-2 px-4 py-2 text-white text-sm rounded-lg transition-colors ${
-                  isRefreshing 
-                    ? 'bg-gray-600 cursor-not-allowed opacity-75' 
-                    : 'bg-gray-700 hover:bg-gray-600'
+                className={`flex items-center space-x-2 px-4 min-h-[44px] text-white text-sm rounded-lg transition-colors ${
+                  isRefreshing
+                    ? 'bg-gray-600 cursor-not-allowed opacity-75'
+                    : 'bg-gray-700 hover:bg-gray-600 cursor-pointer'
                 }`}
               >
                 {isRefreshing ? (
@@ -449,7 +462,7 @@ export default function TokensPage() {
               <motion.div {...animations.buttonHover}>
                 <Link
                   to="/create"
-                  className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300"
+                  className="flex items-center px-4 min-h-[44px] bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300 cursor-pointer"
                 >
                   ➕ Create New Token
                 </Link>

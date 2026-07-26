@@ -1,14 +1,15 @@
 import type { VerificationParams, VerificationResult, VerificationStatusResult, ExplorerApiResponse } from './types'
-import { buildVerificationUrl, buildStatusCheckUrl, getApiKey, getApiUrl, isVerificationSupported, getChainName } from './explorerConfig'
+import { buildVerificationUrl, buildStatusCheckUrl, getApiKey, isVerificationSupported, getChainName, isBlockscoutChain } from './explorerConfig'
 import { COMPILER_OPTIMIZATION, EVM_VERSION, CODE_FORMAT, LICENSE_TYPE, VIA_IR, API_STATUS } from './constants'
 
 /**
  * API interaction utilities for contract verification
+ * Uses Etherscan V2 unified API for all chains
  */
 
 /**
- * Verifies a deployed contract using block explorer API
- * Supports Etherscan V2 API and compatible explorers
+ * Verifies a deployed contract using Etherscan V2 API
+ * Single endpoint supports all EVM chains via chainid parameter
  */
 export async function verifyContract(params: VerificationParams): Promise<VerificationResult> {
   const { contractAddress, sourceCode, contractName, compilerVersion, constructorArguments, chainId } = params
@@ -19,25 +20,17 @@ export async function verifyContract(params: VerificationParams): Promise<Verifi
   }
 
   const apiKey = getApiKey(chainId)
-  if (!apiKey) {
+  if (!apiKey && !isBlockscoutChain(chainId)) {
     const chainName = getChainName(chainId)
     return {
       success: false,
       isVerified: false,
-      message: `Block explorer API key not configured for ${chainName}. Please add the API key to your environment variables.`
+      message: `Etherscan API key not configured. Please add VITE_ETHERSCAN_API_KEY to your environment variables to verify contracts on ${chainName}.`
     }
-  }
-
-  const apiUrl = getApiUrl(chainId)
-  if (!apiUrl) {
-    return { success: false, isVerified: false, message: 'Block explorer API not available for this network' }
   }
 
   try {
     const url = buildVerificationUrl(chainId, apiKey)
-    if (!url) {
-      return { success: false, isVerified: false, message: 'Failed to build verification URL' }
-    }
 
     const formData = new FormData()
     formData.append('contractaddress', contractAddress)
@@ -88,11 +81,11 @@ export async function verifyContract(params: VerificationParams): Promise<Verifi
 
 /**
  * Checks the status of a contract verification
- * Polls the block explorer API to check if verification has completed
+ * Uses Etherscan V2 unified API
  */
 export async function checkVerificationStatus(guid: string, chainId: number): Promise<VerificationStatusResult> {
   const apiKey = getApiKey(chainId)
-  if (!apiKey) {
+  if (!apiKey && !isBlockscoutChain(chainId)) {
     return { success: false, message: 'API configuration missing', status: 'failed' }
   }
 
@@ -100,16 +93,8 @@ export async function checkVerificationStatus(guid: string, chainId: number): Pr
     return { success: false, message: 'Unsupported network', status: 'failed' }
   }
 
-  const apiUrl = getApiUrl(chainId)
-  if (!apiUrl) {
-    return { success: false, message: 'Block explorer API not available', status: 'failed' }
-  }
-
   try {
     const url = buildStatusCheckUrl(chainId, guid, apiKey)
-    if (!url) {
-      return { success: false, message: 'Failed to build status check URL', status: 'failed' }
-    }
 
     const response = await fetch(url)
     const result: ExplorerApiResponse = await response.json()

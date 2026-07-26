@@ -93,20 +93,21 @@ export default function AddLiquidityForm({
       <div className="space-y-6 mb-8">
         {/* Token A */}
         <div>
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="tokenAAmount" className={`block ${typography.label} mb-3`}>
             First Token *
           </label>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-all duration-300 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
             {/* Top row: Input and Token selector */}
-            <div className="flex items-center space-x-4 mb-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
               {/* Input side (left) */}
               <div className="flex-1">
                 <input
+                  id="tokenAAmount"
                   type="text"
                   placeholder="0.0"
                   value={amountA}
                   onChange={(e) => onAmountAChange(e.target.value)}
-                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
+                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
                   style={{
                     boxShadow: 'none',
                     WebkitAppearance: 'none',
@@ -119,6 +120,7 @@ export default function AddLiquidityForm({
               <div className="flex-shrink-0">
                 <button
                   onClick={onTokenAClick}
+                  aria-label="Select first token"
                   className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all duration-200"
                 >
                   {tokenA ? (
@@ -152,7 +154,7 @@ export default function AddLiquidityForm({
 
             {/* Bottom row: Balance and percentage buttons */}
             {(balanceA || validationErrors.amountA || tokenA) && (
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                 {/* Balance display (left) */}
                 <div className="flex flex-col space-y-1">
                   {balanceA && tokenA && (
@@ -175,14 +177,16 @@ export default function AddLiquidityForm({
                       <button
                         key={percentage}
                         onClick={() => onSetPercentageAmount(tokenA, percentage, onAmountAChange)}
-                        className="px-3 py-1 text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200"
+                        aria-label={`Set ${percentage} percent of first token balance`}
+                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
                       >
                         {percentage}%
                       </button>
                     ))}
                     <button
                       onClick={() => onSetPercentageAmount(tokenA, 100, onAmountAChange)}
-                      className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-all duration-200"
+                      aria-label="Set maximum first token balance"
+                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-all duration-200 cursor-pointer"
                     >
                       MAX
                     </button>
@@ -195,20 +199,21 @@ export default function AddLiquidityForm({
 
         {/* Token B */}
         <div>
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="tokenBAmount" className={`block ${typography.label} mb-3`}>
             Second Token *
           </label>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-all duration-300 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
             {/* Top row: Input and Token selector */}
-            <div className="flex items-center space-x-4 mb-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
               {/* Input side (left) */}
               <div className="flex-1">
                 <input
+                  id="tokenBAmount"
                   type="text"
                   placeholder="0.0"
                   value={amountB}
                   onChange={(e) => onAmountBChange(e.target.value)}
-                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
+                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
                   style={{
                     boxShadow: 'none',
                     WebkitAppearance: 'none',
@@ -221,6 +226,7 @@ export default function AddLiquidityForm({
               <div className="flex-shrink-0">
                 <button
                   onClick={onTokenBClick}
+                  aria-label="Select second token"
                   className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all duration-200"
                 >
                   {tokenB ? (
@@ -254,7 +260,7 @@ export default function AddLiquidityForm({
 
             {/* Bottom row: Balance and percentage buttons */}
             {(balanceB || validationErrors.amountB || tokenB) && (
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                 {/* Balance display (left) */}
                 <div className="flex flex-col space-y-1">
                   {balanceB && tokenB && (
@@ -277,14 +283,16 @@ export default function AddLiquidityForm({
                       <button
                         key={percentage}
                         onClick={() => onSetPercentageAmount(tokenB, percentage, onAmountBChange)}
-                        className="px-3 py-1 text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200"
+                        aria-label={`Set ${percentage} percent of second token balance`}
+                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
                       >
                         {percentage}%
                       </button>
                     ))}
                     <button
                       onClick={() => onSetPercentageAmount(tokenB, 100, onAmountBChange)}
-                      className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-all duration-200"
+                      aria-label="Set maximum second token balance"
+                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-all duration-200 cursor-pointer"
                     >
                       MAX
                     </button>
@@ -299,7 +307,7 @@ export default function AddLiquidityForm({
       {/* Submit Button */}
       <div className="pt-6">
         {!authenticated ? (
-          <div className={`${colors.infoBg} rounded-2xl p-6 text-center`}>
+          <div className={`${colors.infoBg} rounded-2xl p-6 flex justify-center`}>
             <WalletButton />
           </div>
         ) : !isV2CorrectChain ? (

@@ -97,20 +97,21 @@ export default function RemoveLiquidityForm({
       {/* LP Token Selection */}
       <div className="space-y-6 mb-8">
         <div>
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="lpTokenAmount" className={`block ${typography.label} mb-3`}>
             LP Token *
           </label>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-all duration-300 focus-within:border-red-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-red-500/20 focus-within:ring-1 focus-within:ring-red-400/20">
             {/* Top row: Input and Token selector */}
-            <div className="flex items-center space-x-4 mb-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
               {/* Input side (left) */}
               <div className="flex-1">
                 <input
+                  id="lpTokenAmount"
                   type="text"
                   placeholder="0.0"
                   value={lpTokenAmount}
                   onChange={(e) => onLpTokenAmountChange(e.target.value)}
-                  className="w-full text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
+                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
                   style={{
                     boxShadow: 'none',
                     WebkitAppearance: 'none',
@@ -123,6 +124,7 @@ export default function RemoveLiquidityForm({
               <div className="flex-shrink-0">
                 <button
                   onClick={onLpTokenClick}
+                  aria-label="Select LP token"
                   className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all duration-200"
                 >
                   {selectedLpToken ? (
@@ -156,7 +158,7 @@ export default function RemoveLiquidityForm({
 
             {/* Bottom row: Balance and percentage buttons */}
             {(lpTokenBalance || validationErrors.lpTokenAmount || selectedLpToken) && (
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                 {/* Balance display (left) */}
                 <div className="flex flex-col space-y-1">
                   {lpTokenBalance && selectedLpToken && (
@@ -182,14 +184,16 @@ export default function RemoveLiquidityForm({
                       <button
                         key={percentage}
                         onClick={() => onSetPercentageAmount(selectedLpToken, percentage, onLpTokenAmountChange, true)}
-                        className="px-3 py-1 text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200"
+                        aria-label={`Set ${percentage} percent of LP token balance`}
+                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
                       >
                         {percentage}%
                       </button>
                     ))}
                     <button
                       onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
-                      className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 hover:text-red-200 border border-red-500/30 rounded-lg transition-all duration-200"
+                      aria-label="Set maximum LP token balance"
+                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 hover:text-red-200 border border-red-500/30 rounded-lg transition-all duration-200 cursor-pointer"
                     >
                       MAX
                     </button>
@@ -204,7 +208,7 @@ export default function RemoveLiquidityForm({
       {/* Submit Button */}
       <div className="pt-6">
         {!authenticated ? (
-          <div className={`${colors.infoBg} rounded-2xl p-6 text-center`}>
+          <div className={`${colors.infoBg} rounded-2xl p-6 flex justify-center`}>
             <WalletButton />
           </div>
         ) : !isV2CorrectChain ? (

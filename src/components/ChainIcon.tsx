@@ -101,6 +101,8 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       143: 'monad',
       4326: 'megaeth',
       6342: 'megaeth',
+      4663: 'robinhood',
+      46630: 'robinhood',
     }
     return chainNames[id] || null
   }
@@ -165,6 +167,10 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       megaeth: [
         'https://megaeth.com/favicon.svg',
         'https://l2beat.com/icons/megaeth.png',
+      ],
+      robinhood: [
+        'https://robinhood.com/favicon.ico',
+        'https://avatars.githubusercontent.com/u/51801908?s=200&v=4',
       ],
     }
 

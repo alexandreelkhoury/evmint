@@ -2,6 +2,8 @@ import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { colors, typography } from '../../styles/designSystem'
+import { getChainById, getExplorerUrl } from '../../config/chains'
+import { useScrollLock } from '../../hooks/useScrollLock'
 
 interface SuccessModalProps {
   isOpen: boolean
@@ -23,12 +25,41 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
   const [isCopied, setIsCopied] = useState(false)
   const [shareMessageCopied, setShareMessageCopied] = useState(false)
 
+  // Lock body scroll when modal is open
+  useScrollLock(isOpen)
+
   if (!isOpen) return null
 
-  const isMainnet = chainId === 8453
-  const explorerUrl = isMainnet ? 'https://basescan.org' : 'https://sepolia.basescan.org'
-  const dexscreenerUrl = `https://dexscreener.com/base/${pool.tokenAddress}`
-  const uniswapUrl = `https://app.uniswap.org/swap?outputCurrency=${pool.tokenAddress}&chain=base`
+  // Get chain-specific info
+  const chainConfig = getChainById(chainId)
+  const nativeTokenSymbol = chainConfig?.nativeCurrency?.symbol || 'ETH'
+  const chainName = chainConfig?.name || 'Base'
+  const explorerUrl = getExplorerUrl(chainId)
+
+  // Get DEXScreener chain slug (lowercase chain name, handle special cases)
+  const getDexScreenerChain = (id: number): string => {
+    const chainSlugs: Record<number, string> = {
+      1: 'ethereum',
+      8453: 'base',
+      84532: 'base', // Base Sepolia - may not be on DEXScreener
+      42161: 'arbitrum',
+      10: 'optimism',
+      137: 'polygon',
+      56: 'bsc',
+      43114: 'avalanche',
+      250: 'fantom',
+      100: 'gnosis',
+      1284: 'moonbeam',
+      81457: 'blast',
+      143: 'monad',
+      4663: 'robinhoodchain',
+    }
+    return chainSlugs[id] || 'ethereum'
+  }
+
+  const dexScreenerChain = getDexScreenerChain(chainId)
+  const dexscreenerUrl = `https://dexscreener.com/${dexScreenerChain}/${pool.tokenAddress}`
+  const uniswapUrl = `https://app.uniswap.org/swap?outputCurrency=${pool.tokenAddress}&chain=${dexScreenerChain}`
 
   const handleCopyAddress = async () => {
     if (!pool.lpTokenAddress) return
@@ -47,25 +78,25 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
   }
 
   // MAIN VIRAL SHARE - After liquidity (token is NOW tradable!)
-  const tweetText = `🚀 $${pool.tokenSymbol} is NOW LIVE on Base!
+  const tweetText = `🚀 $${pool.tokenSymbol} is NOW LIVE on ${chainName}!
 
 💧 Liquidity added on Uniswap V2
-💎 ${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ETH
+💎 ${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ${nativeTokenSymbol}
 
 🔥 BUY NOW:
 ${uniswapUrl}
 
 📊 Chart: ${dexscreenerUrl}
 
-#${pool.tokenSymbol} #Base #DeFi #crypto`
+#${pool.tokenSymbol} #${chainName.replace(/\s+/g, '')} #DeFi #crypto`
 
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
 
   const handleCopyShareMessage = async () => {
-    const shareMessage = `🚀 $${pool.tokenSymbol} is NOW LIVE on Base!
+    const shareMessage = `🚀 $${pool.tokenSymbol} is NOW LIVE on ${chainName}!
 
 Liquidity added on Uniswap V2
-${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ETH
+${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ${nativeTokenSymbol}
 
 BUY NOW: ${uniswapUrl}
 Chart: ${dexscreenerUrl}
@@ -116,9 +147,9 @@ Contract: ${pool.tokenAddress}`
             {isWithdrawal ? 'Liquidity Removed Successfully!' : 'Liquidity Added Successfully!'}
           </h2>
           <p className="text-green-200 text-lg">
-            {isWithdrawal 
-              ? `Your liquidity has been removed from the ${pool.tokenSymbol}/ETH pool on Uniswap V2.`
-              : `Your liquidity has been added to the ${pool.tokenSymbol}/ETH pool on Uniswap V2.`
+            {isWithdrawal
+              ? `Your liquidity has been removed from the ${pool.tokenSymbol}/${nativeTokenSymbol} pool on Uniswap V2.`
+              : `Your liquidity has been added to the ${pool.tokenSymbol}/${nativeTokenSymbol} pool on Uniswap V2.`
             }
           </p>
         </div>
@@ -136,7 +167,7 @@ Contract: ${pool.tokenAddress}`
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-400">{pool.ethAmount}</div>
-                  <div className="text-sm text-gray-400">ETH</div>
+                  <div className="text-sm text-gray-400">{nativeTokenSymbol}</div>
                 </div>
               </div>
             </div>
@@ -156,11 +187,12 @@ Contract: ${pool.tokenAddress}`
                 </div>
                 <motion.button
                   onClick={handleCopyAddress}
+                  aria-label="Copy LP token address"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 flex items-center space-x-2 ${
-                    isCopied 
-                      ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+                  className={`px-4 py-2 min-h-[44px] rounded-lg font-medium text-sm transition-all duration-300 flex items-center space-x-2 cursor-pointer ${
+                    isCopied
+                      ? 'bg-green-500/20 text-green-300 border border-green-500/30'
                       : 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30'
                   }`}
                   disabled={!pool.lpTokenAddress}
@@ -227,6 +259,7 @@ Contract: ${pool.tokenAddress}`
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackShare('twitter')}
+                aria-label="Share liquidity addition on Twitter"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-all"
@@ -251,6 +284,7 @@ Contract: ${pool.tokenAddress}`
                   handleCopyShareMessage()
                   trackShare('copy_message')
                 }}
+                aria-label="Copy share message for Telegram or Discord"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all ${
@@ -317,7 +351,7 @@ Contract: ${pool.tokenAddress}`
             rel="noopener noreferrer"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 text-base font-medium rounded-xl border border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 transition-all duration-300 flex items-center justify-center space-x-2"
+            className="w-full py-3 min-h-[44px] text-base font-medium rounded-xl border border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 transition-all duration-300 flex items-center justify-center space-x-2"
           >
             <span>View Transaction</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,9 +361,10 @@ Contract: ${pool.tokenAddress}`
           
           <motion.button
             onClick={onClose}
+            aria-label="Close success modal"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 text-base font-medium rounded-xl text-gray-400 hover:text-white transition-colors"
+            className="w-full py-3 min-h-[44px] text-base font-medium rounded-xl text-gray-400 hover:text-white transition-colors cursor-pointer"
           >
             Close
           </motion.button>

@@ -61,14 +61,182 @@ export const monad = defineChain({
 })
 
 /**
+ * Monad Testnet Chain Definition
+ * Testnet for Monad L1
+ */
+export const monadTestnet = defineChain({
+  id: 10143,
+  name: 'Monad Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Monad',
+    symbol: 'MON',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://testnet-rpc.monad.xyz'],
+      webSocket: ['wss://testnet-rpc.monad.xyz'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'MonadScan Testnet',
+      url: 'https://testnet.monadscan.com',
+      apiUrl: 'https://api-testnet.monadscan.com/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
+  testnet: true,
+})
+
+/**
+ * MegaETH Mainnet Chain Definition
+ * Real-time Ethereum L2 with 100,000 TPS and sub-10ms block times
+ * Launched: February 9, 2026
+ * Backed by Paradigm and Vitalik Buterin
+ */
+export const megaeth = defineChain({
+  id: 4326,
+  name: 'MegaETH',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://carrot.megaeth.com/rpc'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'MegaScan',
+      url: 'https://mega.etherscan.io',
+      apiUrl: 'https://api.mega.etherscan.io/api',
+    },
+    blockscout: {
+      name: 'Blockscout',
+      url: 'https://megaeth.blockscout.com',
+      apiUrl: 'https://megaeth.blockscout.com/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
+})
+
+/**
+ * MegaETH Testnet Chain Definition
+ * Testnet for MegaETH L2 - Real-time blockchain with 10ms blocks
+ */
+export const megaethTestnet = defineChain({
+  id: 6342,
+  name: 'MegaETH Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://carrot.megaeth.com/rpc'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'MegaScan Testnet',
+      url: 'https://testnet-mega.etherscan.io',
+      apiUrl: 'https://api-testnet.mega.etherscan.io/api',
+    },
+    blockscout: {
+      name: 'Blockscout Testnet',
+      url: 'https://megaeth-testnet-v2.blockscout.com',
+      apiUrl: 'https://megaeth-testnet-v2.blockscout.com/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
+  testnet: true,
+})
+
+/**
+ * Robinhood Chain Mainnet Definition
+ * Arbitrum Orbit L2 with ETH as gas token
+ * Launched: July 1, 2026
+ */
+export const robinhoodChain = defineChain({
+  id: 4663,
+  name: 'Robinhood Chain',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.mainnet.chain.robinhood.com'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Blockscout',
+      url: 'https://robinhoodchain.blockscout.com',
+      apiUrl: 'https://robinhoodchain.blockscout.com/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
+})
+
+/**
+ * Robinhood Chain Testnet Definition
+ */
+export const robinhoodChainTestnet = defineChain({
+  id: 46630,
+  name: 'Robinhood Chain Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.chain.robinhood.com'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Blockscout Testnet',
+      url: 'https://explorer.testnet.chain.robinhood.com',
+      apiUrl: 'https://explorer.testnet.chain.robinhood.com/api',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
+  testnet: true,
+})
+
+/**
  * DEX Protocol Support for a chain
  */
 export interface DexConfig {
   uniswapV2Factory?: string
   uniswapV2Router?: string
-  uniswapV3Factory?: string
-  uniswapV3Router?: string
-  uniswapV3QuoterV2?: string
   sushiswapFactory?: string
   sushiswapRouter?: string
   pancakeswapFactory?: string
@@ -90,6 +258,7 @@ export interface ExplorerConfig {
   url: string
   apiUrl: string
   apiKeyEnvVar?: string // Environment variable name for API key
+  type?: 'etherscan' | 'blockscout' // Explorer API type (defaults to 'etherscan')
 }
 
 /**
@@ -118,14 +287,16 @@ export interface ChainConfig extends Chain {
   // Feature Flags
   features: {
     tokenDeployment: boolean // Can deploy ERC20 tokens
-    uniswapV2: boolean // Has Uniswap V2 liquidity support
-    uniswapV3: boolean // Has Uniswap V3 liquidity support
+    hasV2Liquidity: boolean // Has V2-style DEX liquidity support (Uniswap V2, PancakeSwap, QuickSwap, etc.)
     hasMultipleDex: boolean // Multiple DEX options available
   }
 
   // Category
   category: 'mainnet' | 'testnet'
   layer: 'L1' | 'L2' | 'sidechain' | 'parachain'
+
+  // Trending status
+  trending?: boolean
 }
 
 /**
@@ -146,9 +317,6 @@ export const ethereumMainnetConfig: ChainConfig = {
   dex: {
     uniswapV2Factory: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
     uniswapV2Router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-    uniswapV3Factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-    uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
-    uniswapV3QuoterV2: '0x61fFE014bA17989E743c5F6cB21bF9697530B21e',
     sushiswapFactory: '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac',
     sushiswapRouter: '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F',
   },
@@ -165,8 +333,8 @@ export const ethereumMainnetConfig: ChainConfig = {
   rpcEnvVar: 'VITE_ETHEREUM_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: true,
+    hasV2Liquidity: true,
+
     hasMultipleDex: true,
   },
   category: 'mainnet',
@@ -196,8 +364,8 @@ export const sepoliaConfig: ChainConfig = {
   rpcEnvVar: 'VITE_ETHEREUM_SEPOLIA_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: false,
+    hasV2Liquidity: true,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -217,8 +385,6 @@ export const baseConfig: ChainConfig = {
   dex: {
     uniswapV2Factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
     uniswapV2Router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
-    uniswapV3Factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
-    uniswapV3Router: '0x2626664c2603336E57B271c5C0b26F421741e481',
     sushiswapFactory: '0x71524B4f93c58fcbF659783284E38825f0622859',
     sushiswapRouter: '0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891',
   },
@@ -235,8 +401,8 @@ export const baseConfig: ChainConfig = {
   rpcEnvVar: 'VITE_BASE_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: true,
+    hasV2Liquidity: true,
+
     hasMultipleDex: true,
   },
   category: 'mainnet',
@@ -265,8 +431,8 @@ export const baseSepoliaConfig: ChainConfig = {
   rpcEnvVar: 'VITE_BASE_SEPOLIA_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -287,8 +453,6 @@ export const arbitrumConfig: ChainConfig = {
   dex: {
     uniswapV2Factory: '0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9',
     uniswapV2Router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
-    uniswapV3Factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-    uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
     sushiswapFactory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
     sushiswapRouter: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
   },
@@ -305,8 +469,8 @@ export const arbitrumConfig: ChainConfig = {
   rpcEnvVar: 'VITE_ARBITRUM_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: true,
+    hasV2Liquidity: true,
+
     hasMultipleDex: true,
   },
   category: 'mainnet',
@@ -333,8 +497,8 @@ export const arbitrumSepoliaConfig: ChainConfig = {
   rpcEnvVar: 'VITE_ARBITRUM_SEPOLIA_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -355,8 +519,6 @@ export const optimismConfig: ChainConfig = {
   dex: {
     uniswapV2Factory: '0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf',
     uniswapV2Router: '0x4A7b5Da61326A6379179b40d00F57E5bbDC962c2',
-    uniswapV3Factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-    uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
   },
   explorer: {
     name: 'Optimistic Etherscan',
@@ -371,8 +533,8 @@ export const optimismConfig: ChainConfig = {
   rpcEnvVar: 'VITE_OPTIMISM_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true, // Now has V2!
-    uniswapV3: true,
+    hasV2Liquidity: true, // Now has V2!
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
@@ -399,8 +561,8 @@ export const optimismSepoliaConfig: ChainConfig = {
   rpcEnvVar: 'VITE_OPTIMISM_SEPOLIA_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -418,8 +580,6 @@ export const polygonConfig: ChainConfig = {
   gradient: 'from-purple-600 to-purple-400',
   weth: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', // WETH on Polygon
   dex: {
-    uniswapV3Factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-    uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
     quickswapFactory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
     quickswapRouter: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff',
     sushiswapFactory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4',
@@ -438,8 +598,7 @@ export const polygonConfig: ChainConfig = {
   rpcEnvVar: 'VITE_POLYGON_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: true,
+    hasV2Liquidity: true, // Via QuickSwap + SushiSwap (V2-style)
     hasMultipleDex: true,
   },
   category: 'mainnet',
@@ -466,8 +625,8 @@ export const polygonAmoyConfig: ChainConfig = {
   rpcEnvVar: 'VITE_POLYGON_AMOY_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -502,8 +661,8 @@ export const bscConfig: ChainConfig = {
   rpcEnvVar: 'VITE_BSC_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true, // PancakeSwap uses V2 model
-    uniswapV3: false,
+    hasV2Liquidity: true, // PancakeSwap uses V2 model
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
@@ -533,8 +692,8 @@ export const bscTestnetConfig: ChainConfig = {
   rpcEnvVar: 'VITE_BSC_TESTNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: false,
+    hasV2Liquidity: true,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -568,8 +727,8 @@ export const avalancheConfig: ChainConfig = {
   rpcEnvVar: 'VITE_AVALANCHE_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true, // Trader Joe uses V2 model
-    uniswapV3: false,
+    hasV2Liquidity: true, // Trader Joe uses V2 model
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
@@ -596,8 +755,8 @@ export const avalancheFujiConfig: ChainConfig = {
   rpcEnvVar: 'VITE_AVALANCHE_FUJI_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -631,8 +790,8 @@ export const fantomConfig: ChainConfig = {
   rpcEnvVar: 'VITE_FANTOM_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: false,
+    hasV2Liquidity: true,
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
@@ -666,8 +825,8 @@ export const gnosisConfig: ChainConfig = {
   rpcEnvVar: 'VITE_GNOSIS_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true, // Via SushiSwap V2
-    uniswapV3: false,
+    hasV2Liquidity: true, // Via SushiSwap V2
+
     hasMultipleDex: true,
   },
   category: 'mainnet',
@@ -701,8 +860,8 @@ export const moonbeamConfig: ChainConfig = {
   rpcEnvVar: 'VITE_MOONBEAM_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true, // Via SushiSwap V2
-    uniswapV3: false,
+    hasV2Liquidity: true, // Via SushiSwap V2
+
     hasMultipleDex: true,
   },
   category: 'mainnet',
@@ -729,8 +888,8 @@ export const moonbaseAlphaConfig: ChainConfig = {
   rpcEnvVar: 'VITE_MOONBASE_ALPHA_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -764,8 +923,8 @@ export const worldchainConfig: ChainConfig = {
   rpcEnvVar: 'VITE_WORLDCHAIN_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: true,
+    hasV2Liquidity: true,
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
@@ -799,8 +958,8 @@ export const blastConfig: ChainConfig = {
   rpcEnvVar: 'VITE_BLAST_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: true,
+    hasV2Liquidity: true,
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
@@ -827,8 +986,8 @@ export const blastSepoliaConfig: ChainConfig = {
   rpcEnvVar: 'VITE_BLAST_SEPOLIA_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: false,
-    uniswapV3: false,
+    hasV2Liquidity: false,
+
     hasMultipleDex: false,
   },
   category: 'testnet',
@@ -862,12 +1021,164 @@ export const monadConfig: ChainConfig = {
   rpcEnvVar: 'VITE_MONAD_MAINNET_RPC',
   features: {
     tokenDeployment: true,
-    uniswapV2: true,
-    uniswapV3: false,
+    hasV2Liquidity: true,
+
     hasMultipleDex: false,
   },
   category: 'mainnet',
   layer: 'L1',
+}
+
+export const monadTestnetConfig: ChainConfig = {
+  ...monadTestnet,
+  icon: '🟣',
+  color: '#836EF9',
+  gradient: 'from-purple-500 to-indigo-600',
+  weth: '0x0000000000000000000000000000000000000000', // TODO: Update when WMON testnet is available
+  dex: {
+    // TODO: Update when DEX is available on testnet
+  },
+  explorer: {
+    name: 'MonadScan Testnet',
+    url: 'https://testnet.monadscan.com',
+    apiUrl: 'https://api-testnet.monadscan.com/api',
+    apiKeyEnvVar: 'VITE_ETHERSCAN_API_KEY', // Uses Etherscan V2 unified API
+  },
+  rpcUrls: {
+    default: { http: ['https://testnet-rpc.monad.xyz'] },
+    public: { http: ['https://testnet-rpc.monad.xyz'] },
+  },
+  rpcEnvVar: 'VITE_MONAD_TESTNET_RPC',
+  features: {
+    tokenDeployment: true,
+    hasV2Liquidity: false, // Not available on testnet yet
+
+    hasMultipleDex: false,
+  },
+  category: 'testnet',
+  layer: 'L1',
+}
+
+// ============================================================================
+// MEGAETH - Real-Time Ethereum L2
+// ============================================================================
+
+export const megaethConfig: ChainConfig = {
+  ...megaeth,
+  icon: '⚡',
+  color: '#00D4FF',
+  gradient: 'from-cyan-400 via-blue-500 to-purple-600',
+  weth: '0x4200000000000000000000000000000000000006', // WETH9 on MegaETH
+  dex: {},
+  explorer: {
+    name: 'MegaScan',
+    url: 'https://mega.etherscan.io',
+    apiUrl: 'https://api.mega.etherscan.io/api',
+    apiKeyEnvVar: 'VITE_ETHERSCAN_API_KEY', // Uses Etherscan infrastructure
+  },
+  rpcUrls: {
+    default: { http: ['https://carrot.megaeth.com/rpc'] },
+    public: { http: ['https://carrot.megaeth.com/rpc'] },
+  },
+  rpcEnvVar: 'VITE_MEGAETH_MAINNET_RPC',
+  features: {
+    tokenDeployment: true,
+    hasV2Liquidity: false,
+    hasMultipleDex: false,
+  },
+  category: 'mainnet',
+  layer: 'L2',
+}
+
+export const megaethTestnetConfig: ChainConfig = {
+  ...megaethTestnet,
+  icon: '⚡',
+  color: '#00D4FF',
+  gradient: 'from-cyan-300 via-blue-400 to-purple-500',
+  weth: '0x4200000000000000000000000000000000000006', // WETH9 on MegaETH Testnet
+  dex: {},
+  explorer: {
+    name: 'MegaScan Testnet',
+    url: 'https://testnet-mega.etherscan.io',
+    apiUrl: 'https://api-testnet.mega.etherscan.io/api',
+    apiKeyEnvVar: 'VITE_ETHERSCAN_API_KEY',
+  },
+  rpcUrls: {
+    default: { http: ['https://carrot.megaeth.com/rpc'] },
+    public: { http: ['https://carrot.megaeth.com/rpc'] },
+  },
+  rpcEnvVar: 'VITE_MEGAETH_TESTNET_RPC',
+  features: {
+    tokenDeployment: true,
+    hasV2Liquidity: false,
+    hasMultipleDex: false,
+  },
+  category: 'testnet',
+  layer: 'L2',
+}
+
+// ============================================================================
+// ROBINHOOD CHAIN - Arbitrum Orbit L2
+// ============================================================================
+
+export const robinhoodChainConfig: ChainConfig = {
+  ...robinhoodChain,
+  icon: '🪶',
+  color: '#00C805',
+  gradient: 'from-green-500 to-emerald-400',
+  trending: true,
+  weth: '0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73',
+  dex: {
+    uniswapV2Factory: '0x8bcEaA40B9AcdfAedF85AdF4FF01F5Ad6517937f',
+    uniswapV2Router: '0x89e5DB8B5aA49aA85AC63f691524311AEB649eba',
+  },
+  explorer: {
+    name: 'Blockscout',
+    url: 'https://robinhoodchain.blockscout.com',
+    apiUrl: 'https://robinhoodchain.blockscout.com/api',
+    type: 'blockscout',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.mainnet.chain.robinhood.com'] },
+    public: { http: ['https://rpc.mainnet.chain.robinhood.com'] },
+  },
+  rpcEnvVar: 'VITE_ROBINHOOD_MAINNET_RPC',
+  features: {
+    tokenDeployment: true,
+    hasV2Liquidity: true,
+
+    hasMultipleDex: false,
+  },
+  category: 'mainnet',
+  layer: 'L2',
+}
+
+export const robinhoodChainTestnetConfig: ChainConfig = {
+  ...robinhoodChainTestnet,
+  icon: '🪶',
+  color: '#00C805',
+  gradient: 'from-green-400 to-emerald-300',
+  weth: '0x7943e237c7F95DA44E0301572D358911207852Fa',
+  dex: {},
+  explorer: {
+    name: 'Blockscout Testnet',
+    url: 'https://explorer.testnet.chain.robinhood.com',
+    apiUrl: 'https://explorer.testnet.chain.robinhood.com/api',
+    type: 'blockscout',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.testnet.chain.robinhood.com'] },
+    public: { http: ['https://rpc.testnet.chain.robinhood.com'] },
+  },
+  rpcEnvVar: 'VITE_ROBINHOOD_TESTNET_RPC',
+  features: {
+    tokenDeployment: true,
+    hasV2Liquidity: false,
+
+    hasMultipleDex: false,
+  },
+  category: 'testnet',
+  layer: 'L2',
 }
 
 // ============================================================================
@@ -882,6 +1193,8 @@ export const ALL_CHAINS: ChainConfig[] = [
   ethereumMainnetConfig,
   baseConfig,
   monadConfig,
+  megaethConfig,
+  robinhoodChainConfig,
   bscConfig,
   arbitrumConfig,
   optimismConfig,
@@ -903,6 +1216,9 @@ export const ALL_CHAINS: ChainConfig[] = [
   avalancheFujiConfig,
   moonbaseAlphaConfig,
   blastSepoliaConfig,
+  monadTestnetConfig,
+  megaethTestnetConfig,
+  robinhoodChainTestnetConfig,
 ]
 
 /**
@@ -918,12 +1234,8 @@ export const TESTNET_CHAINS = ALL_CHAINS.filter(chain => chain.category === 'tes
 /**
  * Chains with Uniswap V2 support
  */
-export const UNISWAP_V2_CHAINS = ALL_CHAINS.filter(chain => chain.features.uniswapV2)
+export const V2_LIQUIDITY_CHAINS = ALL_CHAINS.filter(chain => chain.features.hasV2Liquidity)
 
-/**
- * Chains with Uniswap V3 support
- */
-export const UNISWAP_V3_CHAINS = ALL_CHAINS.filter(chain => chain.features.uniswapV3)
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -1002,9 +1314,9 @@ export function getTokenUrl(chainId: number, tokenAddress: string): string {
 /**
  * Check if chain has Uniswap V2 support
  */
-export function hasUniswapV2(chainId: number): boolean {
+export function hasV2Liquidity(chainId: number): boolean {
   const chain = getChainById(chainId)
-  return chain?.features.uniswapV2 || false
+  return chain?.features.hasV2Liquidity || false
 }
 
 /**
@@ -1012,7 +1324,7 @@ export function hasUniswapV2(chainId: number): boolean {
  */
 export function hasDexSupport(chainId: number): boolean {
   const chain = getChainById(chainId)
-  return chain?.features.uniswapV2 || chain?.features.uniswapV3 || chain?.features.hasMultipleDex || false
+  return chain?.features.hasV2Liquidity || chain?.features.hasMultipleDex || false
 }
 
 /**
@@ -1065,6 +1377,8 @@ export const CHAIN_FEES: Record<number, string> = {
   10: '0.02',        // Optimism
   480: '0.02',       // World Chain
   81457: '0.02',     // Blast
+  4326: '0.02',      // MegaETH Mainnet
+  4663: '0.02',      // Robinhood Chain
 
   // BNB chain
   56: '0.075',       // BSC Mainnet
@@ -1085,16 +1399,27 @@ export const CHAIN_FEES: Record<number, string> = {
   1284: '450',       // Moonbeam
 
   // Monad chain (MON ≈ $0.035)
-  143: '2000',       // Monad Mainnet (~$70)
+  143: '0.1',        // Monad Mainnet (testing)
 
   // Testnets (much lower fees for testing)
   11155111: '0.001', // Sepolia
-  84532: '0.001',    // Base Sepolia
+  84532: '0.000001', // Base Sepolia (minimal fee for testing)
   421614: '0.001',   // Arbitrum Sepolia
   11155420: '0.001', // Optimism Sepolia
   80002: '1',        // Polygon Amoy (1 MATIC for testing)
   1287: '10',        // Moonbase Alpha (10 DEV for testing)
   168587773: '0.001', // Blast Sepolia
+  10143: '0.001',    // Monad Testnet
+  6342: '0.001',     // MegaETH Testnet
+  46630: '0.001',    // Robinhood Chain Testnet
+}
+
+/**
+ * Check if free mode is enabled (for testing)
+ * Set VITE_FREE_MODE=true in .env to deploy tokens without fees
+ */
+export function isFreeMode(): boolean {
+  return import.meta.env.VITE_FREE_MODE === 'true'
 }
 
 /**
@@ -1103,6 +1428,10 @@ export const CHAIN_FEES: Record<number, string> = {
  * @returns Fee amount as string (in native token units)
  */
 export function getDeploymentFee(chainId: number): string {
+  // Free mode for testing - no fees
+  if (isFreeMode()) {
+    return '0'
+  }
   return CHAIN_FEES[chainId] || '0.02' // Default fallback
 }
 
@@ -1114,7 +1443,7 @@ export function getDeploymentFee(chainId: number): string {
 export function getDeploymentFeeUSD(chainId: number): number {
   // Approximate USD values (update periodically)
   const usdValues: Record<number, number> = {
-    1: 80, 8453: 80, 42161: 80, 10: 80, 480: 80, 81457: 80,  // ETH chains
+    1: 80, 8453: 80, 42161: 80, 10: 80, 480: 80, 81457: 80, 4326: 80, 4663: 80,  // ETH chains
     56: 82.5,                             // BSC
     137: 80,                              // Polygon
     43114: 80,                            // Avalanche
@@ -1123,7 +1452,7 @@ export function getDeploymentFeeUSD(chainId: number): number {
     1284: 81,                             // Moonbeam
     143: 70,                              // Monad
     // Testnets
-    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2, 1287: 1.8, 168587773: 4,
+    11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2, 1287: 1.8, 168587773: 4, 10143: 0, 6342: 4, 46630: 4,
   }
   return usdValues[chainId] || 80 // Default $80
 }

@@ -8,7 +8,7 @@ import {
   getTxUrl,
   getAddressUrl,
   getTokenUrl,
-  hasUniswapV2,
+  hasV2Liquidity,
   hasDexSupport,
   isChainSupported,
   getRpcUrl,
@@ -63,7 +63,7 @@ export function useChainConfig() {
   /**
    * Check if chain has Uniswap V2
    */
-  const hasV2 = hasUniswapV2(chainId)
+  const hasV2 = hasV2Liquidity(chainId)
 
   /**
    * Check if chain has any DEX support
@@ -165,7 +165,6 @@ export function useChainConfig() {
     if (!dexContracts) return null
 
     if (dexContracts.uniswapV2Factory) return 'Uniswap V2'
-    if (dexContracts.uniswapV3Factory) return 'Uniswap V3'
     if (dexContracts.pancakeswapFactory) return 'PancakeSwap'
     if (dexContracts.quickswapFactory) return 'QuickSwap'
     if (dexContracts.traderJoeFactory) return 'Trader Joe'
@@ -312,6 +311,8 @@ function getDexScreenerSlug(chainId: number): string | null {
       return 'avalanche'
     case 250:
       return 'fantom'
+    case 4663:
+      return 'robinhoodchain'
     default:
       return null
   }
@@ -325,7 +326,7 @@ export function useSpecificChainConfig(specificChainId: number) {
   const name = getChainName(specificChainId)
   const isSupported = isChainSupported(specificChainId)
   const dexContracts = getDexContracts(specificChainId)
-  const hasV2 = hasUniswapV2(specificChainId)
+  const hasV2 = hasV2Liquidity(specificChainId)
   const hasDex = hasDexSupport(specificChainId)
 
   return {

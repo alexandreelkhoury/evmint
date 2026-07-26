@@ -1,5 +1,5 @@
 import { loggers } from '../utils/logger'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwitchChain, useChainId } from 'wagmi'
 import { ALL_CHAINS, MAINNET_CHAINS, TESTNET_CHAINS, type ChainConfig } from '../config/chains'
@@ -7,7 +7,9 @@ import { useChainConfig } from '../hooks/useChainConfig'
 import ChainBadge from './ChainBadge'
 import ChainIcon from './ChainIcon'
 import { useFirebaseAnalytics } from './FirebaseProvider'
-import { logEvent as firebaseLogEvent } from 'firebase/analytics'
+import { logEvent } from '../utils/analytics'
+import { useScrollLock } from '../hooks/useScrollLock'
+import CloseButton from './CloseButton'
 
 interface ChainSelectorModalProps {
   isOpen: boolean
@@ -31,10 +33,65 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
   const { switchChain, isPending } = useSwitchChain()
   const { name: currentChainName } = useChainConfig()
   const analytics = useFirebaseAnalytics()
+  const modalRef = useRef<HTMLDivElement>(null)
+
+
+  // Lock body scroll when modal is open
+  useScrollLock(isOpen)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [filterTab, setFilterTab] = useState<'all' | 'mainnet' | 'testnet'>('all')
   const [switchingTo, setSwitchingTo] = useState<number | null>(null)
+
+  // ESC key handler - WCAG requirement
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscape)
+      return () => window.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen, onClose])
+
+  // Focus trap - WCAG requirement
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return
+
+    const modal = modalRef.current
+    const focusableElements = modal.querySelectorAll(
+      'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+    const firstElement = focusableElements[0] as HTMLElement
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement
+
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault()
+          lastElement?.focus()
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault()
+          firstElement?.focus()
+        }
+      }
+    }
+
+    modal.addEventListener('keydown', handleTab)
+
+    // Focus first focusable element when modal opens
+    const firstFocusable = modal.querySelector<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+    setTimeout(() => firstFocusable?.focus(), 100)
+
+    return () => modal.removeEventListener('keydown', handleTab)
+  }, [isOpen])
 
   // Filter chains based on search and tab
   const filteredChains = useMemo(() => {
@@ -70,16 +127,14 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
     try {
       setSwitchingTo(chain.id)
 
-      // Log analytics
-      if (analytics) {
-        firebaseLogEvent(analytics, 'chain_switched', {
-          from_chain: currentChainName,
-          from_chain_id: currentChainId,
-          to_chain: chain.name,
-          to_chain_id: chain.id,
-          method: 'modal_selector',
-        })
-      }
+      // Log analytics - will queue if analytics not ready yet
+      logEvent(analytics!, 'chain_switched', {
+        from_chain: currentChainName,
+        from_chain_id: currentChainId,
+        to_chain: chain.name,
+        to_chain_id: chain.id,
+        method: 'modal_selector',
+      })
 
       await switchChain({ chainId: chain.id })
 
@@ -98,7 +153,12 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="chain-selector-title"
+        >
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -110,6 +170,7 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
 
           {/* Modal */}
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -119,17 +180,13 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
               {/* Header */}
               <div className="p-6 border-b border-gray-700">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+                  <h2 id="chain-selector-title" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
                     Select Network
                   </h2>
-                  <button
+                  <CloseButton
                     onClick={onClose}
-                    className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-800 rounded-lg"
-                  >
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                    ariaLabel="Close network selector (ESC)"
+                  />
                 </div>
 
                 {/* Search Bar */}
@@ -234,7 +291,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
         active
           ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
           : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
@@ -259,7 +316,7 @@ function ChainCard({
   isSwitching: boolean
   onClick: () => void
 }) {
-  const hasLiquidity = chain.features.uniswapV2 || chain.features.uniswapV3 || chain.features.hasMultipleDex
+  const hasLiquidity = chain.features.hasV2Liquidity || chain.features.hasMultipleDex
 
   return (
     <motion.button
@@ -270,6 +327,8 @@ function ChainCard({
       className={`relative p-4 rounded-xl border-2 text-left transition-all ${
         isActive
           ? 'border-green-500 bg-green-500/10'
+          : chain.trending
+          ? 'border-orange-500/40 bg-gradient-to-br from-orange-500/[0.07] to-transparent hover:border-orange-400/60 hover:shadow-lg hover:shadow-orange-500/10'
           : 'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800'
       } ${isSwitching ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
     >
@@ -279,6 +338,15 @@ function ChainCard({
           <span className="flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+          </span>
+        </div>
+      )}
+
+      {/* Trending Badge */}
+      {chain.trending && !isActive && (
+        <div className="absolute top-3 right-3">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/15 border border-orange-500/30 text-[10px] font-bold text-orange-400 uppercase tracking-wide">
+            <span>🔥</span> Hot
           </span>
         </div>
       )}

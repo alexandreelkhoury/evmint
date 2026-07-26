@@ -1,0 +1,55 @@
+# EVMint — Multi-Chain EVM Token Launcher
+
+> EVMint is a no-code platform for creating and deploying ERC-20 tokens on 15+ EVM blockchains. Users connect a wallet, fill in token details (name, symbol, supply), and deploy in under 60 seconds. Contracts are automatically verified on block explorers. Liquidity can be added via integrated DEXes (Uniswap V2, PancakeSwap, QuickSwap, SushiSwap, TraderJoe, SpookySwap).
+
+## Supported Chains
+
+- Ethereum (chain ID 1)
+- Base (chain ID 8453)
+- Arbitrum (chain ID 42161)
+- Optimism (chain ID 10)
+- Robinhood Chain (chain ID 4663) — trending, most token launches
+- MegaETH (chain ID 4326)
+- BSC / BNB Smart Chain (chain ID 56)
+- Polygon (chain ID 137)
+- Avalanche (chain ID 43114)
+- Monad (chain ID 143)
+- Fantom (chain ID 250)
+- Gnosis (chain ID 100)
+- Moonbeam (chain ID 1284)
+- World Chain (chain ID 480)
+- Blast (chain ID 81457)
+
+## How It Works
+
+1. Connect your Web3 wallet (MetaMask, Coinbase Wallet, WalletConnect, or Privy embedded wallet)
+2. Choose a blockchain network
+3. Enter token name, symbol, and total supply
+4. Click "Create Token" — one transaction deploys and verifies the contract
+5. Optionally add liquidity on the chain's DEX
+
+## Pricing
+
+~$80 equivalent per deployment on any chain, paid in the chain's native token. No platform fee, no subscription. Testnet deployments are near-free.
+
+## Key Features
+
+- No coding or Solidity knowledge required
+- OpenZeppelin-audited smart contract templates
+- Automatic source code verification on Etherscan, Basescan, Arbiscan, Blockscout, etc.
+- Built-in liquidity management (add/remove) via Uniswap V2 and compatible DEXes
+- 100% non-custodial — deployer owns the token contract
+- Works on desktop and mobile
+
+## Links
+
+- Website: https://evmint.io
+- Create a token: https://evmint.io/create
+- Add liquidity: https://evmint.io/liquidity
+- Guides: https://evmint.io/guides
+- FAQ: https://evmint.io/faq
+- Blog: https://evmint.io/blog
+
+## Sister Project
+
+For Solana (SPL) token creation, visit https://spltokenlauncher.pro — same team, same simplicity, for the Solana ecosystem.

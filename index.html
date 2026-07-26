@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary SEO Meta Tags - Revenue Optimized -->
-    <title>🚀 EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly</title>
-    <meta name="title" content="🚀 EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly" />
-    <meta name="description" content="⚡ Create ERC20 tokens on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding, ultra-low fees, instant deployment. Start your crypto project today with EVMint!" />
+    <title>EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly</title>
+    <meta name="title" content="EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly" />
+
+    <!-- Google Fonts for Typography System -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <meta name="description" content="Create ERC20 tokens on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding, ultra-low fees, instant deployment. Start your crypto project today with EVMint!" />
     <meta name="keywords" content="evmint, multi-chain token launcher, erc20 token generator, create cryptocurrency, evm blockchain, no code crypto, token launcher, defi token maker, ethereum token, base token, arbitrum, polygon, multi-chain deployment, cheap token deployment" />
     <meta name="author" content="EVMint" />
     <meta name="robots" content="index, follow" />
@@ -69,9 +72,11 @@
       "operatingSystem": "Web Browser",
       "offers": {
         "@type": "Offer",
-        "price": "0.50-15",
+        "price": "80",
         "priceCurrency": "USD",
-        "description": "Token creation cost in gas fees across multiple chains"
+        "availability": "https://schema.org/InStock",
+        "priceValidUntil": "2027-12-31",
+        "description": "~$80 equivalent per token deployment on any supported chain, paid in native token. Same price across all 15+ EVM networks."
       },
       "creator": {
         "@type": "Organization",
@@ -90,7 +95,35 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Instant splash screen — pure CSS, zero JS, replaced when React mounts -->
+      <div id="splash" style="
+        position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+        background:#111827;color:#fff;font-family:system-ui,sans-serif;
+        gap:28px;z-index:9999;
+      ">
+        <!-- Logo — inline SVG of the three hexagons -->
+        <div style="width:64px;height:50px;filter:drop-shadow(0 0 20px rgba(59,130,246,0.3));">
+          <svg viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="50">
+            <g transform="translate(50,0)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#06B6D4" opacity=".9"/></g>
+            <g transform="translate(10,40) scale(.9)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#A855F7" opacity=".85"/></g>
+            <g transform="translate(90,40) scale(.9)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#3B82F6" opacity=".9"/></g>
+          </svg>
+        </div>
+        <!-- Loading bar -->
+        <div style="width:160px;height:3px;background:#1f2937;border-radius:4px;overflow:hidden;">
+          <div style="
+            width:40%;height:100%;border-radius:4px;
+            background:linear-gradient(90deg,#06B6D4,#3B82F6,#A855F7);
+            animation:splash-slide 1.2s ease-in-out infinite;
+          "></div>
+        </div>
+        <style>
+          @keyframes splash-slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+          body{margin:0;background:#111827}
+        </style>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

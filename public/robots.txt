@@ -21,9 +21,6 @@ Disallow: /api/internal/
 # Sitemap for maximum crawl efficiency
 Sitemap: https://evmint.io/sitemap.xml
 
-# Optimized crawl settings for revenue pages
-Crawl-delay: 0.5
-
 # Premium bot treatment for major search engines
 User-agent: Googlebot
 Allow: /
@@ -52,9 +49,34 @@ Allow: /
 User-agent: TelegramBot
 Allow: /
 
+# AI crawlers and assistants
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 # Crypto-specific crawlers
 User-agent: CoinGeckoBot
 Allow: /
 
 User-agent: CoinMarketCapBot
 Allow: /
+
+# AI discoverability
+# See https://evmint.io/llms.txt for structured AI-readable site summary

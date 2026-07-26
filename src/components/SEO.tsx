@@ -7,12 +7,12 @@ interface SEOProps {
   canonical?: string
   ogImage?: string
   noIndex?: boolean
-  structuredData?: object
+  structuredData?: object | object[]
 }
 
 export default function SEO({
   title = "EVMint - Multi-Chain EVM Token Launcher | Deploy on 15+ Chains",
-  description = "🚀 Create ERC20 tokens on 15+ EVM blockchains instantly! No coding required. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. Ultra-low fees. Auto-verify. Start your crypto project today!",
+  description = "Create ERC20 tokens on 15+ EVM blockchains instantly! No coding required. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. Ultra-low fees. Auto-verify. Start your crypto project today! 🚀",
   keywords = "evmint, evm token creator, multi-chain token launcher, erc20 token generator, create cryptocurrency, meme coin creator, no code crypto, defi token maker, ethereum token, base token, arbitrum token, polygon token, bsc token, multi-chain deployment, cheap token deployment",
   canonical,
   ogImage = "/og-image.png",
@@ -63,7 +63,6 @@ export default function SEO({
       <meta property="og:image:alt" content="EVMint - Launch ERC20 tokens on 15+ EVM blockchains" />
       <meta property="og:site_name" content="EVMint" />
       <meta property="og:locale" content="en_US" />
-      <meta property="fb:app_id" content="your-facebook-app-id" />
 
       {/* Twitter / X */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -84,11 +83,19 @@ export default function SEO({
       <meta property="article:tag" content="DeFi" />
       <meta property="article:tag" content="Token Creator" />
 
-      {/* Structured Data */}
+      {/* Structured Data - supports single object or array of objects */}
       {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
+        Array.isArray(structuredData)
+          ? structuredData.map((data, index) => (
+              <script key={index} type="application/ld+json">
+                {JSON.stringify(data)}
+              </script>
+            ))
+          : (
+              <script type="application/ld+json">
+                {JSON.stringify(structuredData)}
+              </script>
+            )
       )}
     </Helmet>
   )

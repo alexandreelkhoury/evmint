@@ -136,6 +136,24 @@ export default function WalletButton() {
       case 168587773:
         return { name: 'Blast Sepolia', color: 'text-yellow-400', isBase: false, chainId: numChainId }
 
+      // Monad
+      case 143:
+        return { name: 'Monad', color: 'text-purple-400', isBase: false, chainId: numChainId }
+      case 10143:
+        return { name: 'Monad Testnet', color: 'text-purple-400', isBase: false, chainId: numChainId }
+
+      // MegaETH
+      case 4326:
+        return { name: 'MegaETH', color: 'text-cyan-400', isBase: false, chainId: numChainId }
+      case 6342:
+        return { name: 'MegaETH Testnet', color: 'text-cyan-400', isBase: false, chainId: numChainId }
+
+      // Robinhood Chain
+      case 4663:
+        return { name: 'Robinhood 🔥', color: 'text-orange-400', isBase: false, chainId: numChainId }
+      case 46630:
+        return { name: 'Robinhood Testnet', color: 'text-green-400', isBase: false, chainId: numChainId }
+
       default:
         return { name: numChainId ? `Chain ${numChainId}` : 'Unknown', color: 'text-gray-400', isBase: false, chainId: numChainId }
     }
@@ -195,9 +213,10 @@ export default function WalletButton() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className={`${colors.glassCard} px-2 sm:px-4 py-2 hover:border-white/30 transition-all duration-200 flex items-center space-x-2 sm:space-x-3 min-w-0 max-w-[140px] sm:max-w-none`}
+          className={`${colors.glassCard} px-2 sm:px-4 min-h-[44px] hover:border-white/30 transition-all duration-200 flex items-center space-x-2 sm:space-x-3 min-w-0 max-w-[140px] sm:max-w-none cursor-pointer`}
           aria-expanded={isDropdownOpen}
           aria-haspopup="true"
+          aria-label="Wallet menu"
         >
           {/* Wallet Avatar */}
           <div className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -303,10 +322,11 @@ export default function WalletButton() {
                         setIsNetworkModalOpen(true)
                         setIsDropdownOpen(false)
                       }}
-                      className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                      className="min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
                       title="Change Network"
+                      aria-label="Change Network"
                     >
-                      <svg className="w-4 h-4 text-gray-400 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-400 hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                       </svg>
                     </motion.button>
@@ -320,9 +340,10 @@ export default function WalletButton() {
                 <motion.button
                   whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
                   onClick={handleCopyAddress}
-                  className="w-full px-3 py-2 text-left text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-3"
+                  className="w-full px-3 min-h-[44px] text-left text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-3 cursor-pointer"
+                  aria-label={showCopiedFeedback ? 'Address copied' : 'Copy wallet address'}
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                   <span className="text-sm">{showCopiedFeedback ? 'Copied!' : 'Copy Address'}</span>
@@ -335,9 +356,10 @@ export default function WalletButton() {
                     setIsNetworkModalOpen(true)
                     setIsDropdownOpen(false)
                   }}
-                  className="w-full px-3 py-2 text-left text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex items-center space-x-3"
+                  className="w-full px-3 min-h-[44px] text-left text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex items-center space-x-3 cursor-pointer"
+                  aria-label="Change blockchain network"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                   </svg>
                   <span className="text-sm">Change Network</span>
@@ -347,14 +369,15 @@ export default function WalletButton() {
                 <motion.button
                   whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
                   onClick={() => {
-                    const explorerUrl = chainInfo?.isBase 
+                    const explorerUrl = chainInfo?.isBase
                       ? (currentChain?.id === 8453 ? `https://basescan.org/address/${walletAddress}` : `https://sepolia.basescan.org/address/${walletAddress}`)
                       : `https://etherscan.io/address/${walletAddress}`
                     window.open(explorerUrl, '_blank')
                   }}
-                  className="w-full px-3 py-2 text-left text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-3"
+                  className="w-full px-3 min-h-[44px] text-left text-white hover:bg-white/5 rounded-lg transition-colors flex items-center space-x-3 cursor-pointer"
+                  aria-label="View wallet on block explorer"
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                   <span className="text-sm">View on Explorer</span>
@@ -364,9 +387,10 @@ export default function WalletButton() {
                 <motion.button
                   whileHover={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
                   onClick={handleDisconnect}
-                  className="w-full px-3 py-2 text-left text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex items-center space-x-3"
+                  className="w-full px-3 min-h-[44px] text-left text-red-400 hover:bg-red-500/10 rounded-lg transition-colors flex items-center space-x-3 cursor-pointer"
+                  aria-label="Disconnect wallet"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                   <span className="text-sm">Disconnect Wallet</span>
@@ -394,7 +418,8 @@ export default function WalletButton() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       onClick={login}
-      className={`${colors.primaryButton} px-3 sm:px-4 py-2 text-sm sm:text-base`}
+      className={`${colors.primaryButton} px-3 sm:px-4 min-h-[44px] flex items-center text-sm sm:text-base cursor-pointer`}
+      aria-label="Connect wallet"
     >
       <div className="flex items-center space-x-1.5 sm:space-x-2">
         <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

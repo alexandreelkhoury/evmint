@@ -1,33 +1,36 @@
+import { useEffect } from 'react'
 import SEO from '../../components/SEO'
 import { layout } from '../../styles/designSystem'
-import { useHomePageLogic } from './hooks/useHomePageLogic'
+import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
+import { trackPageView } from '../../utils/analytics'
 import HeroSection from './components/HeroSection'
-import WhyEVMSection from './components/WhyEVMSection'
-import FeaturesSection from './components/FeaturesSection'
-import QuickStartForm from './components/QuickStartForm'
 import CTASection from './components/CTASection'
+import SocialProofSection from '../../components/SocialProofSection'
+// import TeamSection from '../../components/TeamSection'
+import ProblemSolutionSection from './components/ProblemSolutionSection'
+import HowItWorksSection from './components/HowItWorksSection'
+import PricingSection from './components/PricingSection'
 
 /**
- * HomePage - Slim orchestrator component
- * Composes all sections using extracted components and business logic hook
+ * HomePage - Conversion-optimized landing page
+ *
+ * Section Order (Optimized for Conversion):
+ * 1. Hero - Immediate value proposition + primary CTA
+ * 2. Social Proof - Build trust early (10,000+ launches)
+ * 3. Problem/Solution - Increase relatability & positioning (includes EVM vs alternatives comparison)
+ * 4. How It Works - Visual 3-step process (reduce complexity)
+ * 5. Pricing - Transparent cost breakdown (reduces friction)
+ * 6. Testimonials - Real user success stories
+ * 7. Team - Build credibility
+ * 8. Final CTA - Last chance conversion
  */
 export default function HomePage() {
-  // All business logic extracted to custom hook
-  const {
-    formData,
-    formErrors,
-    handleInputChange,
-    handleSubmit,
-    isCreating,
-    createdTokenAddress,
-    error,
-    authenticated,
-    isConnected,
-    isCorrectChain,
-    showSuccess,
-    handleCloseSuccess,
-    getNetworkName
-  } = useHomePageLogic()
+  const analytics = useFirebaseAnalytics()
+
+  // Track page view on mount
+  useEffect(() => {
+    trackPageView(analytics, 'home')
+  }, [analytics])
 
   // Structured data for SEO
   const homePageStructuredData = {
@@ -49,17 +52,10 @@ export default function HomePage() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "75-100",
+      "price": "80",
       "priceCurrency": "USD",
-      "description": "Multi-chain token deployment on 15+ EVM networks including Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, Fantom, Gnosis, Moonbeam, Blast, and Worldchain",
-      "priceValidUntil": "2025-12-31"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "2847",
-      "bestRating": "5",
-      "worstRating": "1"
+      "description": "~$80 equivalent per token deployment on any supported chain, paid in native token. Same price across all 15+ EVM networks.",
+      "priceValidUntil": "2027-12-31"
     },
     "featureList": [
       "🚀 5-second token deployment",
@@ -97,40 +93,33 @@ export default function HomePage() {
       </div>
 
       <SEO
-        title="🚀 EVMint - Multi-Chain Token Creator | Deploy on 15+ EVM Blockchains in 5 Seconds"
-        description="⚡ Create ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC & 10+ more EVM chains! No coding required, ultra-low fees, instant deployment. Launch meme coins, utility tokens, DeFi projects across multiple blockchains. 10,000+ successful launches!"
+        title="EVMint - Multi-Chain Token Creator | Deploy on 15+ EVM Blockchains in 5 Seconds"
+        description="Create ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC & 10+ more EVM chains! No coding required, ultra-low fees, instant deployment. Launch meme coins, utility tokens, DeFi projects across multiple blockchains. 10,000+ successful launches!"
         keywords="multi-chain token creator, evm token launcher, meme coin creator, erc20 token generator, create cryptocurrency, ethereum token, base token, arbitrum token, polygon token, bsc token, no code crypto, multi-chain deployment, defi token maker, layer 2 tokens, cross-chain token creator"
         canonical="/"
         structuredData={homePageStructuredData}
       />
 
       <div className={`relative z-10 ${layout.pageContainer} pb-20`}>
-        {/* Hero Section */}
+        {/* 1. Hero Section - Immediate value proposition */}
         <HeroSection />
 
-        {/* Why EVM Section */}
-        <WhyEVMSection />
+        {/* 2. Social Proof - Build trust early with 10,000+ launches */}
+        <SocialProofSection />
 
-        {/* Features Section */}
-        <FeaturesSection />
+        {/* 3. Problem/Solution - Increase relatability & positioning */}
+        <ProblemSolutionSection />
 
-        {/* Quick Start Form */}
-        <QuickStartForm
-          formData={formData}
-          formErrors={formErrors}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleSubmit}
-          handleCloseSuccess={handleCloseSuccess}
-          isCreating={isCreating}
-          createdTokenAddress={createdTokenAddress}
-          error={error}
-          authenticated={authenticated}
-          isCorrectChain={isCorrectChain}
-          showSuccess={showSuccess}
-          getNetworkName={getNetworkName}
-        />
+        {/* 4. How It Works - Visual 3-step process to reduce perceived complexity */}
+        <HowItWorksSection />
 
-        {/* Final CTA Section */}
+        {/* 5. Pricing - Transparent cost breakdown for trust & conversion */}
+        <PricingSection />
+
+        {/* 6. Team Section - Build credibility */}
+        {/* <TeamSection /> */}
+
+        {/* 8. Final CTA Section - Last chance conversion */}
         <CTASection />
       </div>
     </div>

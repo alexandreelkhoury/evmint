@@ -32,7 +32,9 @@ export default function SubmitButton({
           <p className={`${typography.bodyText} text-blue-200 mb-6`}>
             Connect your wallet to deploy tokens on any EVM blockchain and start creating your own cryptocurrency.
           </p>
-          <WalletButton />
+          <div className="flex justify-center">
+            <WalletButton />
+          </div>
         </div>
       </div>
     )

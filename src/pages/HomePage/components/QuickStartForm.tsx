@@ -98,7 +98,7 @@ export default function QuickStartForm({
                 animate={formInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
               >
-                <label className="block text-sm font-medium text-gray-300 mb-3">
+                <label htmlFor="quickTokenName" className="block text-sm font-medium text-gray-300 mb-3">
                   Token Name *
                 </label>
                 <div className="relative">
@@ -108,6 +108,7 @@ export default function QuickStartForm({
                     </svg>
                   </div>
                   <input
+                    id="quickTokenName"
                     type="text"
                     placeholder="e.g., My Awesome Token"
                     value={formData.name}
@@ -129,7 +130,7 @@ export default function QuickStartForm({
                 animate={formInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
               >
-                <label className="block text-sm font-medium text-gray-300 mb-3">
+                <label htmlFor="quickTokenSymbol" className="block text-sm font-medium text-gray-300 mb-3">
                   Symbol *
                 </label>
                 <div className="relative">
@@ -139,6 +140,7 @@ export default function QuickStartForm({
                     </svg>
                   </div>
                   <input
+                    id="quickTokenSymbol"
                     type="text"
                     placeholder="e.g., MAT"
                     value={formData.symbol}
@@ -160,7 +162,7 @@ export default function QuickStartForm({
                 animate={formInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.4, delay: 0.5 }}
               >
-                <label className="block text-sm font-medium text-gray-300 mb-3">
+                <label htmlFor="quickTokenDecimals" className="block text-sm font-medium text-gray-300 mb-3">
                   Decimals
                 </label>
                 <div className="relative">
@@ -170,6 +172,7 @@ export default function QuickStartForm({
                     </svg>
                   </div>
                   <input
+                    id="quickTokenDecimals"
                     type="number"
                     min={0}
                     max={18}
@@ -190,7 +193,7 @@ export default function QuickStartForm({
                 animate={formInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.4, delay: 0.6 }}
               >
-                <label className="block text-sm font-medium text-gray-300 mb-3">
+                <label htmlFor="quickTokenSupply" className="block text-sm font-medium text-gray-300 mb-3">
                   Total Supply *
                 </label>
                 <div className="relative">
@@ -200,6 +203,7 @@ export default function QuickStartForm({
                     </svg>
                   </div>
                   <input
+                    id="quickTokenSupply"
                     type="text"
                     placeholder="e.g., 1000000"
                     value={formData.totalSupply}
@@ -232,9 +236,11 @@ export default function QuickStartForm({
                     </div>
                     <h3 className="text-xl font-bold text-white mb-3">Connect Your Wallet</h3>
                     <p className="text-blue-200 mb-6">
-                      Connect your wallet to deploy tokens on Base blockchain and start creating your own cryptocurrency.
+                      Connect your wallet to deploy tokens on 15+ EVM chains and start creating your own cryptocurrency.
                     </p>
-                    <WalletButton />
+                    <div className="flex justify-center">
+                      <WalletButton />
+                    </div>
                   </div>
                 </div>
               ) : !isCorrectChain ? (
@@ -300,14 +306,14 @@ export default function QuickStartForm({
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <Link
                         to="/tokens"
-                        className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl font-medium text-white"
+                        className="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl font-medium text-white cursor-pointer"
                       >
                         <span>💎</span>
                         <span className="ml-2">View My Tokens</span>
                       </Link>
                       <button
                         onClick={handleCloseSuccess}
-                        className="inline-flex items-center justify-center px-6 py-3 bg-white/10 border border-white/20 rounded-xl font-medium text-white"
+                        className="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-white/10 border border-white/20 rounded-xl font-medium text-white cursor-pointer"
                       >
                         Create Another
                       </button>

@@ -1,6 +1,8 @@
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { colors } from '../../styles/designSystem'
+import { useScrollLock } from '../../hooks/useScrollLock'
+import { getChainName } from '../../config/chains'
 
 interface Token {
   address: string
@@ -42,6 +44,9 @@ export default function TransactionProgressModal({
   chainId,
   resetLoadingStates
 }: TransactionProgressModalProps) {
+  // Lock body scroll when modal is open
+  useScrollLock(isOpen)
+
   if (!isOpen) return null
 
   // Debug logging to see what data we have
@@ -220,7 +225,7 @@ export default function TransactionProgressModal({
                 <div className="text-sm text-green-300 mb-2">Pool Address:</div>
                 <div className="font-mono text-xs break-all text-gray-300">{poolAddress}</div>
                 <div className="text-xs text-gray-400 mt-2">Protocol: Uniswap V2</div>
-                <div className="text-xs text-gray-400">Network: {chainId === 8453 ? 'Base Mainnet' : 'Base Sepolia'}</div>
+                <div className="text-xs text-gray-400">Network: {chainId ? getChainName(chainId) : 'Unknown'}</div>
               </div>
             )}
 

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  
-  <!-- 🚀 REVENUE PAGES - Maximum Priority for Business Growth -->
-  
+
+  <!-- REVENUE PAGES - Maximum Priority for Business Growth -->
+
   <!-- Homepage - Gateway to Revenue -->
   <url>
     <loc>https://evmint.io/</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -17,17 +17,17 @@
   <!-- Create Token - PRIMARY REVENUE PAGE -->
   <url>
     <loc>https://evmint.io/create</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
-  <!-- 📚 CONTENT PAGES - SEO Traffic Magnets -->
+  <!-- CONTENT PAGES - SEO Traffic Magnets -->
 
   <!-- Guides - Educational Content for SEO -->
   <url>
     <loc>https://evmint.io/guides</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -35,17 +35,17 @@
   <!-- FAQ - Support & Long-tail Keywords -->
   <url>
     <loc>https://evmint.io/faq</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
-  <!-- 💎 USER ENGAGEMENT PAGES -->
+  <!-- USER ENGAGEMENT PAGES -->
 
   <!-- Token Portfolio - User Retention -->
   <url>
     <loc>https://evmint.io/tokens</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -53,17 +53,17 @@
   <!-- Liquidity Management - Advanced Features -->
   <url>
     <loc>https://evmint.io/liquidity</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
 
-  <!-- 🔗 LANDING PAGES - Targeted Keywords -->
+  <!-- LANDING PAGES - Targeted Keywords -->
 
   <!-- Multi-Chain Token Creator - Brand Keywords -->
   <url>
     <loc>https://evmint.io/multi-chain-token-creator</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -71,7 +71,7 @@
   <!-- ERC20 Token Generator - High-Volume Keywords -->
   <url>
     <loc>https://evmint.io/erc20-token-generator</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -79,7 +79,7 @@
   <!-- Meme Coin Creator - Trending Keywords -->
   <url>
     <loc>https://evmint.io/meme-coin-creator</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -87,9 +87,89 @@
   <!-- Cryptocurrency Creator - Broad Keywords -->
   <url>
     <loc>https://evmint.io/cryptocurrency-creator</loc>
-    <lastmod>2025-01-18</lastmod>
+    <lastmod>2026-07-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
+  <!-- BLOG PAGES - Content Marketing -->
+
+  <!-- Blog Index -->
+  <url>
+    <loc>https://evmint.io/blog</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog Posts -->
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-erc20-token-2026</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/ethereum-vs-base-best-chain-token-deployment</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/complete-meme-coin-launch-guide</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/adding-liquidity-uniswap-step-by-step</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/multi-chain-token-strategy-2026</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://evmint.io/about</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- LEGAL PAGES -->
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://evmint.io/privacy</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://evmint.io/terms</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Legal Disclaimers -->
+  <url>
+    <loc>https://evmint.io/disclaimers</loc>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
 </urlset>
