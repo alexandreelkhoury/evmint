@@ -193,7 +193,7 @@ export default function ServerErrorPage() {
               <p className="text-center text-sm text-gray-500 mt-6">
                 Need help?{' '}
                 <a
-                  href="https://github.com/anthropics/claude-code/issues"
+                  href="https://evmint.io/faq"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-cyan-400 hover:text-cyan-300 underline"

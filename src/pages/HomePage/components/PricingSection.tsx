@@ -87,7 +87,7 @@ export default function PricingSection() {
             <span className="text-white font-semibold">~$80 equivalent</span> regardless of which chain you deploy on.
             <br />
             <span className="text-gray-500">
-              Includes deployment + gas fees. No platform fee, no hidden charges.
+              One fee covers everything — deployment, gas, and verification. No subscriptions.
             </span>
           </p>
         </motion.div>

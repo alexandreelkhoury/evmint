@@ -9,7 +9,7 @@ import { useGlobalToasts } from '../../../App'
 import { formatUnits } from 'viem'
 import { validateAndFormatAddress } from '../../../utils/validation'
 import { loggers } from '../../../utils/logger'
-import { TOKEN_ADDRESSES } from '../../../config/constants'
+import { getChainById } from '../../../config/chains'
 
 interface Token {
   address: string
@@ -81,12 +81,18 @@ export function useLiquidityPageLogic() {
 
   const { addToast } = useGlobalToasts()
 
-  // Token selection state
+  // Get chain-specific native token info
+  const chainConfig = getChainById(currentChainId)
+  const nativeTokenSymbol = chainConfig?.nativeCurrency?.symbol || 'ETH'
+  const nativeTokenName = chainConfig?.nativeCurrency?.name || 'Ethereum'
+  const wrappedTokenAddress = chainConfig?.weth || '0x4200000000000000000000000000000000000006'
+
+  // Token selection state - default to chain's native wrapped token
   const [tokenA, setTokenA] = useState<Token | null>(null)
   const [tokenB, setTokenB] = useState<Token | null>({
-    address: TOKEN_ADDRESSES.WETH,
-    name: 'Ethereum',
-    symbol: 'ETH',
+    address: wrappedTokenAddress,
+    name: nativeTokenName,
+    symbol: nativeTokenSymbol,
     decimals: 18
   })
   const [amountA, setAmountA] = useState('')
@@ -94,6 +100,16 @@ export function useLiquidityPageLogic() {
 
   // Input validation state
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
+
+  // Update tokenB when chain changes to use the correct native token
+  useEffect(() => {
+    setTokenB({
+      address: wrappedTokenAddress,
+      name: nativeTokenName,
+      symbol: nativeTokenSymbol,
+      decimals: 18
+    })
+  }, [currentChainId, wrappedTokenAddress, nativeTokenName, nativeTokenSymbol])
 
   // Token selection hook
   const {
@@ -186,13 +202,13 @@ export function useLiquidityPageLogic() {
   // Optimized token balance fetching
   const { data: balanceA } = useBalance({
     address: userAddress,
-    token: tokenA?.address === TOKEN_ADDRESSES.WETH ? undefined : tokenA?.address as `0x${string}`,
+    token: tokenA?.address === wrappedTokenAddress ? undefined : tokenA?.address as `0x${string}`,
     query: { enabled: !!userAddress && !!tokenA }
   })
 
   const { data: balanceB } = useBalance({
     address: userAddress,
-    token: tokenB?.address === TOKEN_ADDRESSES.WETH ? undefined : tokenB?.address as `0x${string}`,
+    token: tokenB?.address === wrappedTokenAddress ? undefined : tokenB?.address as `0x${string}`,
     query: { enabled: !!userAddress && !!tokenB }
   })
 
@@ -241,7 +257,7 @@ export function useLiquidityPageLogic() {
       setShowProgressModal(true)
     }, 100)
 
-    const isTokenAEth = tokenA.address === TOKEN_ADDRESSES.WETH
+    const isTokenAEth = tokenA.address === wrappedTokenAddress
     const customToken = isTokenAEth ? tokenB : tokenA
     const ethAmount = isTokenAEth ? amountA : amountB
     const tokenAmount = isTokenAEth ? amountB : amountA
@@ -255,7 +271,7 @@ export function useLiquidityPageLogic() {
         ethAmount
       )
     } catch (error: any) {
-      loggers.ui.error('❌ BASE TOKEN LAUNCHER - Liquidity addition error:', error)
+      loggers.ui.error('❌ EVMint - Liquidity addition error:', error)
 
       // Track detailed liquidity error
       trackLiquidityError(analytics, error, {
@@ -298,7 +314,7 @@ export function useLiquidityPageLogic() {
       // FIX: Don't reset LP token selection immediately - wait for transaction completion
       // The reset will happen in the success handler instead
     } catch (error: any) {
-      loggers.ui.error('❌ BASE TOKEN LAUNCHER - Liquidity removal error:', error)
+      loggers.ui.error('❌ EVMint - Liquidity removal error:', error)
 
       // Track detailed liquidity removal error
       trackLiquidityError(analytics, error, {
@@ -332,7 +348,7 @@ export function useLiquidityPageLogic() {
         title: isWithdrawal ? 'Liquidity Withdrawn Successfully' : 'Liquidity Added Successfully',
         message: isWithdrawal
           ? `Successfully removed ${lastSuccessfulPool.liquidityTokens} LP tokens from pool`
-          : `Added ${lastSuccessfulPool.tokenAmount} ${lastSuccessfulPool.tokenSymbol} and ${lastSuccessfulPool.ethAmount} ETH to pool`,
+          : `Added ${lastSuccessfulPool.tokenAmount} ${lastSuccessfulPool.tokenSymbol} and ${lastSuccessfulPool.ethAmount} ${nativeTokenSymbol} to pool`,
         type: 'success'
       })
 
@@ -346,7 +362,7 @@ export function useLiquidityPageLogic() {
         loadUserLPTokens() // Also reload LP tokens to update balances
       }
     }
-  }, [lastSuccessfulPool, addToast, loadUserLPTokens])
+  }, [lastSuccessfulPool, addToast, loadUserLPTokens, nativeTokenSymbol])
 
   // Progress modal state management - CLEAN: Only handle proper success detection
   useEffect(() => {

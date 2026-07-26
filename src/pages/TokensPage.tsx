@@ -356,7 +356,7 @@ export default function TokensPage() {
       <SEO
         title="My Tokens - Manage Your ERC20 Tokens | EVMint"
         description="View and manage all your created ERC20 tokens across 15+ EVM chains. Track token performance, manage liquidity, and monitor your crypto projects."
-        keywords="base tokens management, my base tokens, erc20 token dashboard, base blockchain portfolio, token management interface"
+        keywords="token management, my erc20 tokens, multi-chain token dashboard, blockchain portfolio, token management interface"
         canonical="/tokens"
       />
       

@@ -29,7 +29,7 @@ interface CreatedToken extends TokenData {
 }
 
 // Storage for user tokens
-const STORAGE_KEY = 'baseTokens_openZeppelinDeployments'
+const STORAGE_KEY = 'evmint_deployments'
 
 export function useOpenZeppelinTokenDeployment() {
   const { address: userAddress, isConnected } = useAccount()

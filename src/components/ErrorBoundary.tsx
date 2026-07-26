@@ -1,5 +1,4 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
-import { analytics } from '../config/firebase'
 import { trackError } from '../utils/analytics'
 
 interface Props {
@@ -31,11 +30,10 @@ class ErrorBoundary extends Component<Props, State> {
     }
   }
 
-  async componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to analytics
-    const analyticsInstance = await analytics
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log error to analytics - will queue if not ready yet
     trackError(
-      analyticsInstance,
+      null, // Will use global instance or queue
       error.message,
       errorInfo.componentStack || 'Unknown component',
       {
@@ -133,13 +131,13 @@ class ErrorBoundary extends Component<Props, State> {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={this.handleReset}
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-cyan-500/50"
+                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 shadow-lg hover:shadow-cyan-500/50"
                 >
                   Try Again
                 </button>
                 <button
                   onClick={() => window.location.href = '/'}
-                  className="px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-600 transition-all duration-200"
+                  className="px-6 py-3 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-600 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                 >
                   Go Home
                 </button>
@@ -149,7 +147,7 @@ class ErrorBoundary extends Component<Props, State> {
               <p className="text-center text-sm text-gray-500 mt-6">
                 If this problem persists,{' '}
                 <a
-                  href="https://github.com/anthropics/claude-code/issues"
+                  href="https://evmint.io/faq"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-cyan-400 hover:text-cyan-300 underline"

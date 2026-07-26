@@ -67,7 +67,7 @@ export function useTokenCreationLogic() {
       await createToken(sanitizedData)
       setShowSuccess(true)
     } catch (error: any) {
-      loggers.ui.error('❌ BASE TOKEN LAUNCHER - Token creation failed:', error)
+      loggers.ui.error('❌ EVMint - Token creation failed:', error)
 
       // Track detailed token creation error
       trackTokenCreationError(analytics, error, {
