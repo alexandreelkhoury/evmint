@@ -113,7 +113,7 @@ export default function QuickStartForm({
                     placeholder="e.g., My Awesome Token"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                     maxLength={50}
                     required
                   />
@@ -145,7 +145,7 @@ export default function QuickStartForm({
                     placeholder="e.g., MAT"
                     value={formData.symbol}
                     onChange={(e) => handleInputChange('symbol', e.target.value.toUpperCase())}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all duration-300 uppercase"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 uppercase"
                     maxLength={10}
                     required
                   />
@@ -178,7 +178,7 @@ export default function QuickStartForm({
                     max={18}
                     value={formData.decimals}
                     onChange={(e) => handleInputChange('decimals', parseInt(e.target.value) || 18)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                   />
                 </div>
                 {formErrors.decimals && (
@@ -208,7 +208,7 @@ export default function QuickStartForm({
                     placeholder="e.g., 1000000"
                     value={formData.totalSupply}
                     onChange={(e) => handleInputChange('totalSupply', e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                     required
                   />
                 </div>
@@ -261,7 +261,7 @@ export default function QuickStartForm({
                   disabled={isCreating || Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full py-6 text-xl font-semibold rounded-2xl transition-all duration-300 ${
+                  className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
                     isCreating || Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])
                       ? 'bg-gray-600 cursor-not-allowed opacity-50'
                       : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-xl hover:shadow-2xl'

@@ -65,7 +65,7 @@ export default function SubmitButton({
       disabled={isDisabled}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className={`w-full py-6 text-xl font-semibold rounded-2xl transition-all duration-300 ${
+      className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
         isDisabled ? colors.primaryButtonDisabled : colors.primaryButton
       }`}
     >

@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { usePublicClient, useAccount, useChainId } from 'wagmi'
 import type { LPToken } from './useUniswapV2Liquidity'
 import { TOKEN_ADDRESSES } from '../config/constants'
 import { loggers } from '../utils/logger'
+import { getChainById } from '../config/chains'
 
 // ERC20 ABI for token details
 const ERC20_ABI = [
@@ -55,8 +56,8 @@ interface CreatedToken {
 }
 
 // Storage keys
-const CREATED_TOKENS_STORAGE_KEY = 'baseTokens_openZeppelinDeployments'
-const LP_TOKENS_STORAGE_KEY = 'baseTokenCreator_lpTokens'
+const CREATED_TOKENS_STORAGE_KEY = 'evmint_deployments'
+const LP_TOKENS_STORAGE_KEY = 'evmint_lpTokens'
 
 /**
  * Simple hook for token selection UI state management
@@ -82,15 +83,21 @@ export function useTokenSelection() {
   const [userLPTokens, setUserLPTokens] = useState<Token[]>([])
   const [isLoadingCustomToken, setIsLoadingCustomToken] = useState(false)
 
-  // Default available tokens (ETH/WETH)
-  const availableTokens: Token[] = [
+  // Get chain-specific native token info
+  const chainConfig = getChainById(chainId)
+  const nativeTokenSymbol = chainConfig?.nativeCurrency?.symbol || 'ETH'
+  const nativeTokenName = chainConfig?.nativeCurrency?.name || 'Ethereum'
+  const wrappedTokenAddress = chainConfig?.weth || TOKEN_ADDRESSES.WETH
+
+  // Default available tokens - chain-aware native wrapped token
+  const availableTokens: Token[] = useMemo(() => [
     {
-      address: TOKEN_ADDRESSES.WETH,
-      name: 'Ethereum',
-      symbol: 'ETH',
+      address: wrappedTokenAddress,
+      name: nativeTokenName,
+      symbol: nativeTokenSymbol,
       decimals: 18
     }
-  ]
+  ], [wrappedTokenAddress, nativeTokenName, nativeTokenSymbol])
 
   // Load user's created tokens and LP tokens from localStorage
   useEffect(() => {
@@ -285,19 +292,24 @@ export function useTokenSelection() {
     tokenB,
     setTokenA,
     setTokenB,
-    
+
     // Amount state
     amountA,
     amountB,
     setAmountA,
     setAmountB,
-    
+
     // Token lists
     availableTokens,
     customTokens,
     userCreatedTokens,
     userLPTokens,
-    
+
+    // Chain-specific token info
+    nativeTokenSymbol,
+    nativeTokenName,
+    wrappedTokenAddress,
+
     // Token management functions
     addCustomToken,
     removeToken,

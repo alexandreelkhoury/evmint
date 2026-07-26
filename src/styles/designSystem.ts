@@ -69,30 +69,33 @@ export const layout = {
 }
 
 // Typography system
+// Font Strategy:
+// - Orbitron (font-display): Headings, titles, brand elements - crypto/Web3 aesthetic
+// - Exo 2 (font-sans): Body text, descriptions - modern, readable
 export const typography = {
-  // Page titles - consistent across all pages
-  pageTitle: "text-4xl sm:text-5xl font-bold tracking-tight mb-6",
+  // Page titles - consistent across all pages (Orbitron via h1-h6 CSS)
+  pageTitle: "text-4xl sm:text-5xl font-display font-bold tracking-tight mb-6",
   pageTitleGradient: "bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent",
   pageTitleWhite: "text-white",
+
+  // Section titles (Orbitron via font-display)
+  sectionTitle: "text-3xl sm:text-4xl font-display font-bold text-white mb-6",
+
+  // Card titles (Orbitron via font-display)
+  cardTitle: "text-2xl font-display font-bold text-white mb-4",
+  cardTitleSmall: "text-xl font-display font-bold text-white mb-3",
   
-  // Section titles  
-  sectionTitle: "text-3xl sm:text-4xl font-bold text-white mb-6",
+  // Subtitles (Exo 2 - more readable for longer text)
+  subtitle: "text-xl font-sans text-gray-300 mb-8 leading-relaxed",
+  subtitleSmall: "text-lg font-sans text-gray-300 mb-6 leading-relaxed",
+
+  // Body text (Exo 2 - default)
+  bodyText: "text-gray-400 leading-relaxed text-base font-sans",
+  bodyTextSmall: "text-gray-400 leading-relaxed text-sm font-sans",
   
-  // Card titles
-  cardTitle: "text-2xl font-bold text-white mb-4",
-  cardTitleSmall: "text-xl font-bold text-white mb-3",
-  
-  // Subtitles
-  subtitle: "text-xl text-gray-300 mb-8 leading-relaxed",
-  subtitleSmall: "text-lg text-gray-300 mb-6 leading-relaxed",
-  
-  // Body text
-  bodyText: "text-gray-400 leading-relaxed text-base",
-  bodyTextSmall: "text-gray-400 leading-relaxed text-sm",
-  
-  // Labels and metadata
-  label: "text-sm font-medium text-gray-300",
-  metadata: "text-xs text-gray-500 uppercase tracking-wide font-semibold",
+  // Labels and metadata (Exo 2)
+  label: "text-sm font-sans font-medium text-gray-300",
+  metadata: "text-xs font-sans text-gray-500 uppercase tracking-wide font-semibold",
   
   // Status text
   success: "text-green-400 font-medium",
@@ -100,26 +103,30 @@ export const typography = {
   warning: "text-yellow-400 font-medium",
   info: "text-blue-400 font-medium",
   
-  // Gradient text (for highlights) - same as page title gradient
-  gradientText: "bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent"
+  // Gradient text (for highlights)
+  gradientText: "bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent",
+  gradientTextGold: "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-bold"
 }
 
-// Color system
+// Color system - Fintech/Crypto optimized
+// Gold/Amber = Trust, value, premium (perfect for financial products)
+// Purple = Innovation, tech (secondary actions)
 export const colors = {
-  // Glass morphism cards
-  glassCard: "bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl",
-  glassCardHover: "bg-gradient-to-br from-white/15 to-white/8 backdrop-blur-xl border border-white/30 rounded-2xl",
-  
+  // Glass morphism cards - Enhanced with multi-layer depth and premium shadows
+  glassCard: "bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/5 before:to-transparent before:pointer-events-none",
+  glassCardHover: "bg-gradient-to-br from-white/15 via-white/8 to-white/5 backdrop-blur-xl border border-amber-500/30 rounded-2xl shadow-2xl shadow-amber-500/10 transition-[border-color,box-shadow] duration-200 relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-amber-400/10 before:to-transparent before:pointer-events-none",
+
   // Primary buttons
-  primaryButton: "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl",
+  primaryButton: "bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:via-yellow-400 hover:to-amber-500 text-gray-900 font-bold rounded-xl transition-[background,box-shadow] duration-200 shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60",
   primaryButtonDisabled: "bg-gray-600 text-gray-400 rounded-xl cursor-not-allowed opacity-50",
-  
+
   // Secondary buttons
-  secondaryButton: "border-2 border-white/20 hover:border-white/40 text-white rounded-xl transition-all duration-300",
-  tertiaryButton: "bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg transition-all duration-200",
-  
+  secondaryButton: "border-2 border-white/20 hover:border-white/40 text-white rounded-xl transition-[border-color] duration-200",
+  secondaryCTA: "bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white font-semibold rounded-xl transition-[background,box-shadow] duration-200 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40",
+  tertiaryButton: "bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg transition-[background-color,color] duration-150",
+
   // Form inputs
-  input: "w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20",
+  input: "w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-[border-color,box-shadow] duration-150",
   inputError: "w-full px-4 py-3 bg-red-900/10 border border-red-500/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-400/20",
   
   // Status backgrounds
@@ -134,6 +141,8 @@ export const colors = {
   badgeWarning: "bg-yellow-600/20 text-yellow-400 border border-yellow-600/30",
   badgeInfo: "bg-blue-600/20 text-blue-400 border border-blue-600/30",
   badgeNeutral: "bg-gray-600/20 text-gray-400 border border-gray-600/30",
+  badgePremium: "bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold",
+  badgeGold: "bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-900 border-0 font-bold shadow-lg shadow-amber-500/30",
   
   // Loading state
   loadingText: "text-gray-400 animate-pulse"

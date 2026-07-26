@@ -291,7 +291,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer ${
         active
           ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
           : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
@@ -324,7 +324,7 @@ function ChainCard({
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       disabled={isSwitching}
-      className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+      className={`relative p-4 rounded-xl border-2 text-left transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
         isActive
           ? 'border-green-500 bg-green-500/10'
           : chain.trending
@@ -336,7 +336,7 @@ function ChainCard({
       {isActive && (
         <div className="absolute top-3 right-3">
           <span className="flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
           </span>
         </div>

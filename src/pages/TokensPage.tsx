@@ -59,7 +59,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className={`${colors.glassCard} p-6 hover:border-white/40 transition-all duration-300 group`}
+      className={`${colors.glassCard} p-6 hover:border-white/40 transition-[border-color,box-shadow] duration-200 group`}
       whileHover={{ scale: 1.02, y: -5 }}
     >
       <div className="flex items-start justify-between mb-6">
@@ -121,7 +121,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
           </span>
           <motion.button
             onClick={handleCopyAddress}
-            className={`ml-2 px-3 min-h-[44px] min-w-[44px] rounded transition-all duration-300 flex items-center justify-center space-x-1 cursor-pointer ${
+            className={`ml-2 px-3 min-h-[44px] min-w-[44px] rounded transition-[border-color,box-shadow] duration-200 flex items-center justify-center space-x-1 cursor-pointer ${
               isCopied
                 ? 'bg-green-600/20 text-green-400'
                 : 'hover:bg-blue-600/20 text-blue-400'
@@ -165,7 +165,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
       <div className="flex space-x-3">
         <Link
           to="/liquidity"
-          className={`flex-1 px-4 min-h-[44px] ${colors.tertiaryButton} hover:bg-gradient-to-r hover:from-green-600/20 hover:to-blue-600/20 text-sm rounded-lg flex items-center justify-center space-x-2 transition-all duration-300 cursor-pointer`}
+          className={`flex-1 px-4 min-h-[44px] ${colors.tertiaryButton} hover:bg-gradient-to-r hover:from-green-600/20 hover:to-blue-600/20 text-sm rounded-lg flex items-center justify-center space-x-2 transition-[border-color,box-shadow] duration-200 cursor-pointer`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -418,7 +418,7 @@ export default function TokensPage() {
             <motion.div {...animations.buttonHover}>
               <Link
                 to="/create"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300 cursor-pointer"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
               >
                 🚀 Create Your First Token
               </Link>
@@ -462,7 +462,7 @@ export default function TokensPage() {
               <motion.div {...animations.buttonHover}>
                 <Link
                   to="/create"
-                  className="flex items-center px-4 min-h-[44px] bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300 cursor-pointer"
+                  className="flex items-center px-4 min-h-[44px] bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm rounded-lg hover:from-blue-500 hover:to-purple-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
                 >
                   ➕ Create New Token
                 </Link>

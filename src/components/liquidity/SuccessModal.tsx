@@ -190,7 +190,7 @@ Contract: ${pool.tokenAddress}`
                   aria-label="Copy LP token address"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`px-4 py-2 min-h-[44px] rounded-lg font-medium text-sm transition-all duration-300 flex items-center space-x-2 cursor-pointer ${
+                  className={`px-4 py-2 min-h-[44px] rounded-lg font-medium text-sm transition-[background-color,color,border-color,box-shadow,opacity] duration-200 flex items-center space-x-2 cursor-pointer ${
                     isCopied
                       ? 'bg-green-500/20 text-green-300 border border-green-500/30'
                       : 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30'
@@ -262,7 +262,7 @@ Contract: ${pool.tokenAddress}`
                 aria-label="Share liquidity addition on Twitter"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-all"
+                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -287,7 +287,7 @@ Contract: ${pool.tokenAddress}`
                 aria-label="Copy share message for Telegram or Discord"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all ${
+                className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-semibold transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
                   shareMessageCopied
                     ? 'bg-green-500/20 border-2 border-green-500/50 text-green-300'
                     : 'bg-gray-800/50 border-2 border-gray-700/50 text-gray-300 hover:border-cyan-500/50 hover:bg-gray-800'
@@ -335,7 +335,7 @@ Contract: ${pool.tokenAddress}`
               rel="noopener noreferrer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full py-4 text-lg font-semibold rounded-xl transition-all duration-300 ${colors.primaryButton} flex items-center justify-center space-x-2`}
+              className={`w-full py-4 text-lg font-semibold rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${colors.primaryButton} flex items-center justify-center space-x-2`}
             >
               <span>📊</span>
               <span>View Chart on DEXScreener</span>
@@ -351,7 +351,7 @@ Contract: ${pool.tokenAddress}`
             rel="noopener noreferrer"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 min-h-[44px] text-base font-medium rounded-xl border border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 transition-all duration-300 flex items-center justify-center space-x-2"
+            className="w-full py-3 min-h-[44px] text-base font-medium rounded-xl border border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 flex items-center justify-center space-x-2"
           >
             <span>View Transaction</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

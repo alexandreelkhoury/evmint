@@ -311,6 +311,114 @@ export default function GuidePage() {
     }
   }, [analytics, guide])
 
+  // Build comprehensive HowTo structured data for each guide
+  const guideStructuredData: object[] | undefined = guide ? [
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": guide.title,
+      "description": guide.description,
+      "url": `https://evmint.io/guides/${guide.id}`,
+      "totalTime": guide.id === 'create-base-token' ? "PT5M"
+        : guide.id === 'add-liquidity' ? "PT10M"
+        : guide.id === 'token-security' ? "PT7M"
+        : "PT12M",
+      ...(guide.cost ? {
+        "estimatedCost": {
+          "@type": "MonetaryAmount",
+          "currency": "USD",
+          "value": guide.cost
+        }
+      } : {}),
+      "tool": guide.id === 'create-base-token' ? [
+        { "@type": "HowToTool", "name": "Web3 wallet (MetaMask, Rainbow, or WalletConnect-compatible)" },
+        { "@type": "HowToTool", "name": "Web browser (Chrome, Firefox, Safari, or Brave)" }
+      ] : guide.id === 'add-liquidity' ? [
+        { "@type": "HowToTool", "name": "Web3 wallet with deployed ERC20 token" },
+        { "@type": "HowToTool", "name": "EVMint Liquidity Management interface" }
+      ] : guide.id === 'token-security' ? [
+        { "@type": "HowToTool", "name": "Block explorer (Etherscan, Arbiscan, Polygonscan, etc.)" },
+        { "@type": "HowToTool", "name": "Web3 wallet for contract interaction" }
+      ] : [
+        { "@type": "HowToTool", "name": "Web3 wallet (MetaMask or compatible)" },
+        { "@type": "HowToTool", "name": "EVMint platform" }
+      ],
+      "supply": guide.id === 'create-base-token' ? [
+        { "@type": "HowToSupply", "name": "Native tokens for gas fees (ETH, MATIC, BNB, AVAX, etc.)" },
+        { "@type": "HowToSupply", "name": "Platform deployment fee ($75-100 USD equivalent)" }
+      ] : guide.id === 'add-liquidity' ? [
+        { "@type": "HowToSupply", "name": "Your deployed ERC20 tokens (10-20% of total supply recommended)" },
+        { "@type": "HowToSupply", "name": "Native tokens for the trading pair (ETH, MATIC, BNB, etc.)" },
+        { "@type": "HowToSupply", "name": "Gas fees for approval and liquidity transactions" }
+      ] : [],
+      "step": guide.steps.map((step, index) => ({
+        "@type": "HowToStep",
+        "position": index + 1,
+        "name": step.title,
+        "text": `${step.description}. ${step.details.map(d => typeof d === 'string' ? d : d.text).join('. ')}.`,
+        "url": `https://evmint.io/guides/${guide.id}`
+      })),
+      "image": "https://evmint.io/og-image.png"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Guides",
+          "item": "https://evmint.io/guides"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": guide.title,
+          "item": `https://evmint.io/guides/${guide.id}`
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": guide.title,
+      "description": guide.description,
+      "url": `https://evmint.io/guides/${guide.id}`,
+      "author": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://evmint.io/og-image.png"
+        }
+      },
+      "datePublished": "2025-01-01",
+      "dateModified": "2026-02-01",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://evmint.io/guides/${guide.id}`
+      },
+      "articleSection": "Cryptocurrency Guides",
+      "wordCount": guide.steps.reduce((total, step) =>
+        total + step.details.reduce((stepTotal, d) =>
+          stepTotal + (typeof d === 'string' ? d : d.text).split(' ').length, 0
+        ), 0
+      ) * 2
+    }
+  ] : undefined
+
   if (!guide) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black flex items-center justify-center">
@@ -321,7 +429,7 @@ export default function GuidePage() {
           <p className="text-gray-400 mb-8">The guide you're looking for doesn't exist.</p>
           <Link 
             to="/guides"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 transform hover:scale-105"
           >
             Back to Guides
           </Link>
@@ -340,8 +448,9 @@ export default function GuidePage() {
       <SEO
         title={`${guide.title} | Token Creation Guide`}
         description={guide.description}
-        keywords={`erc20 token, ${guide.id}, tutorial, guide, blockchain, evm`}
+        keywords={`erc20 token, ${guide.id}, tutorial, guide, blockchain, evm, how to, step by step`}
         canonical={`/guides/${guide.id}`}
+        structuredData={guideStructuredData}
       />
 
       <div className="relative py-12">
@@ -482,7 +591,7 @@ export default function GuidePage() {
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
               >
-                <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:border-white/30 transition-all duration-300">
+                <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:border-white/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200">
                   {/* Step Header */}
                   <div className="flex items-center mb-6">
                     <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold text-lg rounded-full w-12 h-12 flex items-center justify-center mr-4 flex-shrink-0">
@@ -556,7 +665,7 @@ export default function GuidePage() {
                   </p>
                   <Link 
                     to={`/guides/${nextGuide.id}`}
-                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 transform hover:scale-105"
                   >
                     <SparklesIcon className="h-5 w-5 mr-2" />
                     Next Guide
@@ -571,7 +680,7 @@ export default function GuidePage() {
                   </p>
                   <Link 
                     to="/create"
-                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105"
+                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 transform hover:scale-105"
                   >
                     <SparklesIcon className="h-5 w-5 mr-2" />
                     Create Your Token
@@ -593,7 +702,7 @@ export default function GuidePage() {
               <div className="flex-1">
                 <Link 
                   to="/guides"
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-xl hover:border-white/30 transition-all duration-300"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-xl hover:border-white/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                 >
                   <ArrowRightIcon className="h-4 w-4 mr-2 rotate-180" />
                   Back to All Guides
@@ -604,7 +713,7 @@ export default function GuidePage() {
                 {nextGuide ? (
                   <Link 
                     to={`/guides/${nextGuide.id}`}
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 transform hover:scale-105"
                   >
                     Next Guide
                     <ArrowRightIcon className="h-4 w-4 ml-2" />
@@ -612,7 +721,7 @@ export default function GuidePage() {
                 ) : (
                   <Link 
                     to="/create"
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-700 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 transform hover:scale-105"
                   >
                     Start Creating
                     <ArrowRightIcon className="h-4 w-4 ml-2" />

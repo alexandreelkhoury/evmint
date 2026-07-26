@@ -18,12 +18,8 @@ export default function CTASection() {
       transition={{ duration: 0.3, delay: 0.1 }}
     >
       <CTACard
-        title={
-          <>
-            Ready to <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Launch</span>?
-          </>
-        }
-        subtitle="Join thousands of successful projects that have launched on Base. Start building the future today!"
+        title="Ready to launch your token?"
+        subtitle="Deploy on any of 15+ EVM chains. Verified, liquid, and live in under a minute."
         buttons={[
           {
             text: 'Launch Token Creator',
@@ -62,7 +58,7 @@ export default function CTASection() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             ),
-            text: '5s Deploy',
+            text: 'Deploy in Seconds',
             color: 'text-blue-400'
           },
           {

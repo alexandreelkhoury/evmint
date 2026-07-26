@@ -49,7 +49,7 @@ function OrbitChainIcon({ chain, iconSize }: { chain: typeof ORBIT_CHAINS[0]; ic
 
       {/* Icon container */}
       <div
-        className="relative rounded-full flex items-center justify-center backdrop-blur-sm cursor-default transition-all duration-200"
+        className="relative rounded-full flex items-center justify-center backdrop-blur-sm cursor-default transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
         style={{
           width: containerSize,
           height: containerSize,
@@ -297,7 +297,7 @@ export default function HeroSection() {
                     e.preventDefault()
                     document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
                   }}
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-300 border border-white/[0.12] hover:border-white/25 rounded-xl hover:bg-white/[0.04] transition-all duration-300 focus-visible:ring-4 focus-visible:ring-white/30 focus-visible:outline-none"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-300 border border-white/[0.12] hover:border-white/25 rounded-xl hover:bg-white/[0.04] transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-visible:ring-4 focus-visible:ring-white/30 focus-visible:outline-none"
                 >
                   How It Works
                 </a>

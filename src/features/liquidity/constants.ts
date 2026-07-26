@@ -178,5 +178,5 @@ export const ERC20_ABI = [
 ] as const
 
 // Storage keys
-export const LIQUIDITY_STORAGE_KEY = 'baseTokenCreator_uniswapV2Pools'
-export const LP_TOKENS_STORAGE_KEY = 'baseTokenCreator_lpTokens'
+export const LIQUIDITY_STORAGE_KEY = 'evmint_uniswapV2Pools'
+export const LP_TOKENS_STORAGE_KEY = 'evmint_lpTokens'

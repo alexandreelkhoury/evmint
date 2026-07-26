@@ -213,7 +213,7 @@ export default function WalletButton() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className={`${colors.glassCard} px-2 sm:px-4 min-h-[44px] hover:border-white/30 transition-all duration-200 flex items-center space-x-2 sm:space-x-3 min-w-0 max-w-[140px] sm:max-w-none cursor-pointer`}
+          className={`${colors.glassCard} px-2 sm:px-4 min-h-[44px] hover:border-white/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 flex items-center space-x-2 sm:space-x-3 min-w-0 max-w-[140px] sm:max-w-none cursor-pointer`}
           aria-expanded={isDropdownOpen}
           aria-haspopup="true"
           aria-label="Wallet menu"

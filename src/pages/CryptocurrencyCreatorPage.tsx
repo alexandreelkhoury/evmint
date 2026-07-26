@@ -83,7 +83,7 @@ export default function CryptocurrencyCreatorPage() {
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_cryptocurrency', 'hero_section')}>
-              <button className="group relative px-12 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-xl font-bold text-lg text-white shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all duration-300 hover:scale-105">
+              <button className="group relative px-12 py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-xl font-bold text-lg text-white shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-3">
                   🚀 Create Your Cryptocurrency Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export default function CryptocurrencyCreatorPage() {
             transition={{ delay: 0.6 }}
             className="grid md:grid-cols-2 gap-6 mb-12"
           >
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-cyan-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-cyan-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">🎮</span>
               </div>
@@ -112,7 +112,7 @@ export default function CryptocurrencyCreatorPage() {
               </p>
             </div>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-blue-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-blue-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">🏦</span>
               </div>
@@ -122,7 +122,7 @@ export default function CryptocurrencyCreatorPage() {
               </p>
             </div>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">🏆</span>
               </div>
@@ -132,7 +132,7 @@ export default function CryptocurrencyCreatorPage() {
               </p>
             </div>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-pink-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-pink-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">🌐</span>
               </div>
@@ -305,6 +305,211 @@ export default function CryptocurrencyCreatorPage() {
             </p>
           </motion.div>
 
+          {/* Understanding Cryptocurrency Creation */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.95 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6">
+              Understanding Cryptocurrency Creation in 2026
+            </h2>
+            <div className="space-y-4 text-gray-300 leading-relaxed">
+              <p>
+                Creating a cryptocurrency has evolved dramatically since the early days of blockchain. What once required deep technical expertise, custom blockchain development, and months of work can now be accomplished in seconds using standardized token contracts on existing networks.
+              </p>
+              <p>
+                Modern cryptocurrency creation leverages the ERC20 standard and EVM-compatible blockchains, allowing anyone to launch a fully-functional digital currency that works with existing infrastructure. Your token can be stored in popular wallets like MetaMask, traded on decentralized exchanges like Uniswap, and integrated into DeFi protocols from day one.
+              </p>
+              <p>
+                The key innovation is building on proven platforms rather than creating infrastructure from scratch. Ethereum and its Layer 2 networks provide the security, consensus mechanisms, and user base that would take years to build independently. This allows creators to focus on what matters: building utility, community, and value around their token.
+              </p>
+              <p>
+                Whether you're launching a governance token for a DAO, a utility token for a platform, a reward currency for a loyalty program, or an in-game currency for a blockchain game, the technical barriers have been eliminated. Success now depends on vision, execution, and community building rather than coding expertise.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Token Economics Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              Designing Your Token Economics
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-white font-semibold mb-2">Total Supply Strategy</h4>
+                <p className="text-gray-300">Your total supply decision affects perception and usability. Small supplies (1M-100M) create scarcity narratives. Large supplies (1B-1T) allow psychological affordability. Consider your use case: governance tokens often use smaller supplies while gaming currencies benefit from larger numbers.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Distribution Planning</h4>
+                <p className="text-gray-300">Plan how tokens will be distributed before launch. Common allocations include: liquidity pool (40-60%), team and advisors with vesting (10-20%), community rewards (15-25%), and development/marketing reserves (10-20%). Transparency in distribution builds trust.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Decimal Configuration</h4>
+                <p className="text-gray-300">Standard ERC20 tokens use 18 decimals, matching ETH. This allows precise fractional transactions. Some projects use fewer decimals (6 for stablecoins, 8 for Bitcoin-like tokens) for simpler user experience. EVMint defaults to 18 but allows customization.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Naming and Branding</h4>
+                <p className="text-gray-300">Your token name and symbol are permanent on-chain. Choose wisely: unique but memorable, easy to pronounce, and available across social platforms. Check existing token registries to avoid confusion with established projects.</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Comparison with Alternatives */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.05 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              EVMint vs Alternative Approaches
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-4 text-gray-400">Approach</th>
+                    <th className="text-center py-3 px-4 text-gray-400">Cost</th>
+                    <th className="text-center py-3 px-4 text-gray-400">Time</th>
+                    <th className="text-center py-3 px-4 text-gray-400">Skills Needed</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-300">
+                  <tr className="border-b border-white/5 bg-cyan-500/5">
+                    <td className="py-3 px-4 font-semibold text-cyan-400">EVMint Generator</td>
+                    <td className="text-center py-3 px-4">$75-100</td>
+                    <td className="text-center py-3 px-4">5 seconds</td>
+                    <td className="text-center py-3 px-4">None</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Hire Solidity Developer</td>
+                    <td className="text-center py-3 px-4">$5,000-50,000</td>
+                    <td className="text-center py-3 px-4">2-8 weeks</td>
+                    <td className="text-center py-3 px-4">None (outsourced)</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">DIY with Remix</td>
+                    <td className="text-center py-3 px-4">Gas only</td>
+                    <td className="text-center py-3 px-4">Hours-days</td>
+                    <td className="text-center py-3 px-4">Solidity, Web3</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Fork Existing Token</td>
+                    <td className="text-center py-3 px-4">Gas only</td>
+                    <td className="text-center py-3 px-4">Hours</td>
+                    <td className="text-center py-3 px-4">Solidity basics</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4">Create New Blockchain</td>
+                    <td className="text-center py-3 px-4">$100,000+</td>
+                    <td className="text-center py-3 px-4">6-12 months</td>
+                    <td className="text-center py-3 px-4">Expert team</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+
+          {/* After Deployment Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              What Happens After You Create Your Cryptocurrency
+            </h2>
+            <div className="space-y-5">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">1</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold mb-2">Instant Contract Verification</h4>
+                  <p className="text-gray-300">EVMint automatically verifies your smart contract on Etherscan, Basescan, Arbiscan, or the relevant block explorer. This displays your source code publicly, building trust with potential holders and enabling interaction with your contract's functions.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">2</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold mb-2">Add to Wallets</h4>
+                  <p className="text-gray-300">Share your contract address with users so they can add your token to MetaMask, Trust Wallet, Coinbase Wallet, or any ERC20-compatible wallet. Users will see their balance and can send/receive your cryptocurrency.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">3</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold mb-2">Create Trading Pair</h4>
+                  <p className="text-gray-300">Add liquidity on Uniswap or another DEX to enable trading. You'll pair your token with ETH or a stablecoin, setting the initial price. Once live, anyone can buy and sell your cryptocurrency 24/7.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">4</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold mb-2">Track on DEXScreener</h4>
+                  <p className="text-gray-300">After adding liquidity, your token automatically appears on DEXScreener and other aggregators. This provides real-time charts, holder counts, and trading volume - essential tools for growing your community.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">5</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold mb-2">Apply for CoinGecko/CoinMarketCap</h4>
+                  <p className="text-gray-300">Submit your token for listing on major tracking sites. Requirements typically include: verified contract, active trading, website/social presence, and accurate project information. Listings increase visibility and credibility.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.15 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              Cryptocurrency Creator FAQ
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-white font-semibold mb-2">Is it legal to create a cryptocurrency?</h4>
+                <p className="text-gray-400">Creating a token is legal in most jurisdictions. However, how you market and use it matters. Avoid making investment promises, ensure you're not offering unregistered securities, and consult legal counsel for specific guidance in your jurisdiction.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Can I change my token's parameters after deployment?</h4>
+                <p className="text-gray-400">No. Smart contracts are immutable once deployed. Token name, symbol, supply, and decimals cannot be changed. Plan carefully before deploying, and test on testnets first if unsure.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">How do I distribute tokens to my team or community?</h4>
+                <p className="text-gray-400">After creation, all tokens are in your wallet. You can transfer them directly, use a vesting contract for team allocations, or distribute through airdrops, staking rewards, or community initiatives.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">What's the difference between a token and a coin?</h4>
+                <p className="text-gray-400">Technically, "coins" run on their own blockchain (Bitcoin, Ethereum) while "tokens" run on existing blockchains (ERC20 tokens on Ethereum). In practice, the terms are often used interchangeably. EVMint creates tokens that function identically to coins for most purposes.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">How long until my token is tradeable?</h4>
+                <p className="text-gray-400">Your token can be tradeable within minutes of creation. Deploy (5 seconds), then add liquidity to a DEX (2-3 minutes for setup), and your token is live for trading.</p>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Secondary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -313,7 +518,7 @@ export default function CryptocurrencyCreatorPage() {
             className="text-center"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_cryptocurrency', 'bottom_section')}>
-              <button className="px-10 py-4 bg-white/5 border-2 border-white/10 rounded-xl font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+              <button className="px-10 py-4 bg-white/5 border-2 border-white/10 rounded-xl font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-[background-color,color,border-color,box-shadow,opacity] duration-200">
                 Start Creating Your Cryptocurrency →
               </button>
             </Link>

@@ -30,21 +30,73 @@ export default function FAQPage() {
     faq.answer.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const faqPageStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "name": "ERC20 Token Creation FAQ",
-    "description": "Frequently asked questions about creating ERC20 tokens on EVM blockchains",
-    "url": "https://evmint.io/faq",
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
-    }))
-  }
+  const faqPageStructuredData: object[] = [
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "name": "ERC20 Token Creation FAQ - Frequently Asked Questions",
+      "description": "Get instant answers to common questions about ERC20 token creation, deployment costs, liquidity management, security, and exchange listings on 15+ EVM blockchains.",
+      "url": "https://evmint.io/faq",
+      "inLanguage": "en-US",
+      "dateModified": "2026-02-01",
+      "publisher": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "FAQ",
+          "item": "https://evmint.io/faq"
+        }
+      ]
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "ERC20 Token Creation FAQ",
+      "description": "Expert answers to frequently asked questions about creating and managing ERC20 tokens on EVM blockchains",
+      "url": "https://evmint.io/faq",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "ERC20 Token Creation",
+        "description": "Creating and deploying ERC20 tokens on EVM-compatible blockchains"
+      },
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "h3", ".text-gray-300"]
+      },
+      "significantLink": [
+        "https://evmint.io/create",
+        "https://evmint.io/guides"
+      ]
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
@@ -103,7 +155,8 @@ export default function FAQPage() {
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white"
+                aria-label="Clear search"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white cursor-pointer"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -116,9 +169,11 @@ export default function FAQPage() {
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
             <motion.button
               onClick={toggleAllFaqs}
+              aria-label={allFaqsOpen ? "Collapse all FAQ items" : "Expand all FAQ items"}
+              aria-expanded={allFaqsOpen}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`inline-flex items-center px-6 py-3 ${colors.primaryButton} rounded-2xl font-medium`}
+              className={`inline-flex items-center px-6 py-3 ${colors.primaryButton} rounded-2xl font-medium cursor-pointer`}
             >
               {allFaqsOpen ? (
                 <>
@@ -148,7 +203,7 @@ export default function FAQPage() {
               >
                 <Link
                   to="/guides"
-                  className={`inline-flex items-center px-6 py-3 ${colors.secondaryButton} rounded-2xl font-medium`}
+                  className={`inline-flex items-center px-6 py-3 ${colors.secondaryButton} rounded-2xl font-medium cursor-pointer`}
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -176,7 +231,7 @@ export default function FAQPage() {
                   >
                     {/* Modern card with design system glassmorphism */}
                     <div className={`
-                      relative rounded-2xl border transition-all duration-300
+                      relative rounded-2xl border transition-[background-color,color,border-color,box-shadow,opacity] duration-200
                       ${isOpen 
                         ? `${colors.glassCardHover} shadow-2xl` 
                         : `${colors.glassCard} hover:border-white/[0.2] hover:bg-white/[0.1]`
@@ -186,13 +241,15 @@ export default function FAQPage() {
                       {/* Question button */}
                       <motion.button
                         onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                        className="w-full text-left p-6 lg:p-8 focus:outline-none"
+                        aria-expanded={isOpen}
+                        aria-label={`${isOpen ? 'Collapse' : 'Expand'} FAQ: ${faq.question}`}
+                        className="w-full text-left p-6 lg:p-8 focus:outline-none cursor-pointer"
                         whileTap={{ scale: 0.995 }}
                       >
                         <div className="flex items-start justify-between">
                           {/* Question text */}
                           <h3 className={`
-                            ${typography.cardTitleSmall} text-lg lg:text-xl pr-8 leading-relaxed transition-all duration-300
+                            ${typography.cardTitleSmall} text-lg lg:text-xl pr-8 leading-relaxed transition-[background-color,color,border-color,box-shadow,opacity] duration-200
                             ${isOpen 
                               ? `text-transparent ${typography.gradientText}` 
                               : `${typography.pageTitleWhite} group-hover:text-gray-100`
@@ -203,7 +260,7 @@ export default function FAQPage() {
                           
                           {/* Expand icon */}
                           <div className={`
-                            flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300
+                            flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-[background-color,color,border-color,box-shadow,opacity] duration-200
                             ${isOpen 
                               ? 'bg-gradient-to-r from-blue-500 to-purple-500 rotate-180' 
                               : 'bg-white/10 group-hover:bg-white/20'
@@ -254,7 +311,7 @@ export default function FAQPage() {
                                   >
                                     <Link
                                       to={`/guides?guide=${faq.relatedGuide}`}
-                                      className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                                      className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200 cursor-pointer"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -295,7 +352,7 @@ export default function FAQPage() {
                 </p>
                 <button
                   onClick={() => setSearchTerm('')}
-                  className={`inline-flex items-center px-6 py-3 ${colors.primaryButton} rounded-2xl font-medium`}
+                  className={`inline-flex items-center px-6 py-3 ${colors.primaryButton} rounded-2xl font-medium cursor-pointer`}
                 >
                   Clear Search
                 </button>

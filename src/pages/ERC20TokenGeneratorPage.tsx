@@ -83,7 +83,7 @@ export default function ERC20TokenGeneratorPage() {
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_erc20', 'hero_section')}>
-              <button className="group relative px-12 py-5 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-xl font-bold text-lg text-white shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transition-all duration-300 hover:scale-105">
+              <button className="group relative px-12 py-5 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-xl font-bold text-lg text-white shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:scale-105">
                 <span className="relative z-10 flex items-center gap-3">
                   ⚡ Generate Your ERC20 Token Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@ export default function ERC20TokenGeneratorPage() {
             transition={{ delay: 0.6 }}
             className="grid md:grid-cols-2 gap-6 mb-12"
           >
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">⚙️</span>
               </div>
@@ -112,7 +112,7 @@ export default function ERC20TokenGeneratorPage() {
               </p>
             </div>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-pink-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-pink-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">🔒</span>
               </div>
@@ -122,7 +122,7 @@ export default function ERC20TokenGeneratorPage() {
               </p>
             </div>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-red-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-red-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">🌍</span>
               </div>
@@ -132,7 +132,7 @@ export default function ERC20TokenGeneratorPage() {
               </p>
             </div>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-orange-500/30 transition-all`}>
+            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-orange-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">✅</span>
               </div>
@@ -256,6 +256,218 @@ export default function ERC20TokenGeneratorPage() {
             </div>
           </motion.div>
 
+          {/* What is ERC20 Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6">
+              What is an ERC20 Token?
+            </h2>
+            <div className="space-y-4 text-gray-300 leading-relaxed">
+              <p>
+                ERC20 is the most widely adopted token standard in the cryptocurrency ecosystem, originally developed for the Ethereum blockchain. The acronym stands for "Ethereum Request for Comments 20," referring to the proposal number that established this groundbreaking standard in 2015.
+              </p>
+              <p>
+                An ERC20 token is a smart contract that follows a specific set of rules and interfaces, enabling seamless interaction with wallets, exchanges, and decentralized applications (dApps). This standardization is what makes ERC20 tokens so powerful - any wallet or platform that supports ERC20 can automatically work with your token without custom integration.
+              </p>
+              <p>
+                Every ERC20 token implements six mandatory functions: totalSupply (returns total tokens), balanceOf (returns balance for an address), transfer (moves tokens between addresses), transferFrom (allows approved transfers), approve (authorizes spending), and allowance (checks remaining approval). These functions ensure interoperability across the entire Ethereum ecosystem and all EVM-compatible chains.
+              </p>
+              <p>
+                Today, ERC20 tokens power everything from DeFi protocols and governance systems to gaming economies and loyalty programs. Major cryptocurrencies like USDC, USDT, LINK, and UNI are all ERC20 tokens, demonstrating the standard's reliability and versatility for projects of all sizes.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* How It Works Step by Step */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              How Our ERC20 Generator Works
+            </h2>
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">1</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold mb-2">Connect Your Wallet</h3>
+                  <p className="text-gray-300">Link your MetaMask, Coinbase Wallet, Trust Wallet, or any WalletConnect-compatible wallet. This will be the owner address that receives all minted tokens and owns the smart contract.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">2</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold mb-2">Select Your Blockchain Network</h3>
+                  <p className="text-gray-300">Choose from Ethereum mainnet for maximum credibility, or Layer 2 networks like Base, Arbitrum, and Polygon for 90% lower gas fees. All networks use the same ERC20 standard.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">3</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold mb-2">Configure Your Token</h3>
+                  <p className="text-gray-300">Enter your token name, symbol (ticker), total supply, and decimals. The name should be memorable, the symbol should be unique and 3-5 characters, and consider your supply carefully for your tokenomics model.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">4</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold mb-2">Deploy in 5 Seconds</h3>
+                  <p className="text-gray-300">Click deploy and confirm the transaction in your wallet. Our platform compiles the OpenZeppelin-based smart contract, deploys it to your chosen network, and automatically verifies the source code on the block explorer.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold">5</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold mb-2">Add Liquidity (Optional)</h3>
+                  <p className="text-gray-300">Make your token tradeable by adding liquidity on Uniswap, SushiSwap, or other DEXs. Create a trading pair with ETH or stablecoins, set your initial price, and enable instant trading for your community.</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Use Cases */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.92 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              Popular ERC20 Token Use Cases
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="p-4 bg-white/5 rounded-xl">
+                <h4 className="text-white font-semibold mb-2">Governance Tokens</h4>
+                <p className="text-gray-400 text-sm">Enable decentralized voting and decision-making in your DAO or protocol. Token holders vote on proposals, parameter changes, and treasury allocations.</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-xl">
+                <h4 className="text-white font-semibold mb-2">Utility Tokens</h4>
+                <p className="text-gray-400 text-sm">Provide access to products, services, or premium features within your ecosystem. Users stake or spend tokens to unlock functionality.</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-xl">
+                <h4 className="text-white font-semibold mb-2">Reward & Loyalty Programs</h4>
+                <p className="text-gray-400 text-sm">Incentivize customer behavior with blockchain-based rewards. Tokens can be earned, traded, and redeemed across your platform.</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-xl">
+                <h4 className="text-white font-semibold mb-2">Gaming Currencies</h4>
+                <p className="text-gray-400 text-sm">Create in-game economies for play-to-earn games. Players earn tokens through gameplay and trade them on decentralized exchanges.</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-xl">
+                <h4 className="text-white font-semibold mb-2">Community Tokens</h4>
+                <p className="text-gray-400 text-sm">Build and engage communities with token-gated access, exclusive content, and community-driven initiatives.</p>
+              </div>
+              <div className="p-4 bg-white/5 rounded-xl">
+                <h4 className="text-white font-semibold mb-2">Staking & DeFi</h4>
+                <p className="text-gray-400 text-sm">Create tokens for liquidity mining, yield farming, and staking rewards within DeFi protocols.</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Comparison Table */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.94 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              EVMint vs Hiring a Developer
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-4 text-gray-400">Criteria</th>
+                    <th className="text-center py-3 px-4 text-green-400">EVMint ERC20 Generator</th>
+                    <th className="text-center py-3 px-4 text-gray-400">Custom Development</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-300">
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Time to Deploy</td>
+                    <td className="text-center py-3 px-4 text-green-400">5 seconds</td>
+                    <td className="text-center py-3 px-4">2-8 weeks</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Cost</td>
+                    <td className="text-center py-3 px-4 text-green-400">$75-100 + gas</td>
+                    <td className="text-center py-3 px-4">$5,000-50,000+</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Security Audits</td>
+                    <td className="text-center py-3 px-4 text-green-400">OpenZeppelin (included)</td>
+                    <td className="text-center py-3 px-4">$10,000-100,000 extra</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Contract Verification</td>
+                    <td className="text-center py-3 px-4 text-green-400">Automatic</td>
+                    <td className="text-center py-3 px-4">Manual process</td>
+                  </tr>
+                  <tr className="border-b border-white/5">
+                    <td className="py-3 px-4">Technical Knowledge</td>
+                    <td className="text-center py-3 px-4 text-green-400">None required</td>
+                    <td className="text-center py-3 px-4">Solidity expertise</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4">Multi-Chain Support</td>
+                    <td className="text-center py-3 px-4 text-green-400">15+ chains built-in</td>
+                    <td className="text-center py-3 px-4">Extra cost per chain</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+
+          {/* FAQ Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.96 }}
+            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+          >
+            <h2 className="text-3xl font-bold text-white mb-6 text-center">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-white font-semibold mb-2">Do I need programming skills to create an ERC20 token?</h4>
+                <p className="text-gray-400">No coding skills are required. Our platform handles all the technical complexity - you just fill out a simple form with your token details.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Which blockchain should I choose for my token?</h4>
+                <p className="text-gray-400">Ethereum provides maximum credibility but higher fees. Layer 2 networks like Base, Arbitrum, and Polygon offer 90% lower fees with similar security. Consider your target audience and use case.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Can I add my token to MetaMask?</h4>
+                <p className="text-gray-400">Yes! All tokens created with EVMint are standard ERC20 tokens. Simply add the token contract address to MetaMask or any ERC20-compatible wallet.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">How do I make my token tradeable?</h4>
+                <p className="text-gray-400">After creating your token, add liquidity on a decentralized exchange like Uniswap. Our platform includes built-in liquidity tools to make this process simple.</p>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-2">Is the smart contract secure?</h4>
+                <p className="text-gray-400">Yes. We use OpenZeppelin's audited smart contract libraries, the industry standard trusted by Coinbase, Aave, Compound, and thousands of other projects.</p>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Secondary CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -264,7 +476,7 @@ export default function ERC20TokenGeneratorPage() {
             className="text-center"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_erc20', 'bottom_section')}>
-              <button className="px-10 py-4 bg-white/5 border-2 border-white/10 rounded-xl font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+              <button className="px-10 py-4 bg-white/5 border-2 border-white/10 rounded-xl font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-[background-color,color,border-color,box-shadow,opacity] duration-200">
                 Start Generating Your ERC20 Token →
               </button>
             </Link>

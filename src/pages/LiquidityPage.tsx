@@ -139,7 +139,7 @@ export default function LiquidityPage() {
             <div className="flex bg-white/5 rounded-2xl p-2">
               <button
                 onClick={() => setLiquidityMode('add')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                className={`px-4 sm:px-6 py-3 rounded-xl font-medium transition-[background-color,color,box-shadow] duration-200 text-sm sm:text-base cursor-pointer ${
                   liquidityMode === 'add'
                     ? 'bg-blue-500 text-white shadow-lg'
                     : 'text-gray-400 hover:text-white'
@@ -149,7 +149,7 @@ export default function LiquidityPage() {
               </button>
               <button
                 onClick={() => setLiquidityMode('withdraw')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                className={`px-4 sm:px-6 py-3 rounded-xl font-medium transition-[background-color,color,box-shadow] duration-200 text-sm sm:text-base cursor-pointer ${
                   liquidityMode === 'withdraw'
                     ? 'bg-red-500 text-white shadow-lg'
                     : 'text-gray-400 hover:text-white'

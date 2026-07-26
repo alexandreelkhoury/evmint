@@ -45,7 +45,7 @@ export default function TokenForm({
         >
           <Link
             to="/tokens"
-            className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-600/10 border border-blue-500/30 text-blue-400 hover:bg-blue-600/20 hover:border-blue-400 text-sm font-medium transition-all duration-300 group"
+            className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-600/10 border border-blue-500/30 text-blue-400 hover:bg-blue-600/20 hover:border-blue-400 text-sm font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 group"
           >
             <span>See your created tokens</span>
             <motion.svg
@@ -76,7 +76,7 @@ export default function TokenForm({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.9 }}
         >
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="tokenName" className={`block ${typography.label} mb-3`}>
             Token Name *
           </label>
           <div className="relative">
@@ -86,6 +86,7 @@ export default function TokenForm({
               </svg>
             </div>
             <input
+              id="tokenName"
               type="text"
               placeholder="e.g., My Awesome Token"
               value={formData.name}
@@ -107,7 +108,7 @@ export default function TokenForm({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 1.0 }}
         >
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="tokenSymbol" className={`block ${typography.label} mb-3`}>
             Symbol *
           </label>
           <div className="relative">
@@ -117,6 +118,7 @@ export default function TokenForm({
               </svg>
             </div>
             <input
+              id="tokenSymbol"
               type="text"
               placeholder="e.g., MAT"
               value={formData.symbol}
@@ -138,7 +140,7 @@ export default function TokenForm({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 1.1 }}
         >
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="tokenDecimals" className={`block ${typography.label} mb-3`}>
             Decimals
           </label>
 
@@ -149,6 +151,7 @@ export default function TokenForm({
               </svg>
             </div>
             <input
+              id="tokenDecimals"
               type="number"
               min={0}
               max={18}
@@ -170,7 +173,7 @@ export default function TokenForm({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 1.2 }}
         >
-          <label className={`block ${typography.label} mb-3`}>
+          <label htmlFor="tokenSupply" className={`block ${typography.label} mb-3`}>
             Total Supply *
           </label>
 
@@ -181,6 +184,7 @@ export default function TokenForm({
               </svg>
             </div>
             <input
+              id="tokenSupply"
               type="text"
               placeholder="1000000000"
               value={formData.totalSupply}

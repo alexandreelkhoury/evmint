@@ -49,17 +49,6 @@ export default function TransactionProgressModal({
 
   if (!isOpen) return null
 
-  // Debug logging to see what data we have
-  console.log('🔍 Progress Modal Data:', {
-    currentStep,
-    isProcessing,
-    transactionHash,
-    poolAddress,
-    chainId,
-    tokenA: tokenA?.symbol,
-    tokenB: tokenB?.symbol
-  })
-
   const getStepStatus = (step: 'approve' | 'add') => {
     if (error) return 'error'
     
@@ -94,7 +83,6 @@ export default function TransactionProgressModal({
         exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={() => {
-          console.log('🖱️ Backdrop clicked - closing modal')
           if (isProcessing || currentStep) {
             resetLoadingStates()
           }
@@ -235,13 +223,6 @@ export default function TransactionProgressModal({
                 <motion.button
                   onClick={() => {
                     const isCompleted = !isProcessing && !!transactionHash
-                    console.log('🖱️ MAIN Modal button clicked:', isCompleted ? 'Continue' : 'Cancel', {
-                      isCompleted,
-                      isProcessing,
-                      currentStep,
-                      hasTransactionHash: !!transactionHash,
-                      buttonAction: isCompleted ? 'CONTINUE_TO_SUCCESS' : (isProcessing ? 'DISABLED' : 'CANCEL')
-                    })
                     if (!isCompleted) {
                       // Cancel: Reset all states before closing modal
                       resetLoadingStates()

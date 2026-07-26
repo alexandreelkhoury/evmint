@@ -111,7 +111,7 @@ export default function NotFoundPage() {
             >
               <Link
                 to="/"
-                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-cyan-500/50 inline-flex items-center gap-2"
+                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-600 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 shadow-lg hover:shadow-cyan-500/50 inline-flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -131,7 +131,7 @@ export default function NotFoundPage() {
 
               <Link
                 to="/create"
-                className="px-8 py-4 bg-gray-700/50 text-white font-semibold rounded-lg hover:bg-gray-600/50 transition-all duration-200 border border-gray-600 inline-flex items-center gap-2"
+                className="px-8 py-4 bg-gray-700/50 text-white font-semibold rounded-lg hover:bg-gray-600/50 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 border border-gray-600 inline-flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"

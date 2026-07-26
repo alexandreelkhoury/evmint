@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { typography, colors } from '../../../styles/designSystem'
+import { colors } from '../../../styles/designSystem'
 
 interface SuccessModalProps {
   tokenAddress: string
@@ -42,53 +42,79 @@ export default function SuccessModal({
     return num.toLocaleString()
   }
 
-  // Get explorer and DEX URLs based on chain
+  // Get explorer URL based on chain - supports all chains including testnets
   const getExplorerUrl = () => {
     const explorers: Record<string, string> = {
+      // Mainnets
       'Base': 'basescan.org',
       'Ethereum': 'etherscan.io',
+      'Arbitrum One': 'arbiscan.io',
       'Arbitrum': 'arbiscan.io',
       'Optimism': 'optimistic.etherscan.io',
       'Polygon': 'polygonscan.com',
+      'BNB Smart Chain': 'bscscan.com',
       'BSC': 'bscscan.com',
-      'Avalanche': 'snowtrace.io'
+      'Avalanche': 'snowtrace.io',
+      'Fantom': 'ftmscan.com',
+      'Gnosis': 'gnosisscan.io',
+      'Moonbeam': 'moonscan.io',
+      'World Chain': 'worldscan.org',
+      'Blast': 'blastscan.io',
+      'Monad': 'monadscan.com',
+      // Testnets
+      'Sepolia': 'sepolia.etherscan.io',
+      'Base Sepolia': 'sepolia.basescan.org',
+      'Arbitrum Sepolia': 'sepolia.arbiscan.io',
+      'Optimism Sepolia': 'sepolia-optimism.etherscan.io',
+      'Polygon Amoy': 'amoy.polygonscan.com',
+      'BSC Testnet': 'testnet.bscscan.com',
+      'Avalanche Fuji': 'testnet.snowtrace.io',
+      'Moonbase Alpha': 'moonbase.moonscan.io',
+      'Blast Sepolia': 'sepolia.blastscan.io',
+      'Monad Testnet': 'testnet.monadscan.com',
     }
     const domain = explorers[chainName] || 'etherscan.io'
     return `https://${domain}/address/${tokenAddress}`
   }
 
-  // TEASER TWEET - Announce creation (before liquidity)
-  const tweetText = tokenName && tokenSymbol && totalSupply
-    ? `🚀 Just launched $${tokenSymbol} on ${chainName}!
+  // Get clean chain name for hashtag (remove "Sepolia", "Testnet", etc.)
+  const getChainHashtag = () => {
+    return chainName
+      .replace(/\s*(Sepolia|Testnet|Amoy|Fuji|Alpha)\s*/gi, '')
+      .replace(/\s+/g, '')
+  }
 
-💎 ${tokenName}
-📊 Supply: ${formatSupply(totalSupply)}
-⛓️ Chain: ${chainName}
+  // VIRAL TWEET - Optimized for engagement and EVMint marketing
+  const displayName = tokenName || 'My Token'
+  const displaySymbol = tokenSymbol || 'TOKEN'
+  const displaySupply = totalSupply ? formatSupply(totalSupply) : '???'
 
-Adding liquidity soon... 💧
+  const tweetText = `🚀 Just deployed $${displaySymbol} on ${chainName}!
 
-Contract: ${tokenAddress}
+💎 ${displayName}
+📊 ${displaySupply} supply
+💧 Liquidity coming soon...
+
+Built with @EVMint_io - launch tokens on 15+ EVM chains in seconds ⚡
 
 ${getExplorerUrl()}
 
-#${tokenSymbol} #crypto #${chainName.replace(/\s/g, '')} #DeFi`
-    : `🚀 Just launched my token on ${chainName}!
-
-Adding liquidity soon...
-
-Contract: ${tokenAddress}
-
-${getExplorerUrl()}
-
-#crypto #${chainName.replace(/\s/g, '')} #DeFi`
+#${displaySymbol} #${getChainHashtag()} #DeFi #Web3 #Crypto`
 
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
 
   const handleCopyLink = async () => {
     try {
-      const shareMessage = tokenName && tokenSymbol
-        ? `Check out $${tokenSymbol} (${tokenName}) on ${chainName}!\n\nContract: ${tokenAddress}\nExplorer: ${getExplorerUrl()}`
-        : `Check out my token on ${chainName}!\n\nContract: ${tokenAddress}\nExplorer: ${getExplorerUrl()}`
+      const shareMessage = `🚀 $${displaySymbol} just launched on ${chainName}!
+
+💎 ${displayName}
+📊 ${displaySupply} supply
+💧 Liquidity coming soon...
+
+📍 Contract: ${tokenAddress}
+🔗 ${getExplorerUrl()}
+
+Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
 
       await navigator.clipboard.writeText(shareMessage)
       setLinkCopied(true)
@@ -143,10 +169,12 @@ ${getExplorerUrl()}
             {tokenAddress}
           </p>
           <motion.button
+            type="button"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleCopyAddress}
-            className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+            aria-label="Copy contract address"
+            className={`px-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${
               copied
                 ? 'bg-green-500/20 text-green-300'
                 : 'bg-white/10 hover:bg-white/20 text-gray-300'
@@ -183,9 +211,10 @@ ${getExplorerUrl()}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackShare('twitter')}
+            aria-label="Share token launch on Twitter"
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-all group"
+            className="w-full flex items-center justify-center gap-3 px-6 min-h-[44px] bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 group"
           >
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -203,13 +232,15 @@ ${getExplorerUrl()}
 
           {/* Copy Token Info - SECONDARY */}
           <motion.button
+            type="button"
             onClick={() => {
               handleCopyLink()
               trackShare('copy_link')
             }}
+            aria-label="Copy share message for Telegram or Discord"
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all ${
+            className={`w-full flex items-center justify-center gap-3 px-6 min-h-[44px] rounded-xl font-semibold transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
               linkCopied
                 ? 'bg-green-500/20 border-2 border-green-500/50 text-green-300'
                 : 'bg-gray-800/50 border-2 border-gray-700/50 text-gray-300 hover:border-purple-500/50 hover:bg-gray-800'
@@ -315,14 +346,14 @@ ${getExplorerUrl()}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link
             to="/liquidity"
-            className={`inline-flex items-center justify-center px-6 py-3 ${colors.primaryButton} rounded-xl font-medium transition-all hover:shadow-lg`}
+            className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.primaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
             <span>💧</span>
             <span className="ml-2">Add Liquidity</span>
           </Link>
           <Link
             to="/tokens"
-            className={`inline-flex items-center justify-center px-6 py-3 ${colors.secondaryButton} rounded-xl font-medium transition-all hover:shadow-lg`}
+            className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.secondaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
             <span>💎</span>
             <span className="ml-2">View My Tokens</span>
@@ -333,16 +364,20 @@ ${getExplorerUrl()}
         <div className="flex flex-col sm:flex-row gap-2 pt-2">
           <Link
             to="/guides"
-            className="flex-1 text-center px-4 py-2 text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
+            className="flex-1 text-center px-4 min-h-[44px] flex items-center justify-center text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
           >
             📚 Read Guides
           </Link>
-          <Link
-            to="/create"
-            className="flex-1 text-center px-4 py-2 text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
+          <button
+            type="button"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+              window.location.reload()
+            }}
+            className="flex-1 text-center px-4 min-h-[44px] flex items-center justify-center text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
           >
             ➕ Create Another Token
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>

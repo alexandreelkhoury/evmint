@@ -100,7 +100,7 @@ export default function RemoveLiquidityForm({
           <label htmlFor="lpTokenAmount" className={`block ${typography.label} mb-3`}>
             LP Token *
           </label>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-all duration-300 focus-within:border-red-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-red-500/20 focus-within:ring-1 focus-within:ring-red-400/20">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-within:border-red-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-red-500/20 focus-within:ring-1 focus-within:ring-red-400/20">
             {/* Top row: Input and Token selector */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
               {/* Input side (left) */}
@@ -111,7 +111,7 @@ export default function RemoveLiquidityForm({
                   placeholder="0.0"
                   value={lpTokenAmount}
                   onChange={(e) => onLpTokenAmountChange(e.target.value)}
-                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
+                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                   style={{
                     boxShadow: 'none',
                     WebkitAppearance: 'none',
@@ -125,7 +125,7 @@ export default function RemoveLiquidityForm({
                 <button
                   onClick={onLpTokenClick}
                   aria-label="Select LP token"
-                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all duration-200"
+                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                 >
                   {selectedLpToken ? (
                     <>
@@ -185,7 +185,7 @@ export default function RemoveLiquidityForm({
                         key={percentage}
                         onClick={() => onSetPercentageAmount(selectedLpToken, percentage, onLpTokenAmountChange, true)}
                         aria-label={`Set ${percentage} percent of LP token balance`}
-                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
+                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
                       >
                         {percentage}%
                       </button>
@@ -193,7 +193,7 @@ export default function RemoveLiquidityForm({
                     <button
                       onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
                       aria-label="Set maximum LP token balance"
-                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 hover:text-red-200 border border-red-500/30 rounded-lg transition-all duration-200 cursor-pointer"
+                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 hover:text-red-200 border border-red-500/30 rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
                     >
                       MAX
                     </button>
@@ -221,7 +221,7 @@ export default function RemoveLiquidityForm({
             disabled={!isFormValid || isRemovingLiquidity || !isV2Available}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full py-6 text-xl font-semibold rounded-2xl transition-all duration-300 ${
+            className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
               !isFormValid || isRemovingLiquidity || !isV2Available
                 ? colors.primaryButtonDisabled
                 : 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg hover:shadow-red-500/25'

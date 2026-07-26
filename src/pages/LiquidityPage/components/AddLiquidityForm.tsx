@@ -96,7 +96,7 @@ export default function AddLiquidityForm({
           <label htmlFor="tokenAAmount" className={`block ${typography.label} mb-3`}>
             First Token *
           </label>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-all duration-300 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
             {/* Top row: Input and Token selector */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
               {/* Input side (left) */}
@@ -107,7 +107,7 @@ export default function AddLiquidityForm({
                   placeholder="0.0"
                   value={amountA}
                   onChange={(e) => onAmountAChange(e.target.value)}
-                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
+                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                   style={{
                     boxShadow: 'none',
                     WebkitAppearance: 'none',
@@ -121,7 +121,7 @@ export default function AddLiquidityForm({
                 <button
                   onClick={onTokenAClick}
                   aria-label="Select first token"
-                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all duration-200"
+                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                 >
                   {tokenA ? (
                     <>
@@ -178,7 +178,7 @@ export default function AddLiquidityForm({
                         key={percentage}
                         onClick={() => onSetPercentageAmount(tokenA, percentage, onAmountAChange)}
                         aria-label={`Set ${percentage} percent of first token balance`}
-                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
+                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
                       >
                         {percentage}%
                       </button>
@@ -186,7 +186,7 @@ export default function AddLiquidityForm({
                     <button
                       onClick={() => onSetPercentageAmount(tokenA, 100, onAmountAChange)}
                       aria-label="Set maximum first token balance"
-                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-all duration-200 cursor-pointer"
+                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
                     >
                       MAX
                     </button>
@@ -202,7 +202,7 @@ export default function AddLiquidityForm({
           <label htmlFor="tokenBAmount" className={`block ${typography.label} mb-3`}>
             Second Token *
           </label>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-all duration-300 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
             {/* Top row: Input and Token selector */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
               {/* Input side (left) */}
@@ -213,7 +213,7 @@ export default function AddLiquidityForm({
                   placeholder="0.0"
                   value={amountB}
                   onChange={(e) => onAmountBChange(e.target.value)}
-                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-all duration-200"
+                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                   style={{
                     boxShadow: 'none',
                     WebkitAppearance: 'none',
@@ -227,7 +227,7 @@ export default function AddLiquidityForm({
                 <button
                   onClick={onTokenBClick}
                   aria-label="Select second token"
-                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-all duration-200"
+                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                 >
                   {tokenB ? (
                     <>
@@ -284,7 +284,7 @@ export default function AddLiquidityForm({
                         key={percentage}
                         onClick={() => onSetPercentageAmount(tokenB, percentage, onAmountBChange)}
                         aria-label={`Set ${percentage} percent of second token balance`}
-                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-all duration-200 cursor-pointer"
+                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
                       >
                         {percentage}%
                       </button>
@@ -292,7 +292,7 @@ export default function AddLiquidityForm({
                     <button
                       onClick={() => onSetPercentageAmount(tokenB, 100, onAmountBChange)}
                       aria-label="Set maximum second token balance"
-                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-all duration-200 cursor-pointer"
+                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
                     >
                       MAX
                     </button>
@@ -320,7 +320,7 @@ export default function AddLiquidityForm({
             disabled={!isFormValid || isAddingLiquidity || !isV2Available}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full py-6 text-xl font-semibold rounded-2xl transition-all duration-300 ${
+            className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
               !isFormValid || isAddingLiquidity || !isV2Available
                 ? colors.primaryButtonDisabled
                 : colors.primaryButton

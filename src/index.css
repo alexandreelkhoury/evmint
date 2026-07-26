@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,8 +12,14 @@
   }
   
   html {
-    font-family: system-ui, sans-serif;
+    font-family: 'Exo 2', system-ui, sans-serif;
     scroll-behavior: smooth;
+  }
+
+  /* Apply Orbitron to all headings for crypto/Web3 aesthetic */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', 'Exo 2', sans-serif;
+    letter-spacing: -0.02em;
   }
   
   body {
@@ -40,6 +48,26 @@
     outline: 2px solid #60a5fa;
     outline-offset: 2px;
   }
+
+  /* Respect user's motion preferences (WCAG 2.1 - Level AAA) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    /* Disable specific animations that may cause vestibular issues */
+    .animate-spin,
+    .animate-ping,
+    .animate-pulse,
+    .animate-bounce {
+      animation: none !important;
+    }
+  }
   
   /* Enhanced button focus states */
   button:focus-visible,
@@ -51,30 +79,27 @@
     outline-offset: 2px;
   }
 
-  /* Custom Scrollbar Styles */
+  /* Custom Scrollbar — thin, subtle */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 4px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(31, 41, 55, 0.5);
-    border-radius: 10px;
+    background: transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
-    border-radius: 10px;
-    border: 2px solid rgba(31, 41, 55, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #2563eb, #7c3aed);
+    background: rgba(255, 255, 255, 0.2);
   }
 
-  /* Firefox scrollbar */
+  /* Firefox */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #3b82f6 rgba(31, 41, 55, 0.5);
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
   }
 }

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useChainConfig } from '../hooks/useChainConfig'
 import NetworkSelectorModal from './NetworkSelectorModal'
 import { useFirebaseAnalytics } from './FirebaseProvider'
-import { logEvent as firebaseLogEvent } from 'firebase/analytics'
+import { logEvent } from '../utils/analytics'
 
 /**
  * Chain Selector Button
@@ -22,12 +22,11 @@ export default function ChainSelectorButton() {
 
   const handleClick = () => {
     setModalOpen(true)
-    if (analytics) {
-      firebaseLogEvent(analytics, 'network_selector_opened', {
-        current_chain: name,
-        is_supported: isSupported,
-      })
-    }
+    // Track event - will queue if analytics not ready yet
+    logEvent(analytics!, 'network_selector_opened', {
+      current_chain: name,
+      is_supported: isSupported,
+    })
   }
 
   return (
@@ -36,12 +35,13 @@ export default function ChainSelectorButton() {
         onClick={handleClick}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className={`relative flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg font-medium transition-all border-2 backdrop-blur-sm ${
+        className={`relative flex items-center gap-2 px-3 sm:px-4 min-h-[44px] rounded-lg font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 border-2 backdrop-blur-sm ${
           isSupported
             ? 'bg-gray-800/80 border-gray-700 hover:border-gray-600 hover:bg-gray-800 text-white'
             : 'bg-red-500/20 border-red-500/50 hover:border-red-500 text-red-400 animate-pulse'
         }`}
         title={isSupported ? `Current network: ${name}` : `Unsupported network: ${name}`}
+        aria-label={`Select blockchain network. Current: ${name}`}
       >
       {/* Chain Icon */}
       <span className="text-lg sm:text-xl">{icon}</span>
@@ -55,7 +55,7 @@ export default function ChainSelectorButton() {
       {/* Warning indicator for unsupported chains */}
       {!isSupported && (
         <span className="absolute -top-1 -right-1 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
         </span>
       )}
