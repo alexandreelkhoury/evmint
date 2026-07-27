@@ -138,6 +138,49 @@
     <priority>0.75</priority>
   </url>
 
+  <!-- Chain-Specific Guides (High SEO Value) -->
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-token-on-base</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-token-on-arbitrum</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-token-on-robinhood-chain</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-token-on-polygon</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-token-on-bsc</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://evmint.io/blog/how-to-create-token-on-ethereum</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- About Page -->
   <url>
     <loc>https://evmint.io/about</loc>
