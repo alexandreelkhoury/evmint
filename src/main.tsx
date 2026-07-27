@@ -1,14 +1,16 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { MotionConfig } from 'framer-motion'
 import './index.css'
 import App from './App.tsx'
 import { initializeWeb3Polyfill } from './utils/web3Polyfill'
 
-// Initialiser la polyfill web3 pour éviter les warnings MetaMask
 initializeWeb3Polyfill()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <MotionConfig reducedMotion="user">
+      <App />
+    </MotionConfig>
   </StrictMode>,
 )

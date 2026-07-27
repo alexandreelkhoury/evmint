@@ -1,7 +1,7 @@
 export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
-    answer: "Token creation has a platform fee of $75-100 USD equivalent (varies by chain: 0.02 ETH on Ethereum/Base/Arbitrum/Optimism, 0.075 BNB on BSC, 400 MATIC on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam, 2000 MON on Monad) plus gas fees. Layer 2 networks and high-performance L1s like Monad offer up to 95% lower gas costs while maintaining full EVM compatibility.",
+    answer: "Token creation costs ~$80 USD equivalent on any chain, paid in native tokens (0.02 ETH on Ethereum/Base/Arbitrum/Optimism/Robinhood Chain/MegaETH, 0.075 BNB on BSC, 400 POL on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam, 0.1 MON on Monad). This single fee covers deployment, gas, and auto-verification. No subscription or hidden charges.",
     relatedGuide: "getting-started"
   },
   {
@@ -63,7 +63,7 @@ export const faqs = [
   },
   {
     question: "What are gas fees across different blockchains?",
-    answer: "Gas fees vary by chain: Layer 2s (Arbitrum, Optimism) offer 90-95% savings vs Ethereum mainnet. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation has a $75-100 platform fee (in native tokens) plus gas fees. Fees fluctuate with network congestion.",
+    answer: "Gas fees vary by chain: Layer 2s (Base, Arbitrum, Optimism) offer 90-95% savings vs Ethereum mainnet. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation on EVMint costs ~$80 equivalent on any chain (one fee covers everything). Fees fluctuate with network congestion.",
     relatedGuide: "getting-started"
   },
   {

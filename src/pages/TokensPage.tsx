@@ -12,7 +12,7 @@ import SEO from '../components/SEO'
 import { CardSkeleton } from '../components/LoadingSkeleton'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenDetails } from '../hooks/useTokenDetails'
-import { animations, typography, colors } from '../styles/designSystem'
+import { animations, typography, colors, layout } from '../styles/designSystem'
 import { getChainById } from '../config/chains'
 import StandardPageHeader from '../components/StandardPageHeader'
 import NetworkSelectorModal from '../components/NetworkSelectorModal'
@@ -230,7 +230,7 @@ export default function TokensPage() {
           canonical="/tokens"
         />
         
-        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20`}>
+        <div className={`relative z-10 ${layout.pageContainer} pb-12`}>
           {/* Modern Token Dashboard Header */}
           <StandardPageHeader
             badgeIcon="💎"
@@ -275,7 +275,7 @@ export default function TokensPage() {
           canonical="/tokens"
         />
         
-        <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20`}>
+        <div className={`relative z-10 ${layout.pageContainer} pb-12`}>
           {/* Modern Token Dashboard Header */}
           <StandardPageHeader
             badgeIcon="💎"
@@ -360,7 +360,7 @@ export default function TokensPage() {
         canonical="/tokens"
       />
       
-      <div className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20`}>
+      <div className={`relative z-10 ${layout.pageContainer} pb-12`}>
         {/* Modern Token Dashboard Header */}
         <StandardPageHeader
           badgeIcon="💎"

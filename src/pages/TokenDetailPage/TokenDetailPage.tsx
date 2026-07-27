@@ -120,7 +120,7 @@ export default function TokenDetailPage() {
   if (!networkId) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
               <svg className="w-10 h-10 text-amber-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +147,7 @@ export default function TokenDetailPage() {
           description="View live token data, chart, and trade activity."
           canonical={`/token/${tokenAddress}`}
         />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <Breadcrumb items={[
             { label: 'Home', href: '/' },
             { label: 'Tokens', href: '/tokens' },
@@ -180,7 +180,7 @@ export default function TokenDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
         <BackgroundBlobs />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
               <svg className="w-10 h-10 text-red-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@ export default function TokenDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
         <BackgroundBlobs />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           {/* Breadcrumb skeleton */}
           <div className="flex items-center gap-2 mb-8 pt-4">
             <div className="h-4 w-12 bg-white/10 rounded animate-pulse" />
@@ -297,7 +297,7 @@ export default function TokenDetailPage() {
           hidden: {},
           visible: { transition: { staggerChildren: 0.08 } },
         }}
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-20"
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12"
       >
         {/* Breadcrumb */}
         <Breadcrumb items={[
