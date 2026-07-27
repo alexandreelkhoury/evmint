@@ -83,7 +83,7 @@ export default function ERC20TokenGeneratorPage() {
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_erc20', 'hero_section')}>
-              <button className="group relative px-12 py-5 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-xl font-bold text-lg text-white shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/70 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:scale-105">
+              <button className={`group relative px-12 py-5 ${colors.primaryButton} text-lg active:scale-[0.97]`}>
                 <span className="relative z-10 flex items-center gap-3">
                   ⚡ Generate Your ERC20 Token Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

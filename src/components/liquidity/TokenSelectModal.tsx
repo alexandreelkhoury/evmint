@@ -1,6 +1,9 @@
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { colors, typography } from '../../styles/designSystem'
+import { useScrollLock } from '../../hooks/useScrollLock'
+import { useModalA11y } from '../../hooks/useModalA11y'
+import CloseButton from '../CloseButton'
 
 interface Token {
   address: string
@@ -44,10 +47,13 @@ export default function TokenSelectModal({
   userLPTokens = [],
   mode = 'add'
 }: TokenSelectModalProps) {
+  useScrollLock(isOpen)
+  const modalRef = useModalA11y(isOpen, onClose)
+
   if (!isOpen) return null
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={title || 'Select Token'} ref={modalRef}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -63,14 +69,10 @@ export default function TokenSelectModal({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className={`${typography.cardTitle} text-xl`}>{title}</h3>
-          <button
+          <CloseButton
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            ariaLabel="Close token selection modal"
+          />
         </div>
 
         {showTokenInput && (
@@ -89,11 +91,12 @@ export default function TokenSelectModal({
               <motion.button
                 onClick={onAddTokenFromAddress}
                 disabled={isLoadingToken || !tokenAddressInput}
+                aria-label="Add token from address"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-4 py-3 rounded-xl font-medium ${
-                  isLoadingToken || !tokenAddressInput 
-                    ? colors.primaryButtonDisabled 
+                className={`px-4 py-3 min-h-[44px] rounded-xl font-medium ${
+                  isLoadingToken || !tokenAddressInput
+                    ? colors.primaryButtonDisabled
                     : colors.primaryButton
                 }`}
               >
@@ -119,7 +122,7 @@ export default function TokenSelectModal({
                   key={`lp-${token.address}`}
                   onClick={() => onSelectToken(token)}
                   whileTap={{ scale: 0.98 }}
-                  className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
+                  className={`w-full p-4 rounded-xl text-left transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
                     selectedToken?.address === token.address
                       ? 'bg-yellow-500/20 border-2 border-yellow-500/50'
                       : 'hover:bg-white/10 border-2 border-transparent hover:border-white/20'
@@ -168,7 +171,7 @@ export default function TokenSelectModal({
               key={token.address}
               onClick={() => onSelectToken(token)}
               whileTap={{ scale: 0.98 }}
-              className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
+              className={`w-full p-4 rounded-xl text-left transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
                 selectedToken?.address === token.address
                   ? 'bg-blue-500/20 border-2 border-blue-500/50'
                   : 'hover:bg-white/10 border-2 border-transparent hover:border-white/20'

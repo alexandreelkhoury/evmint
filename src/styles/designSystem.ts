@@ -39,16 +39,19 @@ export const animations = {
     }
   },
   
-  // Hover effects
+  // Hover effects — standardized scales
+  // Cards/containers: 1.02 hover, 0.98 tap
+  // Standalone CTAs: 1.03 hover, 0.97 tap
   hoverScale: {
-    whileHover: { scale: 1.05, y: -5 },
+    whileHover: { scale: 1.02 },
+    whileTap: { scale: 0.98 },
     transition: { type: "spring", stiffness: 400, damping: 17 }
   },
-  
+
   // Button hover
   buttonHover: {
-    whileHover: { scale: 1.05 },
-    whileTap: { scale: 0.95 },
+    whileHover: { scale: 1.03 },
+    whileTap: { scale: 0.97 },
     transition: { type: "spring", stiffness: 400, damping: 17 }
   }
 }

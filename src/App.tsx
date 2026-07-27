@@ -1,14 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { lazy, Suspense, createContext, useContext } from 'react'
-import PrivyProvider from './components/PrivyProvider'
+import LazyWeb3Provider from './components/LazyWeb3Provider'
 import { FirebaseProvider } from './components/FirebaseProvider'
 import ErrorBoundary from './components/ErrorBoundary'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import MobileBottomNav from './components/MobileBottomNav'
 import ScrollToTop from './components/ScrollToTop'
 import { ToastContainer, useToasts } from './components/Toast'
-import NetworkManager from './components/NetworkManager'
+import NetworkManagerLazy from './components/NetworkManagerLazy'
 import LoadingSpinner from './components/LoadingSpinner'
 import { LiquidityProvider } from './contexts/LiquidityContext'
 
@@ -27,6 +28,10 @@ const MultiChainTokenCreatorPage = lazy(() => import('./pages/MultiChainTokenCre
 const ERC20TokenGeneratorPage = lazy(() => import('./pages/ERC20TokenGeneratorPage'))
 const MemeCoinCreatorPage = lazy(() => import('./pages/MemeCoinCreatorPage'))
 const CryptocurrencyCreatorPage = lazy(() => import('./pages/CryptocurrencyCreatorPage'))
+const BlogPage = lazy(() => import('./pages/BlogPage'))
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
+const TokenDetailPage = lazy(() => import('./pages/TokenDetailPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'))
 
@@ -49,10 +54,13 @@ function AppContent() {
     <ErrorBoundary>
       <ToastContext.Provider value={toastManager}>
         <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[99999] focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-lg focus:text-sm focus:font-semibold">
+            Skip to content
+          </a>
           <ScrollToTop />
-          <NetworkManager />
+          <NetworkManagerLazy />
           <Header />
-          <main className="pt-16 flex-1">
+          <main id="main-content" className="pt-16 pb-24 md:pb-0 flex-1">
             <Suspense fallback={<LoadingSpinner message="Loading page..." />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
@@ -74,12 +82,17 @@ function AppContent() {
                 <Route path="/erc20-token-generator" element={<ERC20TokenGeneratorPage />} />
                 <Route path="/meme-coin-creator" element={<MemeCoinCreatorPage />} />
                 <Route path="/cryptocurrency-creator" element={<CryptocurrencyCreatorPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/blog/:slug" element={<BlogPostPage />} />
+                <Route path="/token/:address" element={<TokenDetailPage />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/500" element={<ServerErrorPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
           </main>
           <Footer />
+          <MobileBottomNav />
           <ToastContainer
             toasts={toastManager.toasts}
             onRemove={toastManager.removeToast}
@@ -94,13 +107,13 @@ function AppContent() {
 function App() {
   return (
     <HelmetProvider>
-      <PrivyProvider>
-        <FirebaseProvider>
-          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <FirebaseProvider>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <LazyWeb3Provider>
             <AppContent />
-          </Router>
-        </FirebaseProvider>
-      </PrivyProvider>
+          </LazyWeb3Provider>
+        </Router>
+      </FirebaseProvider>
     </HelmetProvider>
   )
 }

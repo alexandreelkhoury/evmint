@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { colors } from '../../styles/designSystem'
 import { useScrollLock } from '../../hooks/useScrollLock'
+import { useModalA11y } from '../../hooks/useModalA11y'
 import { getChainName } from '../../config/chains'
 
 interface Token {
@@ -44,8 +45,8 @@ export default function TransactionProgressModal({
   chainId,
   resetLoadingStates
 }: TransactionProgressModalProps) {
-  // Lock body scroll when modal is open
   useScrollLock(isOpen)
+  const modalRef = useModalA11y(isOpen, onClose)
 
   if (!isOpen) return null
 
@@ -76,7 +77,7 @@ export default function TransactionProgressModal({
   }
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Transaction Progress" ref={modalRef}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

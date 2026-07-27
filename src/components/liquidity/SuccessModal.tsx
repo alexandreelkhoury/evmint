@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { colors, typography } from '../../styles/designSystem'
 import { getChainById, getExplorerUrl } from '../../config/chains'
 import { useScrollLock } from '../../hooks/useScrollLock'
+import { useModalA11y } from '../../hooks/useModalA11y'
 
 interface SuccessModalProps {
   isOpen: boolean
@@ -25,8 +26,8 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
   const [isCopied, setIsCopied] = useState(false)
   const [shareMessageCopied, setShareMessageCopied] = useState(false)
 
-  // Lock body scroll when modal is open
   useScrollLock(isOpen)
+  const modalRef = useModalA11y(isOpen, onClose)
 
   if (!isOpen) return null
 
@@ -122,7 +123,7 @@ Contract: ${pool.tokenAddress}`
   }
   
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={isWithdrawal ? 'Liquidity Removed' : 'Liquidity Added'} ref={modalRef}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
