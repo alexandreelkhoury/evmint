@@ -63,8 +63,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="bg-gradient-to-br from-white/[0.07] via-white/[0.03] to-transparent backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-xl shadow-black/20 hover:border-white/[0.18] hover:shadow-2xl hover:shadow-blue-500/[0.06] transition-all duration-300 ease-out group"
-      whileHover={{ y: -3 }}
+      className="bg-gray-800/60 border border-white/[0.06] rounded-xl hover:border-white/[0.14] transition-[border-color] duration-200 group"
     >
       {/* Header: avatar + name/symbol + chain pill */}
       <div className="p-5 pb-0">
@@ -75,11 +74,11 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
               <img
                 src={displayTokenInfo.imageUrl}
                 alt={displayTokenInfo.name}
-                className="w-10 h-10 rounded-full ring-1 ring-white/10 group-hover:ring-blue-500/30 transition-all duration-300 object-cover"
+                className="w-10 h-10 rounded-full ring-1 ring-white/10 object-cover"
                 onError={(e) => { e.currentTarget.style.display = 'none' }}
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center ring-1 ring-white/10 group-hover:ring-blue-500/30 transition-all duration-300">
+              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center ring-1 ring-white/10">
                 <span className="text-white font-semibold text-sm">
                   {displayTokenInfo.symbol.charAt(0)}
                 </span>
@@ -109,44 +108,31 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
         </div>
       </div>
 
-      {/* Balance -- the hero number */}
+      {/* Balance */}
       <div className="px-5 pt-4 pb-3">
-        <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest mb-1">
-          Balance
-        </p>
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-display font-bold text-white tabular-nums leading-none">
+          <span className="text-xl font-semibold text-white tabular-nums leading-none">
             {parsedBalance > 0 ? parsedBalance.toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'}
           </span>
-          <span className="text-xs font-medium text-gray-500">
+          <span className="text-xs text-gray-500">
             {displayTokenInfo.symbol}
           </span>
         </div>
-      </div>
-
-      {/* Stats: supply + decimals */}
-      <div className="mx-5 flex items-center gap-px rounded-lg overflow-hidden mb-4">
-        <div className="flex-1 bg-white/[0.03] px-3 py-2.5 rounded-l-lg">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-0.5">Supply</p>
-          <p className="text-sm font-semibold text-gray-200 tabular-nums">
-            {parsedSupply > 1_000_000
-              ? `${(parsedSupply / 1_000_000).toFixed(1)}M`
-              : parsedSupply > 1_000
-                ? `${(parsedSupply / 1_000).toFixed(1)}K`
-                : parsedSupply.toLocaleString()}
-          </p>
-        </div>
-        <div className="flex-1 bg-white/[0.03] px-3 py-2.5 rounded-r-lg">
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-0.5">Decimals</p>
-          <p className="text-sm font-semibold text-gray-200 tabular-nums">{displayTokenInfo.decimals}</p>
-        </div>
+        <p className="text-xs text-gray-600 mt-1.5 tabular-nums">
+          Supply: {parsedSupply > 1_000_000
+            ? `${(parsedSupply / 1_000_000).toFixed(1)}M`
+            : parsedSupply > 1_000
+              ? `${(parsedSupply / 1_000).toFixed(1)}K`
+              : parsedSupply.toLocaleString()}
+          {' · '}{displayTokenInfo.decimals} decimals
+        </p>
       </div>
 
       {/* Contract address -- clickable to copy */}
       <div className="mx-5 mb-4">
         <button
           onClick={handleCopyAddress}
-          className="w-full flex items-center justify-between gap-2 bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12] rounded-lg px-3 py-2 transition-all duration-200 cursor-pointer group/addr"
+          className="w-full flex items-center justify-between gap-2 bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.10] rounded-lg px-3 py-2 transition-[background-color,border-color] duration-150 cursor-pointer group/addr"
           title={isCopied ? 'Copied!' : `Copy ${tokenData.address}`}
         >
           <span className="text-xs font-mono text-gray-400 group-hover/addr:text-gray-300 transition-colors">
@@ -180,7 +166,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
         </Link>
         <Link
           to="/liquidity"
-          className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-all duration-150 cursor-pointer"
+          className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -192,7 +178,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
             const explorerUrl = chainConfig?.explorer.url || 'https://basescan.org'
             window.open(`${explorerUrl}/token/${tokenData.address}`, '_blank')
           }}
-          className="shrink-0 inline-flex items-center justify-center w-9 h-9 bg-white/[0.03] hover:bg-white/[0.08] text-gray-500 hover:text-gray-300 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-all duration-150 cursor-pointer"
+          className="shrink-0 inline-flex items-center justify-center w-9 h-9 bg-white/[0.03] hover:bg-white/[0.08] text-gray-500 hover:text-gray-300 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
           title="View on explorer"
           aria-label="View on block explorer"
         >
