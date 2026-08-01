@@ -29,7 +29,7 @@ export default function MultiChainTokenCreatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
         title="Multi-Chain Token Creator - Deploy ERC20 on 15+ EVM Blockchains | EVMint"
         description="Create ERC20 tokens on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche & more. Multi-chain token deployment in 5 seconds. No coding required. Ultra-low fees."

@@ -82,7 +82,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 relative">
+    <div className="bg-gray-900 relative">
 
       <SEO
         title="EVMint - Multi-Chain Token Creator | Deploy ERC20 Tokens on 15+ EVM Chains"

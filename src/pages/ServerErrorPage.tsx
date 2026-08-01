@@ -25,7 +25,7 @@ export default function ServerErrorPage() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
+      <div className="bg-gray-900 text-white flex items-center justify-center p-4">
         <div className="max-w-2xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

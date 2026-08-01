@@ -27,7 +27,7 @@ export default function ERC20TokenGeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
         title="ERC20 Token Generator - Create Custom ERC20 Tokens in 5 Seconds | EVMint"
         description="Generate ERC20 tokens with custom parameters. Deploy on Ethereum, Base, Arbitrum, Polygon & more. No coding needed. Automatic verification. Start creating your ERC20 token now!"

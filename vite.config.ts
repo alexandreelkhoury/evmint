@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['@base-org/account'],
-    include: ['@privy-io/react-auth', '@privy-io/wagmi', '@tanstack/react-query', 'framer-motion']
+    // Don't pre-bundle Web3 libraries - let them be lazily loaded
+    include: ['framer-motion']
   },
   define: {
     global: 'globalThis',
@@ -23,39 +24,60 @@ export default defineConfig({
       external: ['@safe-globalThis/safe-apps-sdk', '@safe-globalThis/safe-apps-provider'],
       plugins: [],
       output: {
-        manualChunks: {
-          // Core React libraries
-          'vendor-react': ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
+        /**
+         * Smart chunk splitting for lazy Web3 loading
+         *
+         * Strategy: Use a function-based manualChunks to ensure Web3 libraries
+         * are only bundled together and not pulled into the main bundle.
+         */
+        manualChunks(id) {
+          // Web3 core libraries - should be lazily loaded
+          if (
+            id.includes('node_modules/wagmi') ||
+            id.includes('node_modules/viem') ||
+            id.includes('node_modules/@privy-io') ||
+            id.includes('node_modules/@tanstack/react-query') ||
+            id.includes('node_modules/@wagmi') ||
+            id.includes('node_modules/@walletconnect') ||
+            id.includes('node_modules/@reown') ||
+            id.includes('node_modules/@web3modal') ||
+            id.includes('node_modules/@safe-global')
+          ) {
+            return 'vendor-web3'
+          }
 
-          // Web3 and wallet libraries (largest bundle)
-          'vendor-web3': [
-            'wagmi',
-            'viem',
-            '@privy-io/react-auth',
-            '@privy-io/wagmi',
-            '@tanstack/react-query',
-            'ethers'
-          ],
+          // React core - loaded immediately
+          if (
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-dom/') ||
+            id.includes('node_modules/react-router-dom') ||
+            id.includes('node_modules/react-helmet-async')
+          ) {
+            return 'vendor-react'
+          }
 
-          // UI and animation libraries
-          'vendor-ui': [
-            'framer-motion',
-            '@heroicons/react',
-            '@web3icons/react'
-          ],
+          // UI libraries
+          if (
+            id.includes('node_modules/framer-motion') ||
+            id.includes('node_modules/@heroicons') ||
+            id.includes('node_modules/@web3icons')
+          ) {
+            return 'vendor-ui'
+          }
 
-          // Firebase Analytics
-          'vendor-firebase': [
-            'firebase/app',
-            'firebase/analytics'
-          ],
+          // Firebase
+          if (id.includes('node_modules/firebase')) {
+            return 'vendor-firebase'
+          }
 
-          // Utilities and validation
-          'vendor-utils': [
-            'zod',
-            'dompurify',
-            'validator'
-          ]
+          // Utilities
+          if (
+            id.includes('node_modules/zod') ||
+            id.includes('node_modules/dompurify') ||
+            id.includes('node_modules/validator')
+          ) {
+            return 'vendor-utils'
+          }
         }
       },
       onwarn(warning, warn) {

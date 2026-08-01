@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
         canonical="/privacy"
       />
 
-      <div className="min-h-screen bg-gray-900 text-gray-300 py-16 px-4">
+      <div className="bg-gray-900 text-gray-300 py-16 px-4">
         <div className="max-w-3xl mx-auto">
 
           <div className="mb-12">

@@ -27,7 +27,7 @@ export default function MemeCoinCreatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
         title="Meme Coin Creator - Launch Your Meme Token in 5 Seconds | EVMint"
         description="Create your own meme coin on Ethereum, Base, Arbitrum, Polygon & more. Deploy in 5 seconds. No coding. Ultra-low fees on L2. Add liquidity on Uniswap. Start your meme coin empire!"

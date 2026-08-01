@@ -27,7 +27,7 @@ export default function CryptocurrencyCreatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
         title="Cryptocurrency Creator - Launch Your Own Crypto Token in 5 Seconds | EVMint"
         description="Create your own cryptocurrency token instantly! Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. No coding required. Ultra-low fees on L2. Add liquidity on Uniswap. Start your crypto project today!"

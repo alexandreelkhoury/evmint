@@ -53,7 +53,7 @@ export default function StandardPageHeader({
 
   return (
     <motion.div
-      className="text-center mb-20"
+      className="text-center mb-10 sm:mb-20"
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
@@ -72,7 +72,7 @@ export default function StandardPageHeader({
 
       {/* Title */}
       <motion.h1
-        className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
+        className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
@@ -99,13 +99,13 @@ export default function StandardPageHeader({
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
-        className="flex justify-center items-center space-x-8 mt-12"
+        className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 mt-12"
       >
         {stats.map((stat, index) => (
-          <div key={index} className="flex items-center">
-            {index > 0 && <div className="w-px h-8 bg-gray-700 mr-8"></div>}
+          <div key={index} className="flex items-center gap-4 sm:gap-0">
+            {index > 0 && <div className="hidden sm:block w-px h-8 bg-gray-700 sm:mr-8"></div>}
             <div className="text-center">
-              <div className={`text-2xl font-bold ${colorMap[stat.color]}`}>
+              <div className={`text-lg sm:text-2xl font-bold ${colorMap[stat.color]}`}>
                 {stat.value}
               </div>
               <div className="text-sm text-gray-400">{stat.label}</div>
@@ -128,7 +128,7 @@ export default function StandardPageHeader({
             onClick={onNetworkClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="cursor-pointer transition-all duration-200 hover:opacity-80"
+            className="cursor-pointer transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:opacity-80"
             title="Click to change network"
           >
             <ChainBadge chainId={chainId} size="md" />

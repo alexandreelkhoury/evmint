@@ -45,6 +45,12 @@ export const loadFirebaseAnalytics = async (): Promise<import('firebase/analytic
     return null
   }
 
+  // Skip analytics on localhost / dev — only track on production domain
+  const isProduction = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')
+  if (!isProduction) {
+    return null
+  }
+
   try {
     // Dynamic imports - these won't be in the initial bundle
     const [{ initializeApp }, { getAnalytics, isSupported }] = await Promise.all([

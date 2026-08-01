@@ -280,7 +280,7 @@ export default function GuidesPage() {
         structuredData={schemaData}
       />
       <motion.div
-        className="min-h-screen bg-gray-900 py-12"
+        className="bg-gray-900 py-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}

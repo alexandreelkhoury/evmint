@@ -421,7 +421,7 @@ export default function GuidePage() {
 
   if (!guide) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black flex items-center justify-center">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-4">
             Guide Not Found
@@ -440,7 +440,7 @@ export default function GuidePage() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black"
+      className="bg-gradient-to-br from-gray-900 via-gray-900 to-black"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}

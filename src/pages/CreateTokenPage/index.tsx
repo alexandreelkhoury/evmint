@@ -188,7 +188,7 @@ export default function CreateTokenPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
         {/* Loading skeleton */}
         <div className={`relative z-10 ${layout.pageContainer} pb-20`}>
           <div className="animate-pulse space-y-8">
@@ -201,7 +201,7 @@ export default function CreateTokenPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>

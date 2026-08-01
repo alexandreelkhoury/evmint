@@ -119,7 +119,7 @@ export default function TokenDetailPage() {
   // Unsupported network
   if (!networkId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
@@ -140,7 +140,7 @@ export default function TokenDetailPage() {
   // Not indexed state
   if (notIndexed && !poolLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
         <BackgroundBlobs />
         <SEO
           title={`Token ${tokenAddress?.slice(0, 8)}... | EVMint`}
@@ -178,7 +178,7 @@ export default function TokenDetailPage() {
   // Error state
   if (poolError && !poolLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
         <BackgroundBlobs />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="text-center py-20">
@@ -204,7 +204,7 @@ export default function TokenDetailPage() {
   // Issue #5: Full-page loading skeleton
   if (poolLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
         <BackgroundBlobs />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           {/* Breadcrumb skeleton */}
@@ -280,7 +280,7 @@ export default function TokenDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <BackgroundBlobs />
 
       <SEO

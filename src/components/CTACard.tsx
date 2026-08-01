@@ -83,7 +83,7 @@ export default function CTACard({
                 button.variant === 'primary' ? colors.primaryButton : colors.secondaryButton
               } ${
                 button.variant === 'primary' ? 'font-semibold' : 'font-medium'
-              } text-lg rounded-2xl`
+              } text-lg rounded-2xl cursor-pointer`
 
               return (
                 <motion.div
