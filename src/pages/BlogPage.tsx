@@ -80,15 +80,6 @@ export default function BlogPage() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16 pt-8"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 mb-6"
-          >
-            <span className="text-sm font-medium text-purple-400">Knowledge Hub</span>
-          </motion.div>
-
           <h1 className={`${typography.pageTitle} mb-6`}>
             EVMint <span className={typography.pageTitleGradient}>Blog</span>
           </h1>
