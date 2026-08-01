@@ -271,7 +271,7 @@ export default function LiquidityPage() {
             isOpen={showTokenModalA}
             onClose={() => setShowTokenModalA(false)}
             title="Select First Token"
-            tokens={[...availableTokens, ...userCreatedTokens, ...customTokens]}
+            tokens={[...availableTokens, ...userCreatedTokens, ...customTokens].filter(t => !tokenB || t.address.toLowerCase() !== tokenB.address.toLowerCase())}
             selectedToken={tokenA || undefined}
             onSelectToken={(token) => {
               setTokenA(token)
@@ -293,7 +293,7 @@ export default function LiquidityPage() {
             isOpen={showTokenModalB}
             onClose={() => setShowTokenModalB(false)}
             title="Select Second Token"
-            tokens={[...availableTokens, ...userCreatedTokens, ...customTokens]}
+            tokens={[...availableTokens, ...userCreatedTokens, ...customTokens].filter(t => !tokenA || t.address.toLowerCase() !== tokenA.address.toLowerCase())}
             selectedToken={tokenB || undefined}
             onSelectToken={(token) => {
               setTokenB(token)
