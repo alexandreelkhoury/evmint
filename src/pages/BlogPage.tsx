@@ -7,7 +7,7 @@ import { trackPageView } from '../utils/analytics'
 import { blogPosts, getFeaturedPosts, BlogPost } from '../data/blogData'
 import { colors, typography, layout } from '../styles/designSystem'
 import { initializeApp, getApps } from 'firebase/app'
-import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { firebaseConfig } from '../config/firebase'
 
 const categories = ['All', 'Tutorials', 'Guides', 'Strategy']
@@ -298,23 +298,42 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
 function NewsletterForm() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !email.includes('@')) return
+    setErrorMsg('')
+
+    const trimmed = email.trim().toLowerCase()
+    if (!isValidEmail(trimmed)) {
+      setErrorMsg('Please enter a valid email address.')
+      return
+    }
 
     setStatus('loading')
     try {
       const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
       const db = getFirestore(app)
-      await addDoc(collection(db, 'subscribers'), {
-        email: email.trim().toLowerCase(),
+      // Use email as document ID — prevents duplicates automatically
+      // setDoc with merge:true means re-subscribing just updates the timestamp
+      await setDoc(doc(db, 'subscribers', trimmed), {
+        email: trimmed,
         subscribedAt: serverTimestamp(),
         source: 'blog'
-      })
+      }, { merge: true })
       setStatus('success')
       setEmail('')
-    } catch {
+    } catch (err: any) {
+      const msg = err?.message || ''
+      if (msg.includes('permission') || msg.includes('PERMISSION_DENIED')) {
+        setErrorMsg('Subscription service is temporarily unavailable.')
+      } else if (msg.includes('network') || msg.includes('Failed to fetch')) {
+        setErrorMsg('Network error. Check your connection and try again.')
+      } else {
+        setErrorMsg('Something went wrong. Please try again.')
+      }
       setStatus('error')
     }
   }
@@ -336,7 +355,7 @@ function NewsletterForm() {
             required
             placeholder="your@email.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => { setEmail(e.target.value); if (status === 'error') setStatus('idle') }}
             className={`${colors.input} flex-1 rounded-xl`}
             disabled={status === 'loading'}
           />
@@ -349,8 +368,8 @@ function NewsletterForm() {
           </button>
         </form>
       )}
-      {status === 'error' && (
-        <p className="text-red-400 text-sm mt-3">Something went wrong. Try again.</p>
+      {errorMsg && (
+        <p className="text-red-400 text-sm mt-3">{errorMsg}</p>
       )}
     </>
   )
