@@ -26,6 +26,7 @@ interface CreatedToken extends TokenData {
   txHash: string
   chainId: number
   imageUrl?: string
+  cachedBalance?: string // Last known balance, updated on each fetch
 }
 
 // Storage for user tokens
@@ -222,13 +223,14 @@ export function useOpenZeppelinTokenDeployment() {
   }, [userAddress, chainId, loadUserTokens])
 
   const addTokenToStorage = (tokenAddress: string, txHash: string) => {
-    // Store basic info - real details will be fetched from blockchain
+    // Store the actual form data — no need to refetch name/symbol/supply/decimals later
+    const formData = pendingTokenDataRef.current
     const newToken: CreatedToken = {
       address: tokenAddress,
-      name: 'Loading...', // Will be updated when we read from contract
-      symbol: 'LOADING',
-      totalSupply: '0',
-      decimals: 18,
+      name: formData?.name || 'Unknown Token',
+      symbol: formData?.symbol || '???',
+      totalSupply: formData?.totalSupply || '0',
+      decimals: formData?.decimals ?? 18,
       creator: userAddress!,
       createdAt: Date.now(),
       txHash,

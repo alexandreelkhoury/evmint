@@ -169,7 +169,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
           className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a8 8 0 0 0 8-8c0-3.5-2.5-6.5-5-9.5L12 0l-3 3.5C6.5 6.5 4 9.5 4 13a8 8 0 0 0 8 8z" />
           </svg>
           Liquidity
         </Link>
