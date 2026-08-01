@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import WalletButton from '../../../components/WalletButton'
-import { colors, typography } from '../../../styles/designSystem'
 import { formatUnits } from 'viem'
 
 interface Token {
@@ -65,173 +64,167 @@ export default function RemoveLiquidityForm({
 }: RemoveLiquidityFormProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 1.0 }}
-      className={`${colors.glassCard} rounded-3xl p-8 lg:p-12`}
+      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="bg-white/[0.04] border border-white/10 rounded-2xl p-5 lg:p-6 shadow-xl shadow-black/20"
     >
-      <div className="text-center mb-8">
-        <h2 className={`${typography.sectionTitle} text-2xl lg:text-3xl mb-4`}>
+      {/* Header */}
+      <div className="mb-5">
+        <h2 className="text-lg font-display font-bold text-white">
           Withdraw Liquidity
         </h2>
-        <p className={`${typography.bodyText} text-gray-400 mb-4`}>
+        <p className="text-[13px] text-gray-500 mt-0.5">
           Remove your liquidity from Uniswap V2 pools
         </p>
-
-        {/* 2-Step Process Notice */}
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 max-w-2xl mx-auto">
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="font-semibold text-blue-300">2-Step Process</span>
-          </div>
-          <p className="text-sm text-blue-200">
-            Withdrawing liquidity requires <strong>2 transactions</strong>:
-            <br />
-            <span className="text-blue-300">1) Approve LP tokens</span> → <span className="text-blue-300">2) Remove liquidity</span>
-          </p>
-        </div>
       </div>
 
-      {/* LP Token Selection */}
-      <div className="space-y-6 mb-8">
-        <div>
-          <label htmlFor="lpTokenAmount" className={`block ${typography.label} mb-3`}>
-            LP Token *
+      {/* Process hint */}
+      <div className="bg-blue-500/[0.06] border border-blue-500/20 rounded-xl px-4 py-3 mb-5 flex items-start gap-2.5">
+        <svg className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p className="text-sm text-blue-200/80">
+          Requires <span className="text-blue-300 font-medium">2 transactions</span>: approve LP tokens, then remove liquidity.
+        </p>
+      </div>
+
+      {/* LP Token Input */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="lpTokenAmount" className="text-sm font-medium text-gray-400">
+            LP Token
           </label>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-within:border-red-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-red-500/20 focus-within:ring-1 focus-within:ring-red-400/20">
-            {/* Top row: Input and Token selector */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
-              {/* Input side (left) */}
-              <div className="flex-1">
-                <input
-                  id="lpTokenAmount"
-                  type="text"
-                  placeholder="0.0"
-                  value={lpTokenAmount}
-                  onChange={(e) => onLpTokenAmountChange(e.target.value)}
-                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
-                  style={{
-                    boxShadow: 'none',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none'
-                  }}
-                />
-              </div>
+          {lpTokenBalance && selectedLpToken && (
+            <button
+              onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-150 cursor-pointer"
+              aria-label={`Use max ${selectedLpToken.symbol} balance`}
+            >
+              Balance: <span className="text-gray-300 tabular-nums">{formatBalance(lpTokenBalance.value.toString(), lpTokenBalance.decimals, selectedLpToken.symbol)}</span>
+            </button>
+          )}
+        </div>
 
-              {/* LP Token selector (right) */}
-              <div className="flex-shrink-0">
+        <div className="bg-white/[0.03] border border-white/[0.08] rounded-xl p-4 transition-colors duration-150 focus-within:border-red-500/30 focus-within:bg-white/[0.04]">
+          <div className="flex items-center gap-3">
+            <input
+              id="lpTokenAmount"
+              type="text"
+              inputMode="decimal"
+              placeholder="0.0"
+              value={lpTokenAmount}
+              onChange={(e) => onLpTokenAmountChange(e.target.value)}
+              className="flex-1 min-w-0 text-[28px] font-semibold bg-transparent border-none outline-none text-white placeholder-gray-700 focus:outline-none focus:ring-0"
+              style={{ boxShadow: 'none' }}
+            />
+
+            <button
+              onClick={onLpTokenClick}
+              aria-label="Select LP token"
+              className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full transition-colors duration-150 cursor-pointer flex-shrink-0 ${
+                selectedLpToken
+                  ? 'bg-white/[0.06] hover:bg-white/[0.1]'
+                  : 'bg-red-500/15 hover:bg-red-500/25 text-red-300'
+              }`}
+            >
+              {selectedLpToken ? (
+                <>
+                  <span className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center text-[10px] font-bold text-red-300 uppercase tracking-wide">
+                    LP
+                  </span>
+                  <span className="font-semibold text-white text-sm">{selectedLpToken.symbol}</span>
+                </>
+              ) : (
+                <>
+                  <span className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v12m-6-6h12" />
+                    </svg>
+                  </span>
+                  <span className="text-sm font-medium">Select LP token</span>
+                </>
+              )}
+              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Percentage quick-fill */}
+          {selectedLpToken && lpTokenBalance && (
+            <div className="flex items-center gap-1 mt-3">
+              {[25, 50, 75].map((pct) => (
                 <button
-                  onClick={onLpTokenClick}
-                  aria-label="Select LP token"
-                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
+                  key={pct}
+                  onClick={() => onSetPercentageAmount(selectedLpToken, pct, onLpTokenAmountChange, true)}
+                  aria-label={`Set ${pct} percent of LP token balance`}
+                  className="px-2 py-0.5 text-xs text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] rounded transition-colors duration-150 cursor-pointer"
                 >
-                  {selectedLpToken ? (
-                    <>
-                      <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">LP</span>
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold text-white text-sm">{selectedLpToken.symbol}</div>
-                      </div>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-400 text-sm">Select LP Token</span>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  )}
+                  {pct}%
                 </button>
-              </div>
+              ))}
+              <button
+                onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
+                aria-label="Set maximum LP token balance"
+                className="px-2 py-0.5 text-xs font-semibold text-red-400/80 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors duration-150 cursor-pointer"
+              >
+                MAX
+              </button>
             </div>
+          )}
+        </div>
 
-            {/* Bottom row: Balance and percentage buttons */}
-            {(lpTokenBalance || validationErrors.lpTokenAmount || selectedLpToken) && (
-              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                {/* Balance display (left) */}
-                <div className="flex flex-col space-y-1">
-                  {lpTokenBalance && selectedLpToken && (
-                    <div className="text-sm text-gray-400">
-                      Balance: <span className="font-medium text-gray-300">
-                        {formatBalance(lpTokenBalance.value.toString(), lpTokenBalance.decimals, selectedLpToken.symbol)}
-                      </span>
-                    </div>
-                  )}
-                  {/* Validation errors */}
-                  {validationErrors.lpTokenAddress && (
-                    <p className="text-red-400 text-sm">{validationErrors.lpTokenAddress}</p>
-                  )}
-                  {validationErrors.lpTokenAmount && (
-                    <p className="text-red-400 text-sm">{validationErrors.lpTokenAmount}</p>
-                  )}
-                </div>
-
-                {/* Percentage buttons (right) */}
-                {selectedLpToken && lpTokenBalance && (
-                  <div className="flex items-center space-x-2">
-                    {[25, 50, 75].map((percentage) => (
-                      <button
-                        key={percentage}
-                        onClick={() => onSetPercentageAmount(selectedLpToken, percentage, onLpTokenAmountChange, true)}
-                        aria-label={`Set ${percentage} percent of LP token balance`}
-                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
-                      >
-                        {percentage}%
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
-                      aria-label="Set maximum LP token balance"
-                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 text-red-300 hover:text-red-200 border border-red-500/30 rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
-                    >
-                      MAX
-                    </button>
-                  </div>
-                )}
-              </div>
+        {/* Validation errors */}
+        {(validationErrors.lpTokenAddress || validationErrors.lpTokenAmount) && (
+          <div className="mt-1.5 space-y-1 px-1">
+            {validationErrors.lpTokenAddress && (
+              <p className="text-sm text-red-400 flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {validationErrors.lpTokenAddress}
+              </p>
+            )}
+            {validationErrors.lpTokenAmount && (
+              <p className="text-sm text-red-400 flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {validationErrors.lpTokenAmount}
+              </p>
             )}
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Submit Button */}
-      <div className="pt-6">
+      {/* Submit */}
+      <div className="mt-5">
         {!authenticated ? (
-          <div className={`${colors.infoBg} rounded-2xl p-6 flex justify-center`}>
+          <div className="bg-blue-500/[0.06] border border-blue-500/20 rounded-xl p-4 flex justify-center">
             <WalletButton />
           </div>
         ) : !isV2CorrectChain ? (
-          <div className={`${colors.warningBg} rounded-2xl p-6 text-center`}>
-            <p className="text-orange-200">Please switch to a supported mainnet</p>
+          <div className="bg-orange-500/[0.06] border border-orange-500/20 rounded-xl p-3.5 text-center">
+            <p className="text-sm text-orange-300/90">Switch to a supported mainnet to continue</p>
           </div>
         ) : (
           <motion.button
             onClick={onSubmit}
             disabled={!isFormValid || isRemovingLiquidity || !isV2Available}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
+            whileHover={isFormValid && !isRemovingLiquidity && isV2Available ? { scale: 1.01 } : undefined}
+            whileTap={isFormValid && !isRemovingLiquidity && isV2Available ? { scale: 0.99 } : undefined}
+            className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
               !isFormValid || isRemovingLiquidity || !isV2Available
-                ? colors.primaryButtonDisabled
-                : 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg hover:shadow-red-500/25'
+                ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+                : 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20 hover:shadow-red-500/30 active:bg-red-700'
             }`}
           >
             {isRemovingLiquidity ? (
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                <span>Removing Liquidity...</span>
-              </div>
+              <span className="flex items-center justify-center gap-2.5">
+                <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                Removing Liquidity...
+              </span>
             ) : (
               'Remove Liquidity'
             )}

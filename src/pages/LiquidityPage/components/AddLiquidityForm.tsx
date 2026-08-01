@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import WalletButton from '../../../components/WalletButton'
-import { colors, typography } from '../../../styles/designSystem'
 import { formatUnits } from 'viem'
 
 interface Token {
@@ -53,6 +52,131 @@ const formatBalance = (balance: string, decimals: number, symbol: string): strin
   }
 }
 
+function TokenPanel({
+  id,
+  label,
+  token,
+  amount,
+  balance,
+  validationError,
+  onAmountChange,
+  onTokenClick,
+  onSetPercentageAmount,
+  position,
+}: {
+  id: string
+  label: string
+  token: Token | null
+  amount: string
+  balance: { value: bigint; decimals: number } | undefined
+  validationError?: string
+  onAmountChange: (value: string) => void
+  onTokenClick: () => void
+  onSetPercentageAmount: (token: Token | null, percentage: number, setAmount: (amount: string) => void, isLpToken?: boolean) => void
+  position: 'top' | 'bottom'
+}) {
+  const roundedClass = position === 'top' ? 'rounded-t-2xl rounded-b-md' : 'rounded-b-2xl rounded-t-md'
+
+  return (
+    <div>
+      <div className={`bg-white/[0.03] border border-white/[0.08] ${roundedClass} p-4 transition-colors duration-150 focus-within:border-blue-500/30 focus-within:bg-white/[0.04]`}>
+        {/* Label row */}
+        <div className="flex items-center justify-between mb-3">
+          <label htmlFor={id} className="text-[13px] font-medium text-gray-500">
+            {label}
+          </label>
+          {balance && token && (
+            <button
+              onClick={() => onSetPercentageAmount(token, 100, onAmountChange)}
+              className="text-[13px] text-gray-500 hover:text-gray-300 transition-colors duration-150 cursor-pointer"
+              aria-label={`Use max ${token.symbol} balance`}
+            >
+              Balance: <span className="text-gray-300 tabular-nums">{formatBalance(balance.value.toString(), balance.decimals, token.symbol)}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Input + token selector */}
+        <div className="flex items-center gap-3">
+          <input
+            id={id}
+            type="text"
+            inputMode="decimal"
+            placeholder="0.0"
+            value={amount}
+            onChange={(e) => onAmountChange(e.target.value)}
+            className="flex-1 min-w-0 text-[28px] font-semibold bg-transparent border-none outline-none text-white placeholder-gray-700 focus:outline-none focus:ring-0"
+            style={{ boxShadow: 'none' }}
+          />
+
+          <button
+            onClick={onTokenClick}
+            aria-label={`Select ${label.toLowerCase()}`}
+            className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full transition-colors duration-150 cursor-pointer flex-shrink-0 ${
+              token
+                ? 'bg-white/[0.06] hover:bg-white/[0.1]'
+                : 'bg-blue-500/15 hover:bg-blue-500/25 text-blue-300'
+            }`}
+          >
+            {token ? (
+              <>
+                <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-gray-200 uppercase tracking-wide">
+                  {token.symbol.slice(0, 2)}
+                </span>
+                <span className="font-semibold text-white text-sm">{token.symbol}</span>
+              </>
+            ) : (
+              <>
+                <span className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v12m-6-6h12" />
+                  </svg>
+                </span>
+                <span className="text-sm font-medium">Select token</span>
+              </>
+            )}
+            <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Percentage quick-fill */}
+        {token && balance && (
+          <div className="flex items-center gap-1 mt-3">
+            {[25, 50, 75].map((pct) => (
+              <button
+                key={pct}
+                onClick={() => onSetPercentageAmount(token, pct, onAmountChange)}
+                aria-label={`Set ${pct} percent of ${token.symbol} balance`}
+                className="px-2 py-0.5 text-xs text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] rounded transition-colors duration-150 cursor-pointer"
+              >
+                {pct}%
+              </button>
+            ))}
+            <button
+              onClick={() => onSetPercentageAmount(token, 100, onAmountChange)}
+              aria-label={`Set maximum ${token.symbol} balance`}
+              className="px-2 py-0.5 text-xs font-semibold text-blue-400/80 hover:text-blue-300 hover:bg-blue-500/10 rounded transition-colors duration-150 cursor-pointer"
+            >
+              MAX
+            </button>
+          </div>
+        )}
+      </div>
+
+      {validationError && (
+        <p className="mt-1.5 text-sm text-red-400 flex items-center gap-1.5 px-1">
+          <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+          {validationError}
+        </p>
+      )}
+    </div>
+  )
+}
+
 export default function AddLiquidityForm({
   tokenA,
   tokenB,
@@ -75,262 +199,88 @@ export default function AddLiquidityForm({
 }: AddLiquidityFormProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 1.0 }}
-      className={`${colors.glassCard} rounded-3xl p-8 lg:p-12`}
+      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="bg-white/[0.04] border border-white/10 rounded-2xl p-5 lg:p-6 shadow-xl shadow-black/20"
     >
-      <div className="text-center mb-8">
-        <h2 className={`${typography.sectionTitle} text-2xl lg:text-3xl mb-4`}>
+      {/* Header */}
+      <div className="mb-5">
+        <h2 className="text-lg font-display font-bold text-white">
           Add Liquidity
         </h2>
-        <p className={`${typography.bodyText} text-gray-400`}>
-          Provide liquidity to earn trading fees on Uniswap V2
+        <p className="text-[13px] text-gray-500 mt-0.5">
+          Deposit two tokens to earn trading fees
         </p>
       </div>
 
-      {/* Token Selection */}
-      <div className="space-y-6 mb-8">
-        {/* Token A */}
-        <div>
-          <label htmlFor="tokenAAmount" className={`block ${typography.label} mb-3`}>
-            First Token *
-          </label>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
-            {/* Top row: Input and Token selector */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
-              {/* Input side (left) */}
-              <div className="flex-1">
-                <input
-                  id="tokenAAmount"
-                  type="text"
-                  placeholder="0.0"
-                  value={amountA}
-                  onChange={(e) => onAmountAChange(e.target.value)}
-                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
-                  style={{
-                    boxShadow: 'none',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none'
-                  }}
-                />
-              </div>
+      {/* Token panels with connector */}
+      <div>
+        <TokenPanel
+          id="tokenAAmount"
+          label="You deposit"
+          token={tokenA}
+          amount={amountA}
+          balance={balanceA}
+          validationError={validationErrors.amountA}
+          onAmountChange={onAmountAChange}
+          onTokenClick={onTokenAClick}
+          onSetPercentageAmount={onSetPercentageAmount}
+          position="top"
+        />
 
-              {/* Token selector (right) */}
-              <div className="flex-shrink-0">
-                <button
-                  onClick={onTokenAClick}
-                  aria-label="Select first token"
-                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
-                >
-                  {tokenA ? (
-                    <>
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">{tokenA.symbol.slice(0, 2)}</span>
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold text-white text-sm">{tokenA.symbol}</div>
-                      </div>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-400 text-sm">Select Token</span>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  )}
-                </button>
-              </div>
+        {/* Connector — in flow between panels */}
+        <div className="flex items-center justify-center -my-[18px] relative z-10 pointer-events-none">
+          <div className="w-10 h-10 rounded-xl border-4 border-gray-900 flex items-center justify-center">
+            <div className="w-full h-full rounded-lg bg-gray-800/80 flex items-center justify-center">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-6-6h12" />
+              </svg>
             </div>
-
-            {/* Bottom row: Balance and percentage buttons */}
-            {(balanceA || validationErrors.amountA || tokenA) && (
-              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                {/* Balance display (left) */}
-                <div className="flex flex-col space-y-1">
-                  {balanceA && tokenA && (
-                    <div className="text-sm text-gray-400">
-                      Balance: <span className="font-medium text-gray-300">
-                        {formatBalance(balanceA.value.toString(), balanceA.decimals, tokenA.symbol)}
-                      </span>
-                    </div>
-                  )}
-                  {/* Validation error */}
-                  {validationErrors.amountA && (
-                    <p className="text-red-400 text-sm">{validationErrors.amountA}</p>
-                  )}
-                </div>
-
-                {/* Percentage buttons (right) */}
-                {tokenA && balanceA && (
-                  <div className="flex items-center space-x-2">
-                    {[25, 50, 75].map((percentage) => (
-                      <button
-                        key={percentage}
-                        onClick={() => onSetPercentageAmount(tokenA, percentage, onAmountAChange)}
-                        aria-label={`Set ${percentage} percent of first token balance`}
-                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
-                      >
-                        {percentage}%
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => onSetPercentageAmount(tokenA, 100, onAmountAChange)}
-                      aria-label="Set maximum first token balance"
-                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
-                    >
-                      MAX
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Token B */}
-        <div>
-          <label htmlFor="tokenBAmount" className={`block ${typography.label} mb-3`}>
-            Second Token *
-          </label>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-within:border-blue-400/50 focus-within:bg-white/[0.08] focus-within:shadow-lg focus-within:shadow-blue-500/20 focus-within:ring-1 focus-within:ring-blue-400/20">
-            {/* Top row: Input and Token selector */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-3">
-              {/* Input side (left) */}
-              <div className="flex-1">
-                <input
-                  id="tokenBAmount"
-                  type="text"
-                  placeholder="0.0"
-                  value={amountB}
-                  onChange={(e) => onAmountBChange(e.target.value)}
-                  className="w-full text-xl sm:text-2xl font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
-                  style={{
-                    boxShadow: 'none',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none'
-                  }}
-                />
-              </div>
-
-              {/* Token selector (right) */}
-              <div className="flex-shrink-0">
-                <button
-                  onClick={onTokenBClick}
-                  aria-label="Select second token"
-                  className="flex items-center space-x-3 px-4 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
-                >
-                  {tokenB ? (
-                    <>
-                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">{tokenB.symbol.slice(0, 2)}</span>
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold text-white text-sm">{tokenB.symbol}</div>
-                      </div>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-400 text-sm">Select Token</span>
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Bottom row: Balance and percentage buttons */}
-            {(balanceB || validationErrors.amountB || tokenB) && (
-              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                {/* Balance display (left) */}
-                <div className="flex flex-col space-y-1">
-                  {balanceB && tokenB && (
-                    <div className="text-sm text-gray-400">
-                      Balance: <span className="font-medium text-gray-300">
-                        {formatBalance(balanceB.value.toString(), balanceB.decimals, tokenB.symbol)}
-                      </span>
-                    </div>
-                  )}
-                  {/* Validation error */}
-                  {validationErrors.amountB && (
-                    <p className="text-red-400 text-sm">{validationErrors.amountB}</p>
-                  )}
-                </div>
-
-                {/* Percentage buttons (right) */}
-                {tokenB && balanceB && (
-                  <div className="flex items-center space-x-2">
-                    {[25, 50, 75].map((percentage) => (
-                      <button
-                        key={percentage}
-                        onClick={() => onSetPercentageAmount(tokenB, percentage, onAmountBChange)}
-                        aria-label={`Set ${percentage} percent of second token balance`}
-                        className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
-                      >
-                        {percentage}%
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => onSetPercentageAmount(tokenB, 100, onAmountBChange)}
-                      aria-label="Set maximum second token balance"
-                      className="px-3 py-2 min-h-[36px] sm:py-1 sm:min-h-auto text-xs font-medium bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 text-blue-300 hover:text-blue-200 border border-blue-500/30 rounded-lg transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer"
-                    >
-                      MAX
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        <TokenPanel
+          id="tokenBAmount"
+          label="Paired with"
+          token={tokenB}
+          amount={amountB}
+          balance={balanceB}
+          validationError={validationErrors.amountB}
+          onAmountChange={onAmountBChange}
+          onTokenClick={onTokenBClick}
+          onSetPercentageAmount={onSetPercentageAmount}
+          position="bottom"
+        />
       </div>
 
-      {/* Submit Button */}
-      <div className="pt-6">
+      {/* Submit */}
+      <div className="mt-4">
         {!authenticated ? (
-          <div className={`${colors.infoBg} rounded-2xl p-6 flex justify-center`}>
+          <div className="bg-blue-500/[0.06] border border-blue-500/20 rounded-xl p-4 flex justify-center">
             <WalletButton />
           </div>
         ) : !isV2CorrectChain ? (
-          <div className={`${colors.warningBg} rounded-2xl p-6 text-center`}>
-            <p className="text-orange-200">Please switch to a supported mainnet</p>
+          <div className="bg-orange-500/[0.06] border border-orange-500/20 rounded-xl p-3.5 text-center">
+            <p className="text-sm text-orange-300/90">Switch to a supported mainnet to continue</p>
           </div>
         ) : (
           <motion.button
             onClick={onSubmit}
             disabled={!isFormValid || isAddingLiquidity || !isV2Available}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
+            whileHover={isFormValid && !isAddingLiquidity && isV2Available ? { scale: 1.01 } : undefined}
+            whileTap={isFormValid && !isAddingLiquidity && isV2Available ? { scale: 0.99 } : undefined}
+            className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
               !isFormValid || isAddingLiquidity || !isV2Available
-                ? colors.primaryButtonDisabled
-                : colors.primaryButton
+                ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 active:bg-blue-700'
             }`}
           >
             {isAddingLiquidity ? (
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                <span>Adding Liquidity...</span>
-              </div>
+              <span className="flex items-center justify-center gap-2.5">
+                <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                Adding Liquidity...
+              </span>
             ) : (
               'Add Liquidity'
             )}

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import SEO from '../../components/SEO'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
 import { trackPageView } from '../../utils/analytics'
-import { layout, colors } from '../../styles/designSystem'
+import { layout } from '../../styles/designSystem'
 import { useTokenCreationLogic } from './hooks/useTokenCreationLogic'
 import StandardPageHeader from '../../components/StandardPageHeader'
 import TokenForm from './components/TokenForm'
@@ -252,12 +252,12 @@ export default function CreateTokenPage() {
         {/* Token Creation Form */}
         <div className="max-w-4xl mx-auto mb-24">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className={`${colors.glassCard} rounded-3xl p-8 lg:p-12`}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="bg-white/[0.04] border border-white/10 rounded-2xl p-5 lg:p-6 shadow-xl shadow-black/20"
           >
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={handleSubmit}>
               <TokenForm
                 formData={formData}
                 formErrors={formErrors}
@@ -270,12 +270,7 @@ export default function CreateTokenPage() {
                 nativeTokenName={nativeTokenName}
               />
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.3 }}
-                className="pt-6"
-              >
+              <div className="mt-5">
                 <SubmitButton
                   authenticated={authenticated}
                   isCorrectChain={isCorrectChain}
@@ -285,7 +280,6 @@ export default function CreateTokenPage() {
                   chainName={chainName}
                 />
 
-                {/* Success/Error Messages */}
                 {showSuccess && createdTokenAddress && (
                   <SuccessModal
                     tokenAddress={createdTokenAddress}
@@ -297,7 +291,7 @@ export default function CreateTokenPage() {
                 )}
 
                 {error && <ErrorDisplay error={error} />}
-              </motion.div>
+              </div>
             </form>
           </motion.div>
         </div>
