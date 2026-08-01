@@ -233,8 +233,8 @@ export default function HeroSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mb-7"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/[0.08] border border-amber-500/20 text-amber-400/90 text-sm font-medium tracking-wide">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/[0.08] border border-blue-500/20 text-blue-400 text-sm font-medium tracking-wide">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                 15+ EVM Chains Supported
               </span>
             </motion.div>
@@ -277,7 +277,7 @@ export default function HeroSection() {
               >
                 <Link
                   to="/create"
-                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-gray-900 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 rounded-xl shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 transition-shadow duration-300 focus-visible:ring-4 focus-visible:ring-amber-400/50 focus-visible:outline-none"
+                  className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-500/40 transition-[background-color,box-shadow] duration-200 focus-visible:ring-4 focus-visible:ring-blue-400/50 focus-visible:outline-none"
                 >
                   Create a Token
                   <svg className="w-5 h-5 ml-2.5 -mr-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">

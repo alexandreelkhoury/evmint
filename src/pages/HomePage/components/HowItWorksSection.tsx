@@ -71,7 +71,7 @@ export default function HowItWorksSection() {
         >
           <Link
             to="/create"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold text-sm rounded-lg hover:bg-gray-100 transition-colors active:scale-[0.97]"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg transition-[background-color] duration-150 active:scale-[0.97]"
           >
             Try it now
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -60,7 +60,7 @@ function AppContent() {
           <ScrollToTop />
           <NetworkManagerLazy />
           <Header />
-          <main id="main-content" className="pt-16 sm:pt-20 pb-24 md:pb-0 flex-1">
+          <main id="main-content" className="pt-14 sm:pt-16 pb-24 md:pb-0 flex-1">
             <Suspense fallback={<LoadingSpinner message="Loading page..." />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />

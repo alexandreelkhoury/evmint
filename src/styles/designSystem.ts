@@ -111,25 +111,25 @@ export const typography = {
   gradientTextGold: "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-bold"
 }
 
-// Color system - Fintech/Crypto optimized
-// Gold/Amber = Trust, value, premium (perfect for financial products)
-// Purple = Innovation, tech (secondary actions)
+// Color system
+// Blue = Primary brand (matches logo, headings, actions)
+// Amber = Accent only (hero emphasis, trending, special moments)
 export const colors = {
-  // Glass morphism cards - Enhanced with multi-layer depth and premium shadows
+  // Glass morphism cards
   glassCard: "bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/5 before:to-transparent before:pointer-events-none",
-  glassCardHover: "bg-gradient-to-br from-white/15 via-white/8 to-white/5 backdrop-blur-xl border border-amber-500/30 rounded-2xl shadow-2xl shadow-amber-500/10 transition-[border-color,box-shadow] duration-200 relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-amber-400/10 before:to-transparent before:pointer-events-none",
+  glassCardHover: "bg-gradient-to-br from-white/15 via-white/8 to-white/5 backdrop-blur-xl border border-blue-500/30 rounded-2xl shadow-2xl shadow-blue-500/10 transition-[border-color,box-shadow] duration-200 relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400/10 before:to-transparent before:pointer-events-none",
 
-  // Primary buttons
-  primaryButton: "bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:via-yellow-400 hover:to-amber-500 text-gray-900 font-bold rounded-xl transition-[background,box-shadow] duration-200 shadow-lg shadow-amber-500/50 hover:shadow-xl hover:shadow-amber-500/60",
+  // Primary buttons — blue
+  primaryButton: "bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-[background-color,box-shadow] duration-200 shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-500/40",
   primaryButtonDisabled: "bg-gray-600 text-gray-400 rounded-xl cursor-not-allowed opacity-50",
 
   // Secondary buttons
-  secondaryButton: "border-2 border-white/20 hover:border-white/40 text-white rounded-xl transition-[border-color] duration-200",
-  secondaryCTA: "bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-500 hover:to-violet-500 text-white font-semibold rounded-xl transition-[background,box-shadow] duration-200 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40",
+  secondaryButton: "border border-white/20 hover:border-white/40 text-white rounded-xl transition-[border-color] duration-200",
+  secondaryCTA: "bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl transition-[background-color] duration-200",
   tertiaryButton: "bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white rounded-lg transition-[background-color,color] duration-150",
 
-  // Form inputs
-  input: "w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 transition-[border-color,box-shadow] duration-150",
+  // Form inputs — blue focus
+  input: "w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-[border-color,box-shadow] duration-150",
   inputError: "w-full px-4 py-3 bg-red-900/10 border border-red-500/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-400 focus:ring-2 focus:ring-red-400/20",
   
   // Status backgrounds

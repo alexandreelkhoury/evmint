@@ -264,7 +264,7 @@ export default function QuickStartForm({
                   className={`w-full py-6 text-xl font-semibold rounded-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
                     isCreating || Object.keys(formErrors).some(key => formErrors[key as keyof typeof formErrors])
                       ? 'bg-gray-600 cursor-not-allowed opacity-50'
-                      : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 shadow-xl hover:shadow-2xl'
+                      : 'bg-blue-600 hover:bg-blue-500 shadow-xl hover:shadow-2xl'
                   } text-white`}
                 >
                   {isCreating ? (

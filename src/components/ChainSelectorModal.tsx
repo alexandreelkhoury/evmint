@@ -326,7 +326,7 @@ function ChainCard({
       disabled={isSwitching}
       className={`relative p-4 rounded-xl border-2 text-left transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
         isActive
-          ? 'border-green-500 bg-green-500/10'
+          ? 'border-blue-500 bg-blue-500/10'
           : chain.trending
           ? 'border-orange-500/40 bg-gradient-to-br from-orange-500/[0.07] to-transparent hover:border-orange-400/60 hover:shadow-lg hover:shadow-orange-500/10'
           : 'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-800'
@@ -336,8 +336,8 @@ function ChainCard({
       {isActive && (
         <div className="absolute top-3 right-3">
           <span className="flex h-3 w-3">
-            <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
           </span>
         </div>
       )}

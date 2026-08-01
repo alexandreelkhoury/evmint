@@ -75,7 +75,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
                 }}
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center border-2 border-gray-600 group-hover:border-blue-400 transition-colors">
+              <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center border-2 border-gray-600 group-hover:border-blue-400 transition-colors">
                 <span className="text-white font-bold text-lg">
                   {displayTokenInfo.symbol.charAt(0)}
                 </span>
@@ -302,7 +302,7 @@ export default function TokensPage() {
           >
             <div className="mb-8">
               <motion.div 
-                className="mx-auto w-20 h-20 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center mb-6"
+                className="mx-auto w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center mb-6"
                 whileHover={{ scale: 1.1, rotate: 10 }}
                 transition={{ duration: 0.5 }}
               >
@@ -418,7 +418,7 @@ export default function TokensPage() {
             <motion.div {...animations.buttonHover}>
               <Link
                 to="/create"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
               >
                 🚀 Create Your First Token
               </Link>
@@ -462,7 +462,7 @@ export default function TokensPage() {
               <motion.div {...animations.buttonHover}>
                 <Link
                   to="/create"
-                  className="flex items-center px-4 min-h-[44px] bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm rounded-lg hover:from-blue-500 hover:to-purple-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
+                  className="flex items-center px-4 min-h-[44px] bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
                 >
                   ➕ Create New Token
                 </Link>

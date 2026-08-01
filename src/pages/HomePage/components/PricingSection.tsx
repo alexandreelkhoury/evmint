@@ -59,7 +59,7 @@ export default function PricingSection() {
             viewport={{ once: true }}
             className="inline-block mb-6"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-semibold">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold">
               <span className="text-lg">💰</span>
               Transparent Pricing
             </span>
@@ -67,7 +67,7 @@ export default function PricingSection() {
 
           <h2 id="pricing-heading" className={`${typography.sectionTitle} text-4xl sm:text-5xl mb-6`}>
             One Simple{' '}
-            <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r text-white">
               Price
             </span>
           </h2>
@@ -77,7 +77,7 @@ export default function PricingSection() {
             <div className="flex flex-wrap justify-center items-center gap-4 text-lg">
               <span className="text-red-400 line-through">Traditional Developer: $5,000 - $50,000 + weeks of waiting</span>
             </div>
-            <div className="text-3xl font-bold text-green-400">
+            <div className="text-3xl font-bold text-blue-400">
               ~$80 on any chain • 60 seconds
             </div>
           </div>
@@ -101,16 +101,16 @@ export default function PricingSection() {
           className="group relative mb-12"
         >
           {/* Glow */}
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500/20 via-emerald-500/10 to-green-600/5 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-[background-color,color,border-color,box-shadow,opacity] duration-300"></div>
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 via-blue-500/10 to-blue-600/5 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-[background-color,color,border-color,box-shadow,opacity] duration-300"></div>
 
-          <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-green-500/30 group-hover:border-green-400/60 rounded-2xl shadow-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-transparent rounded-2xl opacity-50"></div>
+          <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/10 group-hover:border-blue-500/30 rounded-2xl shadow-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-blue-500/[0.02] to-transparent rounded-2xl opacity-50"></div>
 
             <div className="relative p-8 md:p-10">
               {/* Price Display */}
               <div className="text-center mb-10">
                 <div className="flex items-baseline justify-center gap-3 mb-3">
-                  <span className="text-6xl md:text-7xl font-black bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 bg-clip-text text-transparent">
+                  <span className="text-6xl md:text-7xl font-black bg-gradient-to-r text-white">
                     ~$80
                   </span>
                   <span className="text-xl text-gray-400 font-medium">per token</span>
@@ -197,7 +197,7 @@ export default function PricingSection() {
           >
             <Link
               to="/create"
-              className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 hover:from-green-400 hover:via-emerald-400 hover:to-green-500 text-white font-black text-lg rounded-xl shadow-2xl shadow-green-500/50 hover:shadow-green-500/70 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer group focus-visible:ring-4 focus-visible:ring-green-400/70 focus-visible:outline-none"
+              className="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-500/40 transition-[background-color,box-shadow] duration-200 cursor-pointer group focus-visible:ring-4 focus-visible:ring-blue-400/50 focus-visible:outline-none"
               aria-label="Start deploying your token now"
             >
               <svg className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
