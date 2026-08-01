@@ -310,7 +310,7 @@ export default function FAQPage() {
                                     className="mt-4 pt-4 border-t border-white/10"
                                   >
                                     <Link
-                                      to={`/guides?guide=${faq.relatedGuide}`}
+                                      to={`/guides/${faq.relatedGuide}`}
                                       className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200 cursor-pointer"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import SEO from '../../components/SEO'
 import { layout } from '../../styles/designSystem'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
@@ -11,6 +12,33 @@ import HowItWorksSection from './components/HowItWorksSection'
 import PricingSection from './components/PricingSection'
 
 /**
+ * Deep-dive landing pages. The deployer is the same for all of them; each page
+ * covers the decisions specific to that kind of launch.
+ */
+const useCasePages = [
+  {
+    to: '/erc20-token-generator',
+    title: 'ERC20 Token Generator',
+    desc: 'What the standard actually guarantees, and which parameters are locked in at deployment.',
+  },
+  {
+    to: '/meme-coin-creator',
+    title: 'Meme Coin Creator',
+    desc: 'Supply, liquidity, and community tactics for a launch that lives or dies on attention.',
+  },
+  {
+    to: '/cryptocurrency-creator',
+    title: 'Cryptocurrency Creator',
+    desc: 'Token economics, distribution planning, and what happens after your contract goes live.',
+  },
+  {
+    to: '/multi-chain-token-creator',
+    title: 'Multi-Chain Token Creator',
+    desc: 'How the 15+ supported networks compare on fees, speed, and credibility.',
+  },
+]
+
+/**
  * HomePage - Conversion-optimized landing page
  *
  * Section Order (Optimized for Conversion):
@@ -20,7 +48,8 @@ import PricingSection from './components/PricingSection'
  * 4. How It Works - Visual 3-step process (reduce complexity)
  * 5. Pricing - Transparent cost breakdown (reduces friction)
  * 6. Social Proof - Build credibility
- * 7. Final CTA - Last chance conversion
+ * 7. Use-case deep dives - route readers who want detail to the landing pages
+ * 8. Final CTA - Last chance conversion
  */
 export default function HomePage() {
   const analytics = useFirebaseAnalytics()
@@ -106,7 +135,35 @@ export default function HomePage() {
         {/* 5. Social Proof — tech credibility before the ask */}
         <SocialProofSection />
 
-        {/* 6. CTA — convert */}
+        {/* 6. Use-case deep dives — for readers who want detail before deploying */}
+        <section className="py-20" aria-labelledby="use-cases-heading">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 id="use-cases-heading" className="text-3xl sm:text-4xl font-bold text-white mb-3">
+                Launching something specific?
+              </h2>
+              <p className="text-gray-400">
+                Same deployer, different starting points.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {useCasePages.map(page => (
+                <Link
+                  key={page.to}
+                  to={page.to}
+                  className="group block p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.14] hover:bg-white/[0.04] transition-colors"
+                >
+                  <h3 className="text-base font-semibold text-white mb-1 group-hover:text-blue-300 transition-colors">
+                    {page.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{page.desc}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 7. CTA — convert */}
         <CTASection />
       </div>
     </div>

@@ -8,8 +8,12 @@
  *
  * Importing this module pulls metadata only — 19 kB raw / 4 kB gzip.
  *
- * Prefer this module over ./blogData, which is a backwards-compatibility shim
- * that still pulls every body in eagerly.
+ *   list views  ->  this module (blogPostsMeta, getFeaturedPostMetas, …)
+ *   article     ->  this module (getBlogPostMeta) + ./blogBody (loadPostBody)
+ *
+ * Never import a file under ./posts directly from a page: a static import puts
+ * that body — and, once Rollup gives up on splitting them, all the others —
+ * back into the page's chunk.
  */
 
 export interface BlogPostMeta {
@@ -35,7 +39,7 @@ export interface BlogPostMeta {
   }
 }
 
-export const blogPostsMeta: BlogPostMeta[] = [] = [
+export const blogPostsMeta: BlogPostMeta[] = [
   {
     slug: "how-to-create-erc20-token-2026",
     title: "How to Create an ERC20 Token in 2026: Complete Guide",

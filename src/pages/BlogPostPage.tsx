@@ -1,20 +1,345 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SEO from '../components/SEO'
 import Breadcrumb from '../components/Breadcrumb'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
-import { getBlogPost, getRelatedPosts, BlogPost } from '../data/blogData'
-import { colors, typography, layout } from '../styles/designSystem'
+import { getBlogPostMeta, getRelatedPostMetas } from '../data/blogMeta'
+import type { BlogPostMeta } from '../data/blogMeta'
+import { loadPostBody } from '../data/blogBody'
+import { colors, layout } from '../styles/designSystem'
+
+/**
+ * Bodies already fetched in this session. loadPostBody() goes through the ES
+ * module cache anyway, but that cache is only reachable via a promise — this
+ * one lets a re-visit render the article on the first pass with no skeleton.
+ */
+const bodyCache = new Map<string, string>()
+
+// ---------------------------------------------------------------------------
+// Inline markdown
+// ---------------------------------------------------------------------------
+
+/**
+ * `code` | **bold** | [text](href)
+ *
+ * Code spans come first so a span containing brackets or asterisks is taken
+ * whole and never re-parsed. Bold comes before links so `**[x](/y)**` matches
+ * as bold-wrapping-a-link rather than leaving a stray `**` behind; `[**x**](/y)`
+ * still matches as a link because the scan starts at the `[`, where the bold
+ * alternative cannot apply. Either way the captured inner text is re-parsed.
+ */
+const INLINE_TOKEN = /`([^`]+)`|\*\*([\s\S]+?)\*\*|\[([^\]]+)\]\(([^()\s]+)\)/g
+
+/** Depth cap so a pathological `**[**a**](/x)**` cannot recurse forever. */
+const MAX_INLINE_DEPTH = 3
+
+interface LinkTarget {
+  href: string
+  external: boolean
+}
+
+const SITE_ORIGIN = 'https://evmint.io'
+
+/**
+ * Resolve a markdown href to something safe to put in the DOM, or null to drop
+ * the link and keep only its text.
+ *
+ * The gate is the URL parser, not a regex: it lowercases the scheme, decodes
+ * escapes and strips the tab/newline characters that `java\tscript:alert(1)`
+ * hides behind — all tricks a `/^https?:/` test waves straight through. Only
+ * http(s) survives, so `javascript:`, `data:`, `vbscript:` and `file:` are out.
+ *
+ * Not DOMPurify, despite it being a dependency already: vite.config.ts puts
+ * dompurify in the `vendor-utils` manual chunk, which the app *entry* imports,
+ * so pulling it in here adds ~23 kB raw / ~8.7 kB gzip to every route in the
+ * site (measured) to validate six hardcoded hrefs. URL is free and stricter on
+ * scheme parsing. If DOMPurify is ever wanted here, move it out of
+ * `vendor-utils` first.
+ */
+function resolveHref(raw: string): LinkTarget | null {
+  const value = raw.trim()
+  if (!value) return null
+
+  let parsed: URL
+  try {
+    parsed = new URL(value, SITE_ORIGIN)
+  } catch {
+    return null
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null
+
+  // Internal links keep their authored relative form so react-router handles
+  // them client-side. Note the negative lookahead: `//evil.com` is a
+  // protocol-relative URL, and routing to it would hand <Link> an off-site
+  // path, so only a single leading slash (or a bare fragment) counts.
+  if (value.startsWith('#') || /^\/(?!\/)/.test(value)) {
+    return { href: value, external: false }
+  }
+
+  // An absolute URL back to our own origin is still an internal route — send it
+  // through <Link> rather than making the reader reload the whole app.
+  if (parsed.origin === SITE_ORIGIN) {
+    return { href: `${parsed.pathname}${parsed.search}${parsed.hash}`, external: false }
+  }
+
+  return { href: parsed.href, external: true }
+}
+
+const linkClass = 'text-purple-400 hover:text-purple-300 underline underline-offset-2 decoration-purple-400/40 hover:decoration-purple-300 transition-colors'
+
+/**
+ * Turn one line of markdown into React nodes. Returns an array so callers can
+ * drop it straight into JSX children.
+ */
+function renderInline(text: string, keyPrefix: string, depth = 0): (string | JSX.Element)[] {
+  if (!text) return []
+  if (depth >= MAX_INLINE_DEPTH) return [text]
+
+  const nodes: (string | JSX.Element)[] = []
+  // Fresh regex per call: INLINE_TOKEN is stateful (/g) and this recurses.
+  const pattern = new RegExp(INLINE_TOKEN.source, 'g')
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index))
+    lastIndex = pattern.lastIndex
+
+    const key = `${keyPrefix}-${match.index}`
+    const [, code, bold, linkText, linkHref] = match
+
+    if (code !== undefined) {
+      nodes.push(
+        <code key={key} className="px-1.5 py-0.5 rounded bg-white/10 text-purple-200 font-mono text-[0.9em]">
+          {code}
+        </code>
+      )
+      continue
+    }
+
+    if (bold !== undefined) {
+      nodes.push(
+        <strong key={key} className="text-white font-semibold">
+          {renderInline(bold, key, depth + 1)}
+        </strong>
+      )
+      continue
+    }
+
+    const children = renderInline(linkText, key, depth + 1)
+    const target = resolveHref(linkHref)
+
+    // Unsafe or unsupported scheme: keep the label, drop the link.
+    if (!target) {
+      nodes.push(<span key={key}>{children}</span>)
+      continue
+    }
+
+    nodes.push(
+      target.external ? (
+        <a key={key} href={target.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+          {children}
+        </a>
+      ) : (
+        <Link key={key} to={target.href} className={linkClass}>
+          {children}
+        </Link>
+      )
+    )
+  }
+
+  if (lastIndex < text.length) nodes.push(text.slice(lastIndex))
+  return nodes
+}
+
+// ---------------------------------------------------------------------------
+// Block markdown
+// ---------------------------------------------------------------------------
+
+/**
+ * Render a post body.
+ *
+ * Heading policy: the page header already renders the post title as the one and
+ * only <h1>, and every body opens with a `#` restating that same title. So the
+ * leading `#` is dropped rather than demoted — demoting it would leave every
+ * article starting with an <h2> that reads as a near-duplicate of the <h1>
+ * directly above it. A `#` anywhere else (none today) is demoted to <h2> so a
+ * stray top-level heading can never reintroduce a second <h1>. `##`/`###` keep
+ * their existing levels, leaving the outline h1 -> h2 -> h3 with no gaps.
+ */
+function renderContent(content: string) {
+  const lines = content.trim().split('\n')
+  const elements: JSX.Element[] = []
+  let currentList: string[] = []
+  let listType: 'ul' | 'ol' | null = null
+  let seenContent = false
+
+  const flushList = () => {
+    if (currentList.length > 0 && listType) {
+      const ListTag = listType === 'ol' ? 'ol' : 'ul'
+      elements.push(
+        <ListTag key={elements.length} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} list-inside space-y-2 mb-6 text-gray-300`}>
+          {currentList.map((item, i) => (
+            <li key={i} className="leading-relaxed">{renderInline(item, `li-${elements.length}-${i}`)}</li>
+          ))}
+        </ListTag>
+      )
+      currentList = []
+      listType = null
+    }
+  }
+
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim()
+
+    // Empty line
+    if (!trimmedLine) {
+      flushList()
+      return
+    }
+
+    // Headers
+    if (trimmedLine.startsWith('# ')) {
+      flushList()
+      // The leading title heading is already the page <h1>. Skip it.
+      if (!seenContent) {
+        seenContent = true
+        return
+      }
+      elements.push(
+        <h2 key={index} className="text-2xl lg:text-3xl font-bold text-white mb-4 mt-8">
+          {renderInline(trimmedLine.slice(2), `h-${index}`)}
+        </h2>
+      )
+      return
+    }
+
+    seenContent = true
+
+    if (trimmedLine.startsWith('## ')) {
+      flushList()
+      elements.push(
+        <h2 key={index} className="text-2xl lg:text-3xl font-bold text-white mb-4 mt-8">
+          {renderInline(trimmedLine.slice(3), `h-${index}`)}
+        </h2>
+      )
+      return
+    }
+
+    if (trimmedLine.startsWith('### ')) {
+      flushList()
+      elements.push(
+        <h3 key={index} className="text-xl lg:text-2xl font-bold text-white mb-3 mt-6">
+          {renderInline(trimmedLine.slice(4), `h-${index}`)}
+        </h3>
+      )
+      return
+    }
+
+    // Lists
+    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+      if (listType !== 'ul') {
+        flushList()
+        listType = 'ul'
+      }
+      currentList.push(trimmedLine.slice(2))
+      return
+    }
+
+    if (/^\d+\.\s/.test(trimmedLine)) {
+      if (listType !== 'ol') {
+        flushList()
+        listType = 'ol'
+      }
+      currentList.push(trimmedLine.replace(/^\d+\.\s/, ''))
+      return
+    }
+
+    // Tables (simplified - just show as text). Left unparsed on purpose: the
+    // pipe rows are pre-aligned copy and inline parsing would eat the `**` that
+    // marks their total rows without a <table> to hang the emphasis off.
+    if (trimmedLine.startsWith('|')) {
+      flushList()
+      elements.push(
+        <div key={index} className="font-mono text-sm text-gray-400 mb-2 overflow-x-auto">
+          {trimmedLine}
+        </div>
+      )
+      return
+    }
+
+    // A line that is nothing but one bold run acts as a sub-subheading.
+    const wholeLineBold = /^\*\*([^*]+)\*\*$/.exec(trimmedLine)
+    if (wholeLineBold) {
+      flushList()
+      elements.push(
+        <p key={index} className="text-white font-semibold mb-2 mt-4">
+          {renderInline(wholeLineBold[1], `b-${index}`, 1)}
+        </p>
+      )
+      return
+    }
+
+    // Regular paragraphs
+    flushList()
+    elements.push(
+      <p key={index} className="text-gray-300 leading-relaxed mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+        {renderInline(trimmedLine, `p-${index}`)}
+      </p>
+    )
+  })
+
+  flushList()
+  return elements
+}
+
+function ArticleSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4" aria-hidden="true">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className={`h-4 rounded bg-white/5 ${i % 4 === 3 ? 'w-2/3' : 'w-full'}`} />
+      ))}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const analytics = useFirebaseAnalytics()
 
-  const post = slug ? getBlogPost(slug) : undefined
-  const relatedPosts = slug ? getRelatedPosts(slug, 3) : []
+  // Metadata stays synchronous: it drives <SEO>, the 404 redirect and the <h1>,
+  // and the prerender refuses to write a page whose <main> has no <h1>.
+  const post = slug ? getBlogPostMeta(slug) : undefined
+  const relatedPosts = slug ? getRelatedPostMetas(slug, 3) : []
+
+  const [body, setBody] = useState<string | null>(() => (slug ? bodyCache.get(slug) ?? null : null))
+
+  useEffect(() => {
+    if (!slug || !post) return
+
+    const cached = bodyCache.get(slug)
+    if (cached !== undefined) {
+      setBody(cached)
+      return
+    }
+
+    let cancelled = false
+    setBody(null)
+    loadPostBody(slug).then(text => {
+      const resolved = text ?? ''
+      bodyCache.set(slug, resolved)
+      if (!cancelled) setBody(resolved)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [slug, post])
 
   useEffect(() => {
     if (post) {
@@ -34,7 +359,7 @@ export default function BlogPostPage() {
 
   const articleStructuredData = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     "headline": post.title,
     "description": post.excerpt,
     "image": `https://evmint.io${post.image}`,
@@ -56,122 +381,6 @@ export default function BlogPostPage() {
       "@type": "WebPage",
       "@id": `https://evmint.io/blog/${post.slug}`
     }
-  }
-
-  // Parse content into sections for rendering
-  const renderContent = (content: string) => {
-    const lines = content.trim().split('\n')
-    const elements: JSX.Element[] = []
-    let currentList: string[] = []
-    let listType: 'ul' | 'ol' | null = null
-
-    const flushList = () => {
-      if (currentList.length > 0 && listType) {
-        const ListTag = listType === 'ol' ? 'ol' : 'ul'
-        elements.push(
-          <ListTag key={elements.length} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} list-inside space-y-2 mb-6 text-gray-300`}>
-            {currentList.map((item, i) => (
-              <li key={i} className="leading-relaxed">{item}</li>
-            ))}
-          </ListTag>
-        )
-        currentList = []
-        listType = null
-      }
-    }
-
-    lines.forEach((line, index) => {
-      const trimmedLine = line.trim()
-
-      // Empty line
-      if (!trimmedLine) {
-        flushList()
-        return
-      }
-
-      // Headers
-      if (trimmedLine.startsWith('# ')) {
-        flushList()
-        elements.push(
-          <h1 key={index} className="text-3xl lg:text-4xl font-bold text-white mb-6 mt-8">
-            {trimmedLine.slice(2)}
-          </h1>
-        )
-        return
-      }
-
-      if (trimmedLine.startsWith('## ')) {
-        flushList()
-        elements.push(
-          <h2 key={index} className="text-2xl lg:text-3xl font-bold text-white mb-4 mt-8">
-            {trimmedLine.slice(3)}
-          </h2>
-        )
-        return
-      }
-
-      if (trimmedLine.startsWith('### ')) {
-        flushList()
-        elements.push(
-          <h3 key={index} className="text-xl lg:text-2xl font-bold text-white mb-3 mt-6">
-            {trimmedLine.slice(4)}
-          </h3>
-        )
-        return
-      }
-
-      // Bold text sections
-      if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
-        flushList()
-        elements.push(
-          <p key={index} className="text-white font-semibold mb-2 mt-4">
-            {trimmedLine.slice(2, -2)}
-          </p>
-        )
-        return
-      }
-
-      // Lists
-      if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-        if (listType !== 'ul') {
-          flushList()
-          listType = 'ul'
-        }
-        currentList.push(trimmedLine.slice(2))
-        return
-      }
-
-      if (/^\d+\.\s/.test(trimmedLine)) {
-        if (listType !== 'ol') {
-          flushList()
-          listType = 'ol'
-        }
-        currentList.push(trimmedLine.replace(/^\d+\.\s/, ''))
-        return
-      }
-
-      // Tables (simplified - just show as text)
-      if (trimmedLine.startsWith('|')) {
-        flushList()
-        elements.push(
-          <div key={index} className="font-mono text-sm text-gray-400 mb-2 overflow-x-auto">
-            {trimmedLine}
-          </div>
-        )
-        return
-      }
-
-      // Regular paragraphs
-      flushList()
-      elements.push(
-        <p key={index} className="text-gray-300 leading-relaxed mb-4" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
-          {trimmedLine}
-        </p>
-      )
-    })
-
-    flushList()
-    return elements
   }
 
   return (
@@ -217,7 +426,7 @@ export default function BlogPostPage() {
             </span>
           </div>
 
-          {/* Title */}
+          {/* Title — the page's only <h1> */}
           <h1 className="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
             {post.title}
           </h1>
@@ -245,9 +454,11 @@ export default function BlogPostPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.15 }}
           className="max-w-4xl mx-auto mb-16"
+          // Machine-readable "the body has arrived" flag for the prerender.
+          data-post-loaded={body !== null}
         >
           <div className="prose prose-invert prose-lg max-w-none">
-            {renderContent(post.content)}
+            {body === null ? <ArticleSkeleton /> : renderContent(body)}
           </div>
         </motion.article>
 
@@ -313,7 +524,7 @@ export default function BlogPostPage() {
   )
 }
 
-function RelatedPostCard({ post, index }: { post: BlogPost; index: number }) {
+function RelatedPostCard({ post, index }: { post: BlogPostMeta; index: number }) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}

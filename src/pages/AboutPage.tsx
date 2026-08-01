@@ -19,7 +19,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     "name": "About EVMint - Multi-Chain Token Creation Platform",
-    "description": "Learn about EVMint, a no-code multi-chain token creation platform. Discover our mission, how the platform works, and the networks we support.",
+    "description": "Learn about EVMint, a no-code multi-chain token creation platform: the mission behind the product, why it exists, and the principles it is built on.",
     "url": "https://evmint.io/about",
     "mainEntity": {
       "@type": "Organization",
@@ -42,9 +42,9 @@ export default function AboutPage() {
       </div>
 
       <SEO
-        title="About EVMint - Our Mission, Team & Story | Multi-Chain Token Platform"
+        title="About EVMint - Our Mission & Story | Multi-Chain Token Platform"
         description="EVMint is a no-code multi-chain token launcher. Deploy ERC-20 tokens on 15+ EVM blockchains in under 60 seconds. Built with OpenZeppelin contracts, auto-verified on block explorers."
-        keywords="about evmint, evmint team, blockchain company, token creation platform, erc20 platform, crypto startup"
+        keywords="about evmint, blockchain company, token creation platform, erc20 platform, crypto startup"
         canonical="/about"
         structuredData={aboutStructuredData}
       />
@@ -109,9 +109,9 @@ export default function AboutPage() {
               <h2 className="text-2xl font-bold text-white mb-4">Our Mission</h2>
               <p className="text-gray-400 leading-relaxed">
                 Remove every barrier between great ideas and blockchain deployment.
-                We've spent years building infrastructure that handles the complexity
-                so you don't have to. Secure smart contracts, multi-chain deployment,
-                liquidity tools - all accessible through a simple interface.
+                The infrastructure handles the complexity so you don't have to:
+                battle-tested smart contracts, multi-chain deployment and liquidity
+                tools - all accessible through a simple interface.
               </p>
             </div>
           </div>
@@ -131,21 +131,20 @@ export default function AboutPage() {
 
             <div className="max-w-4xl mx-auto space-y-6 text-gray-400 leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
               <p>
-                EVMint started in 2024 when our founders, frustrated by the complexity of token deployment,
-                asked a simple question: "Why is creating a token so hard?"
+                EVMint started in 2024 with a simple question: "Why is creating a token so hard?"
               </p>
 
               <p>
-                At the time, launching an ERC20 token required hiring expensive developers, understanding
-                Solidity, navigating complex deployment processes, and managing multiple blockchain networks.
-                The barrier to entry was immense - countless great ideas never made it on-chain simply because
-                the technical hurdles were too high.
+                Launching an ERC20 token traditionally meant hiring a Solidity developer, wiring up a
+                deployment pipeline, verifying the contract by hand, and repeating all of it for every
+                chain you wanted to be on. The barrier to entry was immense - countless great ideas never
+                made it on-chain simply because the technical hurdles were too high.
               </p>
 
               <p>
-                Drawing from our experience at leading crypto companies, we built EVMint to be the antidote
-                to this complexity. We abstracted away all the technical challenges while maintaining the
-                security and reliability that blockchain applications demand.
+                EVMint is the antidote to that complexity. The technical work happens behind a single form:
+                a standard OpenZeppelin ERC-20, deployed and source-verified on the explorer, owned entirely
+                by the wallet that created it.
               </p>
 
               <p>
@@ -182,7 +181,7 @@ export default function AboutPage() {
                   </svg>
                 ),
                 title: "Security First",
-                description: "Every line of code is audited. We use OpenZeppelin contracts, the industry gold standard, ensuring your tokens are production-ready from day one."
+                description: "Built on OpenZeppelin's audited ERC-20 implementation - the same contracts securing the majority of tokens on Ethereum. Every token we deploy is source-verified on the block explorer so you can read exactly what you own."
               },
               {
                 icon: (
@@ -220,9 +219,6 @@ export default function AboutPage() {
           </div>
         </motion.section>
 
-        {/* Team Section */}
-        {/* TeamSection removed — fabricated team members */}
-
         {/* Social Proof */}
         <SocialProofSection />
 
@@ -237,8 +233,8 @@ export default function AboutPage() {
             Ready to Build Something Amazing?
           </h2>
           <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-            Join thousands of creators who have launched their tokens with EVMint.
-            Your idea deserves to be on-chain.
+            No account, no subscription, no lock-in. Connect a wallet and deploy -
+            you own the contract from the first block.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>

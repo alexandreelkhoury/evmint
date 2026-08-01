@@ -7,6 +7,31 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView, trackButtonClick } from '../utils/analytics'
 
 /**
+ * Single source of truth for this page's FAQ. The visible list and the FAQPage
+ * JSON-LD are both rendered from this array — Google requires the marked-up
+ * questions and answers to match the on-page copy, and hand-duplicating them
+ * guarantees the two eventually drift.
+ */
+const faqs = [
+  {
+    question: 'How much does it cost to create a meme coin?',
+    answer: 'With EVMint, the platform fee is ~$80 equivalent, paid in the native token of the chain you deploy on, plus gas. On Layer 2 networks like Base, gas is a few cents. Compare this to $5,000-20,000 for custom development.'
+  },
+  {
+    question: 'What makes a meme coin successful?',
+    answer: 'Community engagement, viral marketing, authentic humor, transparency, and consistent effort. The best meme coins have passionate communities that create content and spread the word organically.'
+  },
+  {
+    question: 'How do I get my meme coin listed on CoinGecko?',
+    answer: "After launching and adding liquidity, submit your token to CoinGecko's listing form. You'll need: verified contract, active trading, social media presence, and accurate information."
+  },
+  {
+    question: 'Should I use a ridiculous supply like 1 trillion tokens?',
+    answer: 'Large supplies (billions or trillions) create psychological affordability - people like owning millions of tokens. Just ensure your marketing communicates value in terms of market cap, not individual token price.'
+  }
+]
+
+/**
  * SEO Landing Page: Meme Coin Creator
  * Targets keyword: "meme coin creator"
  * Provides value proposition before directing to /create
@@ -17,20 +42,78 @@ export default function MemeCoinCreatorPage() {
   useEffect(() => {
     trackPageView(analytics, 'meme_coin_creator')
   }, [analytics])
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Meme Coin Creator - Launch Your Meme Token in 5 Seconds",
-    "description": "Create and launch your own meme coin on Base, Ethereum, Polygon & more. No coding required. Add liquidity and grow your community.",
-    "url": "https://evmint.io/meme-coin-creator",
-    "applicationCategory": "FinanceApplication"
-  }
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Meme Coin Creator - Launch Your Meme Token in Under 60 Seconds",
+      "description": "Create and launch your own meme coin on Base, Ethereum, Polygon & more. No coding required. Add liquidity and grow your community.",
+      "url": "https://evmint.io/meme-coin-creator",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser",
+      "provider": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "80",
+        "priceCurrency": "USD",
+        "description": "~$80 equivalent per deployment, paid in the native token of the chain you deploy on. Same price across all 15+ EVM networks.",
+        "priceValidUntil": "2027-12-31"
+      },
+      "featureList": [
+        "Meme coin deployment in under 60 seconds",
+        "15+ EVM blockchains supported, including Base and Polygon",
+        "No coding skills required",
+        "OpenZeppelin audited smart contract templates",
+        "Built-in liquidity tools for Uniswap and other DEXs",
+        "Automatic verification on block explorers",
+        "Non-custodial — the deployer owns the contract and the full supply"
+      ],
+      "installUrl": "https://evmint.io/create"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "name": "Meme Coin Creator FAQ",
+      "url": "https://evmint.io/meme-coin-creator",
+      "inLanguage": "en-US",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Meme Coin Creator",
+          "item": "https://evmint.io/meme-coin-creator"
+        }
+      ]
+    }
+  ]
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
-        title="Meme Coin Creator - Launch Your Meme Token in 5 Seconds | EVMint"
-        description="Create your own meme coin on Ethereum, Base, Arbitrum, Polygon & more. Deploy in 5 seconds. No coding. Ultra-low fees on L2. Add liquidity on Uniswap. Start your meme coin empire!"
+        title="Meme Coin Creator - Launch Your Meme Token in Under 60 Seconds | EVMint"
+        description="Create your own meme coin on Ethereum, Base, Arbitrum, Polygon & more. Deploy in under 60 seconds. No coding. Ultra-low fees on L2. Add liquidity on Uniswap. Start your meme coin empire!"
         keywords="meme coin creator, create meme coin, meme token maker, launch meme coin, doge coin creator, shiba inu maker, pepe token creator, viral crypto"
         canonical="/meme-coin-creator"
         structuredData={structuredData}
@@ -73,7 +156,7 @@ export default function MemeCoinCreatorPage() {
             transition={{ duration: 0.25, delay: 0.073 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
-            The ultimate meme coin launcher. Create your DOGE, SHIB, or PEPE successor in 5 seconds. Deploy on Base, Ethereum, or any EVM chain. Add liquidity, build your community, and go viral!
+            The ultimate meme coin launcher. Create your DOGE, SHIB, or PEPE successor in under 60 seconds. Deploy on Base, Ethereum, or any EVM chain. Add liquidity, build your community, and go viral!
           </motion.p>
 
           {/* Main CTA Button */}
@@ -93,7 +176,7 @@ export default function MemeCoinCreatorPage() {
                 </span>
               </button>
             </Link>
-            <p className="text-gray-400 text-sm mt-4">Deploy in 5 seconds • No coding • Add liquidity instantly</p>
+            <p className="text-gray-400 text-sm mt-4">Deploy in under 60 seconds • No coding • Add liquidity instantly</p>
           </motion.div>
 
           {/* Features Grid */}
@@ -107,9 +190,9 @@ export default function MemeCoinCreatorPage() {
               <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl"></span>
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">5-Second Launch</h3>
+              <h3 className="text-xl font-bold text-white mb-3">Sub-Minute Launch</h3>
               <p className="text-gray-300 leading-relaxed">
-                Launch your meme coin faster than you can say "to the moon!" No technical skills needed. Just connect wallet and deploy.
+                Launch your meme coin in under 60 seconds, wallet confirmation included. No technical skills needed. Just connect wallet and deploy.
               </p>
             </div>
 
@@ -169,8 +252,12 @@ export default function MemeCoinCreatorPage() {
                   <span className="text-white font-bold">2</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-semibold mb-2">Launch Your Token in 5 Seconds</h4>
-                  <p className="text-gray-300">Use our platform to deploy your meme coin instantly. Choose Base for speed, Ethereum for credibility, or Polygon for low fees.</p>
+                  <h4 className="text-white font-semibold mb-2">Launch Your Token in Under 60 Seconds</h4>
+                  <p className="text-gray-300">
+                    Use our platform to deploy your meme coin in one transaction. Choose Base for speed, Ethereum for credibility, or Polygon for low fees — the{' '}
+                    <Link to="/multi-chain-token-creator" className="text-green-400 hover:text-green-300 underline underline-offset-2">multi-chain token creator</Link>
+                    {' '}covers every supported network.
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -231,7 +318,7 @@ export default function MemeCoinCreatorPage() {
                 <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Low Barrier to Entry</h4>
-                  <p className="text-gray-300">No coding required. Deploy in 5 seconds. Ultra-low fees on L2. Anyone can launch a meme coin empire.</p>
+                  <p className="text-gray-300">No coding required. Deploy in under 60 seconds. Ultra-low fees on L2. Anyone can launch a meme coin empire.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -278,7 +365,9 @@ export default function MemeCoinCreatorPage() {
                 Dogecoin reached a market cap of over $80 billion in 2021, propelled by tweets from Elon Musk and a devoted community. Shiba Inu followed, creating thousands of millionaires among early holders. PEPE, launched in 2023, reached a $1 billion market cap within weeks. These success stories have inspired a new generation of creators to launch their own meme tokens.
               </p>
               <p>
-                Today, meme coins represent a legitimate path to building communities, launching viral projects, and participating in crypto culture. With platforms like EVMint making token creation accessible to everyone, the barrier to entry has never been lower for aspiring meme coin creators.
+                Today, meme coins represent a legitimate path to building communities, launching viral projects, and participating in crypto culture. With platforms like EVMint making{' '}
+                <Link to="/cryptocurrency-creator" className="text-green-400 hover:text-green-300 underline underline-offset-2">cryptocurrency creation</Link>
+                {' '}accessible to everyone, the barrier to entry has never been lower for aspiring meme coin creators.
               </p>
             </div>
           </motion.div>
@@ -361,7 +450,11 @@ export default function MemeCoinCreatorPage() {
                 </div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Complex or Confusing Tokenomics</h4>
-                  <p className="text-gray-300">Keep it simple. Complicated tax mechanisms, reflections, and burns confuse users. Simple ERC20 with fixed supply works best for meme coins.</p>
+                  <p className="text-gray-300">
+                    Keep it simple. Complicated tax mechanisms, reflections, and burns confuse users. A plain fixed-supply{' '}
+                    <Link to="/erc20-token-generator" className="text-green-400 hover:text-green-300 underline underline-offset-2">ERC20 token</Link>
+                    {' '}works best for meme coins — that page explains exactly which parameters are locked in at deployment.
+                  </p>
                 </div>
               </div>
             </div>
@@ -378,22 +471,12 @@ export default function MemeCoinCreatorPage() {
               Meme Coin Creator FAQ
             </h2>
             <div className="space-y-6">
-              <div>
-                <h4 className="text-white font-semibold mb-2">How much does it cost to create a meme coin?</h4>
-                <p className="text-gray-400">With EVMint, the platform fee is ~$80 plus minimal gas costs. On Layer 2 networks like Base, total cost can be under $80. Compare this to $5,000-20,000 for custom development.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">What makes a meme coin successful?</h4>
-                <p className="text-gray-400">Community engagement, viral marketing, authentic humor, transparency, and consistent effort. The best meme coins have passionate communities that create content and spread the word organically.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">How do I get my meme coin listed on CoinGecko?</h4>
-                <p className="text-gray-400">After launching and adding liquidity, submit your token to CoinGecko's listing form. You'll need: verified contract, active trading, social media presence, and accurate information.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Should I use a ridiculous supply like 1 trillion tokens?</h4>
-                <p className="text-gray-400">Large supplies (billions or trillions) create psychological affordability - people like owning millions of tokens. Just ensure your marketing communicates value in terms of market cap, not individual token price.</p>
-              </div>
+              {faqs.map(faq => (
+                <div key={faq.question}>
+                  <h4 className="text-white font-semibold mb-2">{faq.question}</h4>
+                  <p className="text-gray-400">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
 

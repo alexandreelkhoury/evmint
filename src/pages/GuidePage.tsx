@@ -4,7 +4,8 @@ import { motion } from 'framer-motion'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import SEO from '../components/SEO'
-import { 
+import { guidesById, guideSequence, countGuideWords, buildGuideHowTo } from '../data/guidesData'
+import {
   CheckCircleIcon,
   ClockIcon,
   ChartBarIcon,
@@ -15,281 +16,12 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline'
 
-interface GuideStep {
-  number: string
-  title: string
-  description: string
-  details: (string | { text: string; link: { text: string; url: string } })[]
-  tip: string
-}
-
-interface GuideData {
-  id: string
-  title: string
-  description: string
-  difficulty: string
-  time: string
-  cost?: string
-  steps: GuideStep[]
-  warnings?: Array<{
-    title: string
-    description: string
-    severity: 'warning' | 'info' | 'danger'
-  }>
-  poolTypes?: Array<{
-    title: string
-    description: string
-    pros: string[]
-    cons: string[]
-    bestFor: string
-  }>
-}
-
-// Guide sequence for navigation
-const guideSequence = [
-  'create-base-token',
-  'add-liquidity', 
-  'token-security',
-  'advanced-features'
-]
-
-const guidesData: Record<string, GuideData> = {
-  'create-base-token': {
-    id: 'create-base-token',
-    title: 'How to Create ERC20 Token: No Code, 4 Steps [2025]',
-    description: 'Complete beginner\'s guide to creating your own ERC20 token on any EVM blockchain using our launcher - no coding required!',
-    difficulty: 'Beginner',
-    time: '5 minutes',
-    cost: '$75-100 + gas',
-    steps: [
-      {
-        number: '01',
-        title: 'Connect Your Wallet',
-        description: 'Connect your wallet to get started',
-        details: [
-          'Click "Connect Wallet" in the top navigation',
-          'Choose your preferred wallet (MetaMask, Rainbow, WalletConnect, etc.)',
-          'Select your preferred blockchain network',
-          'Ensure you have native tokens for gas fees (usually ~$1 worth)'
-        ],
-        tip: 'Need native tokens? Send directly from a CEX or bridge from Ethereum mainnet!'
-      },
-      {
-        number: '02',
-        title: 'Enter Token Details',
-        description: 'Define your token\'s basic information and parameters',
-        details: [
-          'Enter your token name (e.g., "My Amazing Token")',
-          'Set the token symbol (e.g., "MAT" - keep it short)',
-          'Choose total supply (default: 1 billion tokens)',
-          'Set decimals (18 is standard for most tokens)'
-        ],
-        tip: '⚖️ Memcoins usually have 1B supply! Higher supply = lower price per token.'
-      },
-      {
-        number: '03',
-        title: 'Review & Deploy',
-        description: 'Final check and deployment to the blockchain',
-        details: [
-          'Review all token parameters carefully',
-          'Check the deployment fee (varies by network, $75-100 USD)',
-          'Click "Create Token" to start deployment',
-          'Approve the transaction in your wallet'
-        ],
-        tip: 'Your token will be live on the blockchain within seconds!'
-      },
-      {
-        number: '04',
-        title: 'Verify & Manage',
-        description: 'Contract verification and post-deployment steps',
-        details: [
-          'Contract is automatically verified on the block explorer',
-          'Your token appears in the "My Tokens" section',
-          'Share your token address with your community',
-          {
-            text: 'Consider adding liquidity to make it tradeable',
-            link: {
-              text: 'Learn how to add liquidity',
-              url: '/guides/add-liquidity'
-            }
-          }
-        ],
-        tip: 'Congratulations! Your token is now live on the blockchain!'
-      }
-    ]
-  },
-  'add-liquidity': {
-    id: 'add-liquidity',
-    title: 'How to Add Liquidity to Your Token [2025 Guide]',
-    description: 'Step-by-step tutorial on adding liquidity to DEX pools using our built-in liquidity tools.',
-    difficulty: 'Intermediate',
-    time: '10 minutes',
-    cost: 'Your tokens + native tokens for pair',
-    poolTypes: [
-      {
-        title: 'DEX Pool (Recommended)',
-        description: 'Standard automated market maker pools on your chosen network',
-        pros: ['Battle-tested protocols', 'High liquidity potential', 'Wide adoption', 'Easy integration'],
-        cons: ['Impermanent loss risk', 'Gas costs for transactions'],
-        bestFor: 'Most tokens - recommended choice for EVM chains'
-      }
-    ],
-    warnings: [
-      {
-        title: 'Impermanent Loss Warning',
-        description: 'Providing liquidity can result in impermanent loss if token prices diverge significantly. Understand the risks before proceeding.',
-        severity: 'warning'
-      }
-    ],
-    steps: [
-      {
-        number: '01',
-        title: 'Navigate to Liquidity Section',
-        description: 'Access the liquidity management interface',
-        details: [
-          'Go to the "Liquidity" page from the main navigation',
-          'Connect your wallet if not already connected',
-          'Ensure you have both your token and native tokens in your wallet',
-          'Select your token from the dropdown list'
-        ],
-        tip: 'You need both your token and native tokens to create a trading pair!'
-      },
-      {
-        number: '02',
-        title: 'Set Token Amounts',
-        description: 'Define how much liquidity to provide',
-        details: [
-          'Enter the amount of your tokens to add (e.g., 100,000 tokens)',
-          'Enter corresponding native token amount (determines initial price)',
-          'Review the calculated price per token',
-          'Consider starting with 10-20% of your token supply'
-        ],
-        tip: '⚖️ Higher liquidity = less price volatility and better trading experience!'
-      },
-      {
-        number: '03',
-        title: 'Approve & Add Liquidity',
-        description: 'Execute the liquidity addition',
-        details: [
-          'Click "Approve Token" to allow the contract to spend your tokens',
-          'Wait for approval transaction to confirm',
-          'Click "Add Liquidity" to create the pool',
-          'Confirm the transaction in your wallet'
-        ],
-        tip: 'Your pool will be live on the DEX within minutes!'
-      },
-      {
-        number: '04',
-        title: 'Manage Your Position',
-        description: 'Monitor and manage your liquidity position',
-        details: [
-          'Your LP tokens represent your share of the pool',
-          'Monitor your position in the "My Liquidity" section',
-          'You can add more liquidity or remove it anytime',
-          'LP tokens can be used for farming opportunities'
-        ],
-        tip: 'Track your pool performance and adjust as needed!'
-      }
-    ]
-  },
-  'token-security': {
-    id: 'token-security',
-    title: 'Token Security Best Practices',
-    description: 'Learn how to secure your token deployment, verify contracts, and protect against common vulnerabilities.',
-    difficulty: 'Intermediate',
-    time: '7 minutes',
-    steps: [
-      {
-        number: '01',
-        title: 'Contract Verification',
-        description: 'Ensure your contract is verified and transparent',
-        details: [
-          'Our platform automatically verifies contracts on block explorers',
-          'Verified contracts show their source code publicly',
-          'Users can inspect the contract before interacting',
-          'Verification builds trust with your community'
-        ],
-        tip: 'Verified contracts are essential for building trust!'
-      },
-      {
-        number: '02',
-        title: 'Safe Token Parameters',
-        description: 'Choose secure token configuration',
-        details: [
-          'Use standard 18 decimals unless you have specific needs',
-          'Set reasonable total supply (avoid extreme numbers)',
-          'Don\'t include backdoors or admin functions',
-          'Our contracts are immutable after deployment'
-        ],
-        tip: 'Immutable contracts provide the highest security!'
-      },
-      {
-        number: '03',
-        title: 'Community Safety',
-        description: 'Protect your token holders',
-        details: [
-          'Be transparent about your project goals',
-          'Provide clear tokenomics documentation',
-          'Engage regularly with your community',
-          'Never promise guaranteed returns'
-        ],
-        tip: 'Transparency builds lasting community trust!'
-      }
-    ]
-  },
-  'advanced-features': {
-    id: 'advanced-features',
-    title: 'Advanced Token Features and Management',
-    description: 'Explore advanced token features like fee collection, upgradeable contracts, and multi-signature security.',
-    difficulty: 'Advanced',
-    time: '12 minutes',
-    steps: [
-      {
-        number: '01',
-        title: 'Understanding Our Fee System',
-        description: 'How our platform fee collection works',
-        details: [
-          'Token deployment fee varies by network ($75-100 USD equivalent)',
-          'Fees support platform development and maintenance',
-          'No ongoing fees after deployment',
-          'Your token contract is completely independent'
-        ],
-        tip: 'One-time fee for lifetime token ownership!'
-      },
-      {
-        number: '02',
-        title: 'Contract Immutability',
-        description: 'Benefits and considerations of immutable contracts',
-        details: [
-          'Our contracts cannot be upgraded or modified',
-          'This provides maximum security for token holders',
-          'No admin keys or backdoors exist',
-          'Code is law - what you deploy is what you get'
-        ],
-        tip: 'Immutability = maximum security and trust!'
-      },
-      {
-        number: '03',
-        title: 'Integration Possibilities',
-        description: 'How to integrate your token with other protocols',
-        details: [
-          'Standard ERC20 interface works with all DeFi protocols',
-          'Compatible with DEXes like Uniswap, SushiSwap',
-          'Can be used in lending protocols like Aave',
-          'Works with bridges for cross-chain functionality'
-        ],
-        tip: 'Standard compliance = endless possibilities!'
-      }
-    ]
-  }
-}
-
 export default function GuidePage() {
   const { guideId } = useParams<{ guideId: string }>()
   const analytics = useFirebaseAnalytics()
-  
-  const guide = guideId ? guidesData[guideId] : null
-  
+
+  const guide = guideId ? guidesById[guideId] ?? null : null
+
   // Get next guide in sequence
   const getNextGuide = (currentGuideId: string) => {
     const currentIndex = guideSequence.indexOf(currentGuideId)
@@ -297,7 +29,7 @@ export default function GuidePage() {
       const nextGuideId = guideSequence[currentIndex + 1]
       return {
         id: nextGuideId,
-        title: guidesData[nextGuideId]?.title || 'Next Guide'
+        title: guidesById[nextGuideId]?.title || 'Next Guide'
       }
     }
     return null
@@ -311,55 +43,12 @@ export default function GuidePage() {
     }
   }, [analytics, guide])
 
-  // Build comprehensive HowTo structured data for each guide
+  // Structured data for the guide: HowTo (shared with the guides index),
+  // breadcrumbs and an Article record. No dates are emitted — we do not track
+  // per-guide publication/modification dates, and inventing them is worse than
+  // omitting them. wordCount is measured from the prose actually rendered.
   const guideStructuredData: object[] | undefined = guide ? [
-    {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": guide.title,
-      "description": guide.description,
-      "url": `https://evmint.io/guides/${guide.id}`,
-      "totalTime": guide.id === 'create-base-token' ? "PT5M"
-        : guide.id === 'add-liquidity' ? "PT10M"
-        : guide.id === 'token-security' ? "PT7M"
-        : "PT12M",
-      ...(guide.cost ? {
-        "estimatedCost": {
-          "@type": "MonetaryAmount",
-          "currency": "USD",
-          "value": guide.cost
-        }
-      } : {}),
-      "tool": guide.id === 'create-base-token' ? [
-        { "@type": "HowToTool", "name": "Web3 wallet (MetaMask, Rainbow, or WalletConnect-compatible)" },
-        { "@type": "HowToTool", "name": "Web browser (Chrome, Firefox, Safari, or Brave)" }
-      ] : guide.id === 'add-liquidity' ? [
-        { "@type": "HowToTool", "name": "Web3 wallet with deployed ERC20 token" },
-        { "@type": "HowToTool", "name": "EVMint Liquidity Management interface" }
-      ] : guide.id === 'token-security' ? [
-        { "@type": "HowToTool", "name": "Block explorer (Etherscan, Arbiscan, Polygonscan, etc.)" },
-        { "@type": "HowToTool", "name": "Web3 wallet for contract interaction" }
-      ] : [
-        { "@type": "HowToTool", "name": "Web3 wallet (MetaMask or compatible)" },
-        { "@type": "HowToTool", "name": "EVMint platform" }
-      ],
-      "supply": guide.id === 'create-base-token' ? [
-        { "@type": "HowToSupply", "name": "Native tokens for gas fees (ETH, MATIC, BNB, AVAX, etc.)" },
-        { "@type": "HowToSupply", "name": "Platform deployment fee ($75-100 USD equivalent)" }
-      ] : guide.id === 'add-liquidity' ? [
-        { "@type": "HowToSupply", "name": "Your deployed ERC20 tokens (10-20% of total supply recommended)" },
-        { "@type": "HowToSupply", "name": "Native tokens for the trading pair (ETH, MATIC, BNB, etc.)" },
-        { "@type": "HowToSupply", "name": "Gas fees for approval and liquidity transactions" }
-      ] : [],
-      "step": guide.steps.map((step, index) => ({
-        "@type": "HowToStep",
-        "position": index + 1,
-        "name": step.title,
-        "text": `${step.description}. ${step.details.map(d => typeof d === 'string' ? d : d.text).join('. ')}.`,
-        "url": `https://evmint.io/guides/${guide.id}`
-      })),
-      "image": "https://evmint.io/og-image.png"
-    },
+    buildGuideHowTo(guide),
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
@@ -404,18 +93,12 @@ export default function GuidePage() {
           "url": "https://evmint.io/og-image.png"
         }
       },
-      "datePublished": "2025-01-01",
-      "dateModified": "2026-02-01",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": `https://evmint.io/guides/${guide.id}`
       },
       "articleSection": "Cryptocurrency Guides",
-      "wordCount": guide.steps.reduce((total, step) =>
-        total + step.details.reduce((stepTotal, d) =>
-          stepTotal + (typeof d === 'string' ? d : d.text).split(' ').length, 0
-        ), 0
-      ) * 2
+      "wordCount": countGuideWords(guide)
     }
   ] : undefined
 
@@ -448,7 +131,7 @@ export default function GuidePage() {
       <SEO
         title={`${guide.title} | Token Creation Guide`}
         description={guide.description}
-        keywords={`erc20 token, ${guide.id}, tutorial, guide, blockchain, evm, how to, step by step`}
+        keywords={`erc20 token, ${guide.keywords}, tutorial, guide, blockchain, evm, how to, step by step`}
         canonical={`/guides/${guide.id}`}
         structuredData={guideStructuredData}
       />

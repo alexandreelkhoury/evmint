@@ -7,6 +7,35 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView, trackButtonClick } from '../utils/analytics'
 
 /**
+ * Single source of truth for this page's FAQ. The visible list and the FAQPage
+ * JSON-LD are both rendered from this array — Google requires the marked-up
+ * questions and answers to match the on-page copy, and hand-duplicating them
+ * guarantees the two eventually drift.
+ */
+const faqs = [
+  {
+    question: 'Do I need programming skills to create an ERC20 token?',
+    answer: 'No coding skills are required. Our platform handles all the technical complexity - you just fill out a simple form with your token details.'
+  },
+  {
+    question: 'Which blockchain should I choose for my token?',
+    answer: 'Ethereum provides maximum credibility but higher fees. Layer 2 networks like Base, Arbitrum, and Polygon offer 90% lower fees with similar security. Consider your target audience and use case.'
+  },
+  {
+    question: 'Can I add my token to MetaMask?',
+    answer: 'Yes. All tokens created with EVMint are standard ERC20 tokens. Simply add the token contract address to MetaMask or any ERC20-compatible wallet.'
+  },
+  {
+    question: 'How do I make my token tradeable?',
+    answer: 'After creating your token, add liquidity on a decentralized exchange like Uniswap. Our platform includes built-in liquidity tools to make this process simple.'
+  },
+  {
+    question: 'Is the smart contract secure?',
+    answer: 'Yes. Every token is generated from OpenZeppelin\'s audited ERC20 libraries rather than hand-written Solidity, so the transfer, approval, and ownership logic is battle-tested code that has been reviewed by security researchers and reused across the ecosystem for years.'
+  }
+]
+
+/**
  * SEO Landing Page: ERC20 Token Generator
  * Targets keyword: "erc20 token generator"
  * Provides value proposition before directing to /create
@@ -17,19 +46,77 @@ export default function ERC20TokenGeneratorPage() {
   useEffect(() => {
     trackPageView(analytics, 'erc20_token_generator')
   }, [analytics])
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "ERC20 Token Generator - Create Custom Tokens Instantly",
-    "description": "Generate ERC20 tokens with custom name, symbol, supply, and decimals. Deploy on any EVM blockchain. No coding skills required.",
-    "url": "https://evmint.io/erc20-token-generator",
-    "applicationCategory": "FinanceApplication"
-  }
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ERC20 Token Generator - Create Custom Tokens Instantly",
+      "description": "Generate ERC20 tokens with custom name, symbol, supply, and decimals. Deploy on any EVM blockchain in under 60 seconds. No coding skills required.",
+      "url": "https://evmint.io/erc20-token-generator",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser",
+      "provider": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "80",
+        "priceCurrency": "USD",
+        "description": "~$80 equivalent per deployment, paid in the native token of the chain you deploy on. Same price across all 15+ EVM networks.",
+        "priceValidUntil": "2027-12-31"
+      },
+      "featureList": [
+        "ERC20 deployment in under 60 seconds",
+        "Custom name, symbol, total supply, and decimals",
+        "15+ EVM blockchains supported",
+        "No coding skills required",
+        "OpenZeppelin audited smart contract templates",
+        "Automatic verification on block explorers",
+        "Non-custodial — the deployer owns the contract and the full supply"
+      ],
+      "installUrl": "https://evmint.io/create"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "name": "ERC20 Token Generator FAQ",
+      "url": "https://evmint.io/erc20-token-generator",
+      "inLanguage": "en-US",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "ERC20 Token Generator",
+          "item": "https://evmint.io/erc20-token-generator"
+        }
+      ]
+    }
+  ]
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
-        title="ERC20 Token Generator - Create Custom ERC20 Tokens in 5 Seconds | EVMint"
+        title="ERC20 Token Generator - Create Custom ERC20 Tokens | EVMint"
         description="Generate ERC20 tokens with custom parameters. Deploy on Ethereum, Base, Arbitrum, Polygon & more. No coding needed. Automatic verification. Start creating your ERC20 token now!"
         keywords="erc20 token generator, create erc20 token, erc20 maker, ethereum token generator, custom erc20, token factory, erc20 deployment"
         canonical="/erc20-token-generator"
@@ -62,7 +149,7 @@ export default function ERC20TokenGeneratorPage() {
             Generate Professional ERC20 Tokens
             <br />
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-              In Just 5 Seconds
+              In Under 60 Seconds
             </span>
           </motion.h1>
 
@@ -228,8 +315,8 @@ export default function ERC20TokenGeneratorPage() {
               <div className="flex items-start gap-4">
                 <div className="text-2xl"></div>
                 <div>
-                  <h4 className="text-white font-semibold mb-1">Launch in 5 Seconds</h4>
-                  <p className="text-gray-300">No complex setup, no waiting. Connect your wallet, fill the form, and your ERC20 token is live.</p>
+                  <h4 className="text-white font-semibold mb-1">Launch in Under 60 Seconds</h4>
+                  <p className="text-gray-300">No complex setup, no waiting. Connect your wallet, fill the form, confirm the transaction, and your ERC20 token is live.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -277,7 +364,9 @@ export default function ERC20TokenGeneratorPage() {
                 Every ERC20 token implements six mandatory functions: totalSupply (returns total tokens), balanceOf (returns balance for an address), transfer (moves tokens between addresses), transferFrom (allows approved transfers), approve (authorizes spending), and allowance (checks remaining approval). These functions ensure interoperability across the entire Ethereum ecosystem and all EVM-compatible chains.
               </p>
               <p>
-                Today, ERC20 tokens power everything from DeFi protocols and governance systems to gaming economies and loyalty programs. Major cryptocurrencies like USDC, USDT, LINK, and UNI are all ERC20 tokens, demonstrating the standard's reliability and versatility for projects of all sizes.
+                Today, ERC20 tokens power everything from DeFi protocols and governance systems to gaming economies, loyalty programs, and{' '}
+                <Link to="/meme-coin-creator" className="text-purple-400 hover:text-purple-300 underline underline-offset-2">community meme coins</Link>
+                . Major cryptocurrencies like USDC, USDT, LINK, and UNI are all ERC20 tokens, demonstrating the standard's reliability and versatility for projects of all sizes.
               </p>
             </div>
           </motion.div>
@@ -308,7 +397,11 @@ export default function ERC20TokenGeneratorPage() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-2">Select Your Blockchain Network</h3>
-                  <p className="text-gray-300">Choose from Ethereum mainnet for maximum credibility, or Layer 2 networks like Base, Arbitrum, and Polygon for 90% lower gas fees. All networks use the same ERC20 standard.</p>
+                  <p className="text-gray-300">
+                    Choose from Ethereum mainnet for maximum credibility, or Layer 2 networks like Base, Arbitrum, and Polygon for 90% lower gas fees. All networks use the same ERC20 standard — see the{' '}
+                    <Link to="/multi-chain-token-creator" className="text-purple-400 hover:text-purple-300 underline underline-offset-2">multi-chain deployment comparison</Link>
+                    {' '}if you are still deciding.
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -317,7 +410,11 @@ export default function ERC20TokenGeneratorPage() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold mb-2">Configure Your Token</h3>
-                  <p className="text-gray-300">Enter your token name, symbol (ticker), total supply, and decimals. The name should be memorable, the symbol should be unique and 3-5 characters, and consider your supply carefully for your tokenomics model.</p>
+                  <p className="text-gray-300">
+                    Enter your token name, symbol (ticker), total supply, and decimals. The name should be memorable, the symbol should be unique and 3-5 characters, and consider your supply carefully for your tokenomics model — our{' '}
+                    <Link to="/cryptocurrency-creator" className="text-purple-400 hover:text-purple-300 underline underline-offset-2">guide to designing token economics</Link>
+                    {' '}covers supply strategy and distribution planning in depth.
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -325,7 +422,7 @@ export default function ERC20TokenGeneratorPage() {
                   <span className="text-white font-bold">4</span>
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-2">Deploy in 5 Seconds</h3>
+                  <h3 className="text-white font-semibold mb-2">Deploy in Under 60 Seconds</h3>
                   <p className="text-gray-300">Click deploy and confirm the transaction in your wallet. Our platform compiles the OpenZeppelin-based smart contract, deploys it to your chosen network, and automatically verifies the source code on the block explorer.</p>
                 </div>
               </div>
@@ -401,7 +498,7 @@ export default function ERC20TokenGeneratorPage() {
                 <tbody className="text-gray-300">
                   <tr className="border-b border-white/5">
                     <td className="py-3 px-4">Time to Deploy</td>
-                    <td className="text-center py-3 px-4 text-green-400">5 seconds</td>
+                    <td className="text-center py-3 px-4 text-green-400">Under 60 seconds</td>
                     <td className="text-center py-3 px-4">2-8 weeks</td>
                   </tr>
                   <tr className="border-b border-white/5">
@@ -445,26 +542,12 @@ export default function ERC20TokenGeneratorPage() {
               Frequently Asked Questions
             </h2>
             <div className="space-y-6">
-              <div>
-                <h4 className="text-white font-semibold mb-2">Do I need programming skills to create an ERC20 token?</h4>
-                <p className="text-gray-400">No coding skills are required. Our platform handles all the technical complexity - you just fill out a simple form with your token details.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Which blockchain should I choose for my token?</h4>
-                <p className="text-gray-400">Ethereum provides maximum credibility but higher fees. Layer 2 networks like Base, Arbitrum, and Polygon offer 90% lower fees with similar security. Consider your target audience and use case.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Can I add my token to MetaMask?</h4>
-                <p className="text-gray-400">Yes! All tokens created with EVMint are standard ERC20 tokens. Simply add the token contract address to MetaMask or any ERC20-compatible wallet.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">How do I make my token tradeable?</h4>
-                <p className="text-gray-400">After creating your token, add liquidity on a decentralized exchange like Uniswap. Our platform includes built-in liquidity tools to make this process simple.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Is the smart contract secure?</h4>
-                <p className="text-gray-400">Yes. We use OpenZeppelin's audited smart contract libraries, the industry standard trusted by Coinbase, Aave, Compound, and thousands of other projects.</p>
-              </div>
+              {faqs.map(faq => (
+                <div key={faq.question}>
+                  <h4 className="text-white font-semibold mb-2">{faq.question}</h4>
+                  <p className="text-gray-400">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
 

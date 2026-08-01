@@ -7,6 +7,31 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView, trackButtonClick } from '../utils/analytics'
 
 /**
+ * Single source of truth for this page's FAQ. The visible list and the FAQPage
+ * JSON-LD are both rendered from this array — Google requires the marked-up
+ * questions and answers to match the on-page copy, and hand-duplicating them
+ * guarantees the two eventually drift.
+ */
+const faqs = [
+  {
+    question: 'Can I deploy the same token on multiple chains?',
+    answer: 'Yes. You can deploy tokens with the same parameters on as many chains as you want. Each deployment creates an independent token contract on that specific chain.'
+  },
+  {
+    question: 'Which chain should I choose for my token?',
+    answer: 'It depends on your goals. Base and Arbitrum offer low fees for new projects. Ethereum provides maximum credibility. Polygon is great for gaming tokens. Consider your target audience and transaction volume.'
+  },
+  {
+    question: 'Are multi-chain tokens compatible with all wallets?',
+    answer: 'Yes, all EVMint tokens are standard ERC20 tokens, compatible with MetaMask, Trust Wallet, Coinbase Wallet, and any wallet that supports the respective chain.'
+  },
+  {
+    question: 'How do I add liquidity after creating my token?',
+    answer: 'EVMint includes built-in liquidity tools. After deployment, you can add liquidity directly to Uniswap, SushiSwap, or other DEXs from our platform.'
+  }
+]
+
+/**
  * SEO Landing Page: Multi-Chain Token Creator
  * Targets keyword: "multi-chain token creator"
  * Provides value proposition before directing to /create
@@ -19,20 +44,78 @@ export default function MultiChainTokenCreatorPage() {
     trackPageView(analytics, 'multi_chain_token_creator')
   }, [analytics])
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Multi-Chain Token Creator - Deploy ERC20 on 15+ Blockchains",
-    "description": "Create and deploy ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC, Avalanche, and 10+ more EVM chains. No coding required.",
-    "url": "https://evmint.io/multi-chain-token-creator",
-    "applicationCategory": "FinanceApplication"
-  }
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Multi-Chain Token Creator - Deploy ERC20 on 15+ Blockchains",
+      "description": "Create and deploy ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC, Avalanche, and 10+ more EVM chains. No coding required.",
+      "url": "https://evmint.io/multi-chain-token-creator",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser",
+      "provider": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "80",
+        "priceCurrency": "USD",
+        "description": "~$80 equivalent per deployment, paid in the native token of the chain you deploy on. Same price across all 15+ EVM networks.",
+        "priceValidUntil": "2027-12-31"
+      },
+      "featureList": [
+        "Token deployment in under 60 seconds",
+        "15+ EVM blockchains supported from one interface",
+        "Redeploy the same token parameters on any supported chain",
+        "No coding skills required",
+        "OpenZeppelin audited smart contract templates",
+        "Automatic verification on block explorers",
+        "Non-custodial — the deployer owns the contract and the full supply"
+      ],
+      "installUrl": "https://evmint.io/create"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "name": "Multi-Chain Token Creator FAQ",
+      "url": "https://evmint.io/multi-chain-token-creator",
+      "inLanguage": "en-US",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Multi-Chain Token Creator",
+          "item": "https://evmint.io/multi-chain-token-creator"
+        }
+      ]
+    }
+  ]
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
         title="Multi-Chain Token Creator - Deploy ERC20 on 15+ EVM Blockchains | EVMint"
-        description="Create ERC20 tokens on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche & more. Multi-chain token deployment in 5 seconds. No coding required. Ultra-low fees."
+        description="Create ERC20 tokens on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche & more. Multi-chain token deployment in under 60 seconds. No coding required. Ultra-low fees."
         keywords="multi-chain token creator, multi chain token, erc20 multi-chain, deploy multiple blockchains, cross-chain token, ethereum base arbitrum polygon, multi network token"
         canonical="/multi-chain-token-creator"
         structuredData={structuredData}
@@ -74,7 +157,7 @@ export default function MultiChainTokenCreatorPage() {
             transition={{ duration: 0.25, delay: 0.089 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
-            The ultimate multi-chain token launcher. Deploy your ERC20 token on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, and 10+ more chains in just 5 seconds.
+            The ultimate multi-chain token launcher. Deploy your ERC20 token on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, and 10+ more chains in under 60 seconds.
           </motion.p>
 
           {/* Main CTA Button */}
@@ -94,7 +177,7 @@ export default function MultiChainTokenCreatorPage() {
                 </span>
               </button>
             </Link>
-            <p className="text-gray-400 text-sm mt-4">No credit card required • Deploy in 5 seconds</p>
+            <p className="text-gray-400 text-sm mt-4">No credit card required • Deploy in under 60 seconds</p>
           </motion.div>
 
           {/* Features Grid */}
@@ -130,7 +213,7 @@ export default function MultiChainTokenCreatorPage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Instant Deployment</h3>
               <p className="text-gray-300 leading-relaxed">
-                Your token goes live in 5 seconds. No waiting, no complex setup. Just connect your wallet, fill the form, and deploy.
+                Your token goes live in under 60 seconds, wallet confirmation included. No waiting, no complex setup. Just connect your wallet, fill the form, and deploy.
               </p>
             </div>
 
@@ -164,7 +247,9 @@ export default function MultiChainTokenCreatorPage() {
               </p>
               <p>
                 The EVM (Ethereum Virtual Machine) compatibility ensures that tokens deployed through EVMint work
-                seamlessly across all supported networks. This means your ERC20 token will function identically
+                seamlessly across all supported networks. This means your{' '}
+                <Link to="/erc20-token-generator" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">ERC20 token</Link>
+                {' '}will function identically
                 whether it's on Ethereum mainnet or a Layer 2 solution like Optimism - same smart contract code,
                 same security standards, same functionality.
               </p>
@@ -219,7 +304,7 @@ export default function MultiChainTokenCreatorPage() {
                   <span className="text-white font-bold">4</span>
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold mb-2">Deploy in 5 Seconds</h3>
+                  <h3 className="text-white font-semibold mb-2">Deploy in Under 60 Seconds</h3>
                   <p className="text-gray-300">Click deploy, confirm the transaction in your wallet, and your token is live. EVMint handles compilation, deployment, and automatic contract verification.</p>
                 </div>
               </div>
@@ -243,7 +328,11 @@ export default function MultiChainTokenCreatorPage() {
                 </div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Maximum Reach & Flexibility</h4>
-                  <p className="text-gray-300">Deploy on the chain that best fits your project's needs - whether it's Ethereum for credibility, Base for speed, or Polygon for cost-efficiency.</p>
+                  <p className="text-gray-300">
+                    Deploy on the chain that best fits your project's needs - whether it's Ethereum for credibility, Base for speed, or Polygon for cost-efficiency. New to this? Start with the basics of{' '}
+                    <Link to="/cryptocurrency-creator" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">creating your own cryptocurrency</Link>
+                    .
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -301,7 +390,11 @@ export default function MultiChainTokenCreatorPage() {
               </div>
               <div className="p-4 bg-white/5 rounded-xl">
                 <h4 className="text-white font-semibold mb-2">Meme Coins</h4>
-                <p className="text-gray-400 text-sm">Maximize viral potential by launching on low-fee chains while maintaining Ethereum credibility.</p>
+                <p className="text-gray-400 text-sm">
+                  Maximize viral potential by launching on low-fee chains while maintaining Ethereum credibility. See the{' '}
+                  <Link to="/meme-coin-creator" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">meme coin launch playbook</Link>
+                  {' '}for liquidity and community tactics.
+                </p>
               </div>
             </div>
           </motion.div>
@@ -328,7 +421,7 @@ export default function MultiChainTokenCreatorPage() {
                 <tbody className="text-gray-300">
                   <tr className="border-b border-white/5">
                     <td className="py-3 px-4">Deployment Time</td>
-                    <td className="text-center py-3 px-4 text-green-400">5 seconds</td>
+                    <td className="text-center py-3 px-4 text-green-400">Under 60 seconds</td>
                     <td className="text-center py-3 px-4">Days to weeks</td>
                   </tr>
                   <tr className="border-b border-white/5">
@@ -372,22 +465,12 @@ export default function MultiChainTokenCreatorPage() {
               Frequently Asked Questions
             </h2>
             <div className="space-y-6">
-              <div>
-                <h4 className="text-white font-semibold mb-2">Can I deploy the same token on multiple chains?</h4>
-                <p className="text-gray-400">Yes! You can deploy tokens with the same parameters on as many chains as you want. Each deployment creates an independent token contract on that specific chain.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Which chain should I choose for my token?</h4>
-                <p className="text-gray-400">It depends on your goals. Base and Arbitrum offer low fees for new projects. Ethereum provides maximum credibility. Polygon is great for gaming tokens. Consider your target audience and transaction volume.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Are multi-chain tokens compatible with all wallets?</h4>
-                <p className="text-gray-400">Yes, all EVMint tokens are standard ERC20 tokens, compatible with MetaMask, Trust Wallet, Coinbase Wallet, and any wallet that supports the respective chain.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">How do I add liquidity after creating my token?</h4>
-                <p className="text-gray-400">EVMint includes built-in liquidity tools. After deployment, you can add liquidity directly to Uniswap, SushiSwap, or other DEXs from our platform.</p>
-              </div>
+              {faqs.map(faq => (
+                <div key={faq.question}>
+                  <h4 className="text-white font-semibold mb-2">{faq.question}</h4>
+                  <p className="text-gray-400">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
 

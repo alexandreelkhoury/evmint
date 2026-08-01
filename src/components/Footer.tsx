@@ -7,6 +7,12 @@ const footerLinks = {
     { to: '/liquidity', label: 'Liquidity' },
     { to: '/tokens', label: 'My Tokens' },
   ],
+  'Token Creators': [
+    { to: '/erc20-token-generator', label: 'ERC20 Token Generator' },
+    { to: '/meme-coin-creator', label: 'Meme Coin Creator' },
+    { to: '/cryptocurrency-creator', label: 'Cryptocurrency Creator' },
+    { to: '/multi-chain-token-creator', label: 'Multi-Chain Token Creator' },
+  ],
   Resources: [
     { to: '/guides', label: 'Guides' },
     { to: '/blog', label: 'Blog' },
@@ -46,7 +52,7 @@ export default function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
             {Object.entries(footerLinks).map(([heading, links]) => (
               <div key={heading}>
                 <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{heading}</h4>

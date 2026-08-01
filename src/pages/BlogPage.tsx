@@ -4,7 +4,8 @@ import { motion } from 'framer-motion'
 import SEO from '../components/SEO'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
-import { blogPosts, getFeaturedPosts, BlogPost } from '../data/blogData'
+import { blogPostsMeta as blogPosts, getFeaturedPostMetas as getFeaturedPosts } from '../data/blogMeta'
+import type { BlogPostMeta as BlogPost } from '../data/blogMeta'
 import { colors, typography, layout } from '../styles/designSystem'
 import { initializeApp, getApps } from 'firebase/app'
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore'
@@ -31,33 +32,56 @@ export default function BlogPage() {
     return matchesCategory && matchesSearch
   })
 
-  const blogStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    "name": "EVMint Blog - Token Creation Guides & Tutorials",
-    "description": "Expert guides on ERC20 token creation, multi-chain deployment, liquidity management, and cryptocurrency marketing strategies.",
-    "url": "https://evmint.io/blog",
-    "publisher": {
-      "@type": "Organization",
-      "name": "EVMint",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://evmint.io/logo.svg"
-      }
+  // Every post is described as a BlogPosting here and on the article page, so
+  // the two graphs agree about what these URLs are. Dates come from the post
+  // metadata — never a build-time or hardcoded value.
+  const blogStructuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "EVMint Blog - Token Creation Guides & Tutorials",
+      "description": "Expert guides on ERC20 token creation, multi-chain deployment, liquidity management, and cryptocurrency marketing strategies.",
+      "url": "https://evmint.io/blog",
+      "publisher": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://evmint.io/logo.svg"
+        }
+      },
+      "blogPost": blogPosts.map(post => ({
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "description": post.excerpt,
+        "url": `https://evmint.io/blog/${post.slug}`,
+        "datePublished": post.publishedAt,
+        "dateModified": post.updatedAt,
+        "author": {
+          "@type": "Person",
+          "name": post.author.name
+        }
+      }))
     },
-    "blogPost": blogPosts.map(post => ({
-      "@type": "BlogPosting",
-      "headline": post.title,
-      "description": post.excerpt,
-      "url": `https://evmint.io/blog/${post.slug}`,
-      "datePublished": post.publishedAt,
-      "dateModified": post.updatedAt,
-      "author": {
-        "@type": "Person",
-        "name": post.author.name
-      }
-    }))
-  }
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://evmint.io/blog"
+        }
+      ]
+    }
+  ]
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">

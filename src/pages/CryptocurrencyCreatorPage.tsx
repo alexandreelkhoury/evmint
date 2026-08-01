@@ -7,6 +7,35 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView, trackButtonClick } from '../utils/analytics'
 
 /**
+ * Single source of truth for this page's FAQ. The visible list and the FAQPage
+ * JSON-LD are both rendered from this array — Google requires the marked-up
+ * questions and answers to match the on-page copy, and hand-duplicating them
+ * guarantees the two eventually drift.
+ */
+const faqs = [
+  {
+    question: 'Is it legal to create a cryptocurrency?',
+    answer: 'Creating a token is legal in most jurisdictions. However, how you market and use it matters. Avoid making investment promises, ensure you are not offering unregistered securities, and consult legal counsel for specific guidance in your jurisdiction.'
+  },
+  {
+    question: "Can I change my token's parameters after deployment?",
+    answer: 'No. Smart contracts are immutable once deployed. Token name, symbol, supply, and decimals cannot be changed. Plan carefully before deploying, and test on testnets first if unsure.'
+  },
+  {
+    question: 'How do I distribute tokens to my team or community?',
+    answer: 'After creation, all tokens are in your wallet. You can transfer them directly, use a vesting contract for team allocations, or distribute through airdrops, staking rewards, or community initiatives.'
+  },
+  {
+    question: "What's the difference between a token and a coin?",
+    answer: 'Technically, "coins" run on their own blockchain (Bitcoin, Ethereum) while "tokens" run on existing blockchains (ERC20 tokens on Ethereum). In practice, the terms are often used interchangeably. EVMint creates tokens that function identically to coins for most purposes.'
+  },
+  {
+    question: 'How long until my token is tradeable?',
+    answer: 'Your token can be tradeable within minutes of creation. Deployment takes under 60 seconds including the wallet confirmation, then adding liquidity to a DEX takes another 2-3 minutes of setup.'
+  }
+]
+
+/**
  * SEO Landing Page: Cryptocurrency Creator
  * Targets keyword: "cryptocurrency creator"
  * Provides value proposition before directing to /create
@@ -17,19 +46,77 @@ export default function CryptocurrencyCreatorPage() {
   useEffect(() => {
     trackPageView(analytics, 'cryptocurrency_creator')
   }, [analytics])
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Cryptocurrency Creator - Launch Your Own Crypto Token",
-    "description": "Create your own cryptocurrency on Ethereum, Base, Arbitrum, Polygon & more. Deploy ERC20 tokens in 5 seconds. No coding required.",
-    "url": "https://evmint.io/cryptocurrency-creator",
-    "applicationCategory": "FinanceApplication"
-  }
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Cryptocurrency Creator - Launch Your Own Crypto Token",
+      "description": "Create your own cryptocurrency on Ethereum, Base, Arbitrum, Polygon & more. Deploy an ERC20 token in under 60 seconds. No coding required.",
+      "url": "https://evmint.io/cryptocurrency-creator",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser",
+      "provider": {
+        "@type": "Organization",
+        "name": "EVMint",
+        "url": "https://evmint.io"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "80",
+        "priceCurrency": "USD",
+        "description": "~$80 equivalent per deployment, paid in the native token of the chain you deploy on. Same price across all 15+ EVM networks.",
+        "priceValidUntil": "2027-12-31"
+      },
+      "featureList": [
+        "Token deployment in under 60 seconds",
+        "15+ EVM blockchains supported",
+        "No coding skills required",
+        "OpenZeppelin audited smart contract templates",
+        "Automatic verification on block explorers",
+        "Built-in liquidity tools for Uniswap and other DEXs",
+        "Non-custodial — the deployer owns the contract and the full supply"
+      ],
+      "installUrl": "https://evmint.io/create"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "name": "Cryptocurrency Creator FAQ",
+      "url": "https://evmint.io/cryptocurrency-creator",
+      "inLanguage": "en-US",
+      "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://evmint.io"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Cryptocurrency Creator",
+          "item": "https://evmint.io/cryptocurrency-creator"
+        }
+      ]
+    }
+  ]
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
-        title="Cryptocurrency Creator - Launch Your Own Crypto Token in 5 Seconds | EVMint"
+        title="Cryptocurrency Creator - Launch Your Own Crypto Token | EVMint"
         description="Create your own cryptocurrency token instantly! Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. No coding required. Ultra-low fees on L2. Add liquidity on Uniswap. Start your crypto project today!"
         keywords="cryptocurrency creator, create cryptocurrency, crypto token maker, launch crypto token, make your own cryptocurrency, crypto coin creator, digital currency maker, blockchain token generator, defi token creator"
         canonical="/cryptocurrency-creator"
@@ -72,7 +159,7 @@ export default function CryptocurrencyCreatorPage() {
             transition={{ duration: 0.25, delay: 0.07 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
-            Launch your own cryptocurrency on 15+ EVM blockchains in just 5 seconds. Perfect for DeFi projects, gaming tokens, utility coins, and more. Built with OpenZeppelin security standards.
+            Launch your own cryptocurrency on 15+ EVM blockchains in under 60 seconds. Perfect for DeFi projects, gaming tokens, utility coins, and more. Built with OpenZeppelin security standards.
           </motion.p>
 
           {/* Main CTA Button */}
@@ -92,7 +179,7 @@ export default function CryptocurrencyCreatorPage() {
                 </span>
               </button>
             </Link>
-            <p className="text-gray-400 text-sm mt-4">Production-ready • OpenZeppelin secured • Deploy in 5 seconds</p>
+            <p className="text-gray-400 text-sm mt-4">Production-ready • OpenZeppelin secured • Deploy in under 60 seconds</p>
           </motion.div>
 
           {/* Use Cases Grid */}
@@ -160,7 +247,11 @@ export default function CryptocurrencyCreatorPage() {
                 </div>
                 <div>
                   <h4 className="text-white font-semibold mb-2">Choose Your Blockchain</h4>
-                  <p className="text-gray-300">Select from 15+ EVM-compatible chains. Ethereum for credibility, Base for speed, Polygon for low fees. Each chain has its own benefits.</p>
+                  <p className="text-gray-300">
+                    Select from 15+ EVM-compatible chains. Ethereum for credibility, Base for speed, Polygon for low fees. Each chain has its own benefits — our{' '}
+                    <Link to="/multi-chain-token-creator" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">multi-chain token creator</Link>
+                    {' '}breaks down how the networks compare.
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -177,8 +268,8 @@ export default function CryptocurrencyCreatorPage() {
                   <span className="text-white font-bold">3</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-semibold mb-2">Deploy in 5 Seconds</h4>
-                  <p className="text-gray-300">Connect your wallet and click deploy. Your cryptocurrency is instantly live on-chain, verified on block explorers, and ready to use.</p>
+                  <h4 className="text-white font-semibold mb-2">Deploy in Under 60 Seconds</h4>
+                  <p className="text-gray-300">Connect your wallet and click deploy. Once you confirm the transaction, your cryptocurrency is live on-chain, verified on block explorers, and ready to use.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -320,7 +411,9 @@ export default function CryptocurrencyCreatorPage() {
                 Creating a cryptocurrency has evolved dramatically since the early days of blockchain. What once required deep technical expertise, custom blockchain development, and months of work can now be accomplished in seconds using standardized token contracts on existing networks.
               </p>
               <p>
-                Modern cryptocurrency creation leverages the ERC20 standard and EVM-compatible blockchains, allowing anyone to launch a fully-functional digital currency that works with existing infrastructure. Your token can be stored in popular wallets like MetaMask, traded on decentralized exchanges like Uniswap, and integrated into DeFi protocols from day one.
+                Modern cryptocurrency creation leverages the ERC20 standard and EVM-compatible blockchains, allowing anyone to launch a fully-functional digital currency that works with existing infrastructure. Your token can be stored in popular wallets like MetaMask, traded on decentralized exchanges like Uniswap, and integrated into DeFi protocols from day one. If you want the technical side of that standard — the six mandatory functions and the parameters you control — read our{' '}
+                <Link to="/erc20-token-generator" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">ERC20 token generator</Link>
+                {' '}breakdown.
               </p>
               <p>
                 The key innovation is building on proven platforms rather than creating infrastructure from scratch. Ethereum and its Layer 2 networks provide the security, consensus mechanisms, and user base that would take years to build independently. This allows creators to focus on what matters: building utility, community, and value around their token.
@@ -344,7 +437,11 @@ export default function CryptocurrencyCreatorPage() {
             <div className="space-y-6">
               <div>
                 <h4 className="text-white font-semibold mb-2">Total Supply Strategy</h4>
-                <p className="text-gray-300">Your total supply decision affects perception and usability. Small supplies (1M-100M) create scarcity narratives. Large supplies (1B-1T) allow psychological affordability. Consider your use case: governance tokens often use smaller supplies while gaming currencies benefit from larger numbers.</p>
+                <p className="text-gray-300">
+                  Your total supply decision affects perception and usability. Small supplies (1M-100M) create scarcity narratives. Large supplies (1B-1T) allow psychological affordability. Consider your use case: governance tokens often use smaller supplies while gaming currencies and{' '}
+                  <Link to="/meme-coin-creator" className="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">meme coins</Link>
+                  {' '}benefit from larger numbers.
+                </p>
               </div>
               <div>
                 <h4 className="text-white font-semibold mb-2">Distribution Planning</h4>
@@ -385,7 +482,7 @@ export default function CryptocurrencyCreatorPage() {
                   <tr className="border-b border-white/5 bg-cyan-500/5">
                     <td className="py-3 px-4 font-semibold text-cyan-400">EVMint Generator</td>
                     <td className="text-center py-3 px-4">~$80</td>
-                    <td className="text-center py-3 px-4">5 seconds</td>
+                    <td className="text-center py-3 px-4">Under 60 seconds</td>
                     <td className="text-center py-3 px-4">None</td>
                   </tr>
                   <tr className="border-b border-white/5">
@@ -487,26 +584,12 @@ export default function CryptocurrencyCreatorPage() {
               Cryptocurrency Creator FAQ
             </h2>
             <div className="space-y-6">
-              <div>
-                <h4 className="text-white font-semibold mb-2">Is it legal to create a cryptocurrency?</h4>
-                <p className="text-gray-400">Creating a token is legal in most jurisdictions. However, how you market and use it matters. Avoid making investment promises, ensure you're not offering unregistered securities, and consult legal counsel for specific guidance in your jurisdiction.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">Can I change my token's parameters after deployment?</h4>
-                <p className="text-gray-400">No. Smart contracts are immutable once deployed. Token name, symbol, supply, and decimals cannot be changed. Plan carefully before deploying, and test on testnets first if unsure.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">How do I distribute tokens to my team or community?</h4>
-                <p className="text-gray-400">After creation, all tokens are in your wallet. You can transfer them directly, use a vesting contract for team allocations, or distribute through airdrops, staking rewards, or community initiatives.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">What's the difference between a token and a coin?</h4>
-                <p className="text-gray-400">Technically, "coins" run on their own blockchain (Bitcoin, Ethereum) while "tokens" run on existing blockchains (ERC20 tokens on Ethereum). In practice, the terms are often used interchangeably. EVMint creates tokens that function identically to coins for most purposes.</p>
-              </div>
-              <div>
-                <h4 className="text-white font-semibold mb-2">How long until my token is tradeable?</h4>
-                <p className="text-gray-400">Your token can be tradeable within minutes of creation. Deploy (5 seconds), then add liquidity to a DEX (2-3 minutes for setup), and your token is live for trading.</p>
-              </div>
+              {faqs.map(faq => (
+                <div key={faq.question}>
+                  <h4 className="text-white font-semibold mb-2">{faq.question}</h4>
+                  <p className="text-gray-400">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
 

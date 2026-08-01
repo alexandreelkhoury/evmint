@@ -1,125 +1,404 @@
-export const guides = [
+/**
+ * Single source of truth for the four published guides.
+ *
+ * The IDs below are the live URLs (/guides/<id>), they are listed in
+ * public/sitemap.xml and prerendered by scripts/prerender.js — do not rename
+ * them without updating both. GuidesPage (index cards + collection schema) and
+ * GuidePage (article + HowTo schema) both read from here; FAQ cross-links in
+ * ./faqData reference these same IDs.
+ */
+import {
+  BoltIcon,
+  CurrencyDollarIcon,
+  ShieldCheckIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline'
+
+const SITE_URL = 'https://evmint.io'
+
+type HeroIcon = typeof SparklesIcon
+
+export interface GuideStepLink {
+  text: string
+  link: { text: string; url: string }
+}
+
+export interface GuideStep {
+  number: string
+  title: string
+  description: string
+  details: (string | GuideStepLink)[]
+  tip: string
+}
+
+export interface Guide {
+  id: string
+  title: string
+  description: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  /** Human-readable reading time shown in the UI */
+  time: string
+  /** Same duration as an ISO 8601 duration, for schema.org */
+  totalTime: string
+  /** Human-readable cost shown in the UI (omitted when there is no fixed cost) */
+  cost?: string
+  /** Only set when the cost is an actual monetary amount schema.org can express */
+  estimatedCost?: { currency: string; value: string }
+  keywords: string
+  icon: HeroIcon
+  tools: string[]
+  supplies: string[]
+  steps: GuideStep[]
+  warnings?: Array<{
+    title: string
+    description: string
+    severity: 'warning' | 'info' | 'danger'
+  }>
+  poolTypes?: Array<{
+    title: string
+    description: string
+    pros: string[]
+    cons: string[]
+    bestFor: string
+  }>
+}
+
+export const guides: Guide[] = [
   {
-    id: 'token-creation',
-    title: 'Token Creation Process',
-    description: 'Step-by-step guide to creating your first token',
-    icon: '🚀',
-    gradient: 'from-green-500 to-emerald-500',
-    content: [
+    id: 'create-base-token',
+    title: 'How to Create ERC20 Token: No Code, 4 Steps [2026]',
+    description: 'Complete beginner\'s guide to creating your own ERC20 token on any EVM blockchain using our launcher - no coding required!',
+    difficulty: 'Beginner',
+    time: '5 minutes',
+    totalTime: 'PT5M',
+    cost: '$75-100 + gas',
+    estimatedCost: { currency: 'USD', value: '75-100' },
+    keywords: 'create erc20 token, ERC20 token, no code token creation, evm',
+    icon: SparklesIcon,
+    tools: [
+      'Web3 wallet (MetaMask, Rainbow, or WalletConnect-compatible)',
+      'Web browser (Chrome, Firefox, Safari, or Brave)'
+    ],
+    supplies: [
+      'Native tokens for gas fees (ETH, MATIC, BNB, AVAX, etc.)',
+      'Platform deployment fee ($75-100 USD equivalent)'
+    ],
+    steps: [
       {
-        title: '🎯 Choose Your Token Details',
-        text: 'You only need 4 simple parameters:\n\n• Name: The full name (e.g., "My Awesome Token")\n• Symbol: 3-4 letters (e.g., "MAT")\n• Decimals: Always use 18 (this is the standard)\n• Total Supply: Usually 1 billion for memecoins (1,000,000,000)\n\nThat\'s it! No complex tokenomics needed.'
+        number: '01',
+        title: 'Connect Your Wallet',
+        description: 'Connect your wallet to get started',
+        details: [
+          'Click "Connect Wallet" in the top navigation',
+          'Choose your preferred wallet (MetaMask, Rainbow, WalletConnect, etc.)',
+          'Select your preferred blockchain network',
+          'Ensure you have native tokens for gas fees (usually ~$1 worth)'
+        ],
+        tip: 'Need native tokens? Send directly from a CEX or bridge from Ethereum mainnet!'
       },
       {
-        title: '⚡ Deploy Your Token (5 seconds)',
-        text: '1. Go to our Create Token page\n2. Fill in your token details\n3. Connect your wallet (you need less than $1 for gas)\n4. Click "Deploy Token"\n5. Wait 5 seconds for confirmation\n\n✅ Your token is now live on your selected EVM blockchain!\n🎉 Contract will be automatically verified on the block explorer!'
+        number: '02',
+        title: 'Enter Token Details',
+        description: 'Define your token\'s basic information and parameters',
+        details: [
+          'Enter your token name (e.g., "My Amazing Token")',
+          'Set the token symbol (e.g., "MAT" - keep it short)',
+          'Choose total supply (default: 1 billion tokens)',
+          'Set decimals (18 is standard for most tokens)'
+        ],
+        tip: '⚖️ Memcoins usually have 1B supply! Higher supply = lower price per token.'
       },
       {
-        title: '🎉 Share Your Token',
-        text: 'Your token is ready! Share these with your community:\n\n• Contract Address: Copy from block explorer\n• Token information for wallet imports\n• Block Explorer Page: For verification and transparency\n\n💡 Next step: Check out our Liquidity Management guide to make your token tradeable!'
+        number: '03',
+        title: 'Review & Deploy',
+        description: 'Final check and deployment to the blockchain',
+        details: [
+          'Review all token parameters carefully',
+          'Check the deployment fee (varies by network, $75-100 USD)',
+          'Click "Create Token" to start deployment',
+          'Approve the transaction in your wallet'
+        ],
+        tip: 'Your token will be live on the blockchain within seconds!'
       },
       {
-        title: '⚠️ Important Notes',
-        text: '• Token details cannot be changed after deployment\n• Keep some tokens for yourself for team/marketing\n• Double-check all parameters before deploying\n• Contract will be immutable once deployed'
+        number: '04',
+        title: 'Verify & Manage',
+        description: 'Contract verification and post-deployment steps',
+        details: [
+          'Contract is automatically verified on the block explorer',
+          'Your token appears in the "My Tokens" section',
+          'Share your token address with your community',
+          {
+            text: 'Consider adding liquidity to make it tradeable',
+            link: {
+              text: 'Learn how to add liquidity',
+              url: '/guides/add-liquidity'
+            }
+          }
+        ],
+        tip: 'Congratulations! Your token is now live on the blockchain!'
       }
     ]
   },
   {
-    id: 'liquidity-management',
-    title: 'Liquidity Management',
-    description: 'Learn how to manage liquidity for your tokens',
-    icon: '💰',
-    gradient: 'from-purple-500 to-pink-500',
-    content: [
+    id: 'add-liquidity',
+    title: 'How to Add Liquidity to Your Token [2026 Guide]',
+    description: 'Step-by-step tutorial on adding liquidity to DEX pools using our built-in liquidity tools.',
+    difficulty: 'Intermediate',
+    time: '10 minutes',
+    totalTime: 'PT10M',
+    cost: 'Your tokens + native tokens for pair',
+    keywords: 'add liquidity, DEX, token trading, uniswap',
+    icon: CurrencyDollarIcon,
+    tools: [
+      'Web3 wallet with deployed ERC20 token',
+      'EVMint Liquidity Management interface'
+    ],
+    supplies: [
+      'Your deployed ERC20 tokens (10-20% of total supply recommended)',
+      'Native tokens for the trading pair (ETH, MATIC, BNB, etc.)',
+      'Gas fees for approval and liquidity transactions'
+    ],
+    poolTypes: [
       {
-        title: '🎯 Understanding Liquidity',
-        text: 'Liquidity allows users to trade your token. Higher liquidity means less price slippage and better trading experience. We use Uniswap V2 for maximum flexibility.'
+        title: 'DEX Pool (Recommended)',
+        description: 'Standard automated market maker pools on your chosen network',
+        pros: ['Battle-tested protocols', 'High liquidity potential', 'Wide adoption', 'Easy integration'],
+        cons: ['Impermanent loss risk', 'Gas costs for transactions'],
+        bestFor: 'Most tokens - recommended choice for EVM chains'
+      }
+    ],
+    warnings: [
+      {
+        title: 'Impermanent Loss Warning',
+        description: 'Providing liquidity can result in impermanent loss if token prices diverge significantly. Understand the risks before proceeding.',
+        severity: 'warning'
+      }
+    ],
+    steps: [
+      {
+        number: '01',
+        title: 'Navigate to Liquidity Section',
+        description: 'Access the liquidity management interface',
+        details: [
+          'Go to the "Liquidity" page from the main navigation',
+          'Connect your wallet if not already connected',
+          'Ensure you have both your token and native tokens in your wallet',
+          'Select your token from the dropdown list'
+        ],
+        tip: 'You need both your token and native tokens to create a trading pair!'
       },
       {
-        title: '🚀 Adding Your First Liquidity Pool',
-        text: '**Step 1: Select Your Token**\n• Go to our Liquidity page\n• Your recently created tokens should appear automatically in the token selection\n• If not visible, paste your token contract address to add it manually\n• The token info (name, symbol, balance) will load automatically\n\n**Step 2: Choose ETH as Second Token**\n• The second token is usually ETH\n• ETH is already selected by default\n\n**Step 3: Set Your Token Amount**\n• Choose how much of your token to add to liquidity\n• The rest stays safely in your wallet\n• You control how much you want to risk\n\n**Step 4: Set Your ETH Amount**\n• Decide how much ETH to add to the pool\n• Remember: You can get this ETH back if you don\'t burn the LP token\n• The ratio determines your token\'s initial price'
+        number: '02',
+        title: 'Set Token Amounts',
+        description: 'Define how much liquidity to provide',
+        details: [
+          'Enter the amount of your tokens to add (e.g., 100,000 tokens)',
+          'Enter corresponding native token amount (determines initial price)',
+          'Review the calculated price per token',
+          'Consider starting with 10-20% of your token supply'
+        ],
+        tip: '⚖️ Higher liquidity = less price volatility and better trading experience!'
       },
       {
-        title: '🔧 Two-Step Process',
-        text: 'Adding liquidity requires two wallet approvals:\n\n1. **Approve Token : ** Allow Uniswap to use your tokens\n2. **Add Liquidity : ** Actually create the liquidity pool\n\nBoth transactions happen automatically - just click approve when your wallet prompts you!'
+        number: '03',
+        title: 'Approve & Add Liquidity',
+        description: 'Execute the liquidity addition',
+        details: [
+          'Click "Approve Token" to allow the contract to spend your tokens',
+          'Wait for approval transaction to confirm',
+          'Click "Add Liquidity" to create the pool',
+          'Confirm the transaction in your wallet'
+        ],
+        tip: 'Your pool will be live on the DEX within minutes!'
       },
       {
-        title: '📊 After Adding Liquidity',
-        text: 'Success modal shows:\n• ✅ Confirmation of amounts added\n• 📈 **DEXScreener Chart Link** - View live trading\n• 🔗 Transaction link on block explorer\n• Your liquidity position in pools list\n\nYou earn 0.3% fees from all trades!'
-      },
-      {
-        title: '💎 Save Your LP Token Address!',
-        text: 'When you add liquidity, the success modal shows your LP token address. **Copy and save this address safely** - you\'ll need it to withdraw liquidity later!\n\nExample: 0xbe677266226C7717c974925e676A226817EE2326\n\n✅ Save it in a secure note or document\n🔒 Keep it private but accessible to you'
-      },
-      {
-        title: '🗑️ Withdrawing Liquidity',
-        text: 'Our platform has two ways to withdraw liquidity:\n\n**Method 1: From Your Pools List**\n• View pools you created on this device\n• Click "Remove Liquidity"\n• Automatic withdrawal\n\n**Method 2: Direct LP Token Withdrawal**\n• Go to Liquidity page → "Withdraw Liquidity" tab\n• Paste your saved LP token address\n• Enter amount to withdraw (or use "Max" button)\n• Approve and confirm transactions\n\nYou get back your tokens + ETH + earned trading fees!'
-      },
-      {
-        title: '🌐 Network Requirements',
-        text: 'Uniswap V2 liquidity is available on supported mainnet networks. Some testnets may not have Uniswap V2 deployed.\n\n✅ Full DEX functionality on mainnets\n⚠️ Limited or no DEX support on testnets\n\nSwitch to a supported mainnet in your wallet to use liquidity features.'
+        number: '04',
+        title: 'Manage Your Position',
+        description: 'Monitor and manage your liquidity position',
+        details: [
+          'Your LP tokens represent your share of the pool',
+          'Monitor your position in the "My Liquidity" section',
+          'You can add more liquidity or remove it anytime',
+          'LP tokens can be used for farming opportunities'
+        ],
+        tip: 'Track your pool performance and adjust as needed!'
       }
     ]
   },
   {
-    id: 'security-best-practices',
-    title: 'Security & Best Practices',
-    description: 'Keep your tokens and community safe',
-    icon: '🛡️',
-    gradient: 'from-orange-500 to-red-500',
-    content: [
+    id: 'token-security',
+    title: 'Token Security Best Practices',
+    description: 'Learn how to secure your token deployment, verify contracts, and protect against common vulnerabilities.',
+    difficulty: 'Intermediate',
+    time: '7 minutes',
+    totalTime: 'PT7M',
+    keywords: 'token security, contract verification, best practices',
+    icon: ShieldCheckIcon,
+    tools: [
+      'Block explorer (Etherscan, Arbiscan, Polygonscan, etc.)',
+      'Web3 wallet for contract interaction'
+    ],
+    supplies: [],
+    steps: [
       {
-        title: 'Smart Contract Security',
-        text: '✅ Your contracts are automatically verified on block explorers after deployment! This provides transparency and allows users to review the source code. Use well-tested contract templates and avoid custom modifications unless audited.'
+        number: '01',
+        title: 'Contract Verification',
+        description: 'Ensure your contract is verified and transparent',
+        details: [
+          'Our platform automatically verifies contracts on block explorers',
+          'Verified contracts show their source code publicly',
+          'Users can inspect the contract before interacting',
+          'Verification builds trust with your community'
+        ],
+        tip: 'Verified contracts are essential for building trust!'
       },
       {
-        title: 'Private Key Safety',
-        text: 'Never share your private keys or seed phrases. Use hardware wallets for token project management.'
+        number: '02',
+        title: 'Safe Token Parameters',
+        description: 'Choose secure token configuration',
+        details: [
+          'Use standard 18 decimals unless you have specific needs',
+          'Set reasonable total supply (avoid extreme numbers)',
+          'Don\'t include backdoors or admin functions',
+          'Our contracts are immutable after deployment'
+        ],
+        tip: 'Immutable contracts provide the highest security!'
       },
       {
-        title: 'Community Protection',
-        text: 'Educate your community about common scams. Only use official contract addresses and verify all communications.'
-      },
-      {
-        title: 'Rug Pull Prevention',
-        text: 'Lock liquidity for extended periods to build trust. Consider using multisig wallets for project funds.'
+        number: '03',
+        title: 'Community Safety',
+        description: 'Protect your token holders',
+        details: [
+          'Be transparent about your project goals',
+          'Provide clear tokenomics documentation',
+          'Engage regularly with your community',
+          'Never promise guaranteed returns'
+        ],
+        tip: 'Transparency builds lasting community trust!'
       }
     ]
   },
   {
-    id: 'token-listing-branding',
-    title: 'Token Branding & Listing Guide',
-    description: 'Complete guide to add logos, verify contracts, and get listed on exchanges',
-    icon: '🎨',
-    gradient: 'from-pink-500 to-violet-500',
-    content: [
+    id: 'advanced-features',
+    title: 'Advanced Token Features and Management',
+    description: 'Explore advanced token features like fee collection, upgradeable contracts, and multi-signature security.',
+    difficulty: 'Advanced',
+    time: '12 minutes',
+    totalTime: 'PT12M',
+    keywords: 'advanced tokens, upgradeable contracts, multi-sig',
+    icon: BoltIcon,
+    tools: [
+      'Web3 wallet (MetaMask or compatible)',
+      'EVMint platform'
+    ],
+    supplies: [],
+    steps: [
       {
-        title: '🖼️ Step 1: Add Token Logo to Block Explorer',
-        text: '✅ Your contract is already verified automatically!\n\n1. Go to your verified token page on the block explorer (BaseScan, Etherscan, Arbiscan, etc.)\n2. Click "Update Token Information" button\n3. Fill out the form with:\n   • Token Name & Symbol\n   • Token Logo (PNG/JPG, 200x200px recommended)\n   • Official Website & Email\n   • Description & Social Media Links'
+        number: '01',
+        title: 'Understanding Our Fee System',
+        description: 'How our platform fee collection works',
+        details: [
+          'Token deployment fee varies by network ($75-100 USD equivalent)',
+          'Fees support platform development and maintenance',
+          'No ongoing fees after deployment',
+          'Your token contract is completely independent'
+        ],
+        tip: 'One-time fee for lifetime token ownership!'
       },
       {
-        title: '📱 Step 2: Add to MetaMask & Wallets',
-        text: '1. Copy your token contract address\n2. In MetaMask: Assets > Import tokens > Custom token\n3. Paste contract address (auto-fills name/symbol/decimals)\n4. Add custom icon URL if desired\n5. Token will appear in wallet for all users'
+        number: '02',
+        title: 'Contract Immutability',
+        description: 'Benefits and considerations of immutable contracts',
+        details: [
+          'Our contracts cannot be upgraded or modified',
+          'This provides maximum security for token holders',
+          'No admin keys or backdoors exist',
+          'Code is law - what you deploy is what you get'
+        ],
+        tip: 'Immutability = maximum security and trust!'
       },
       {
-        title: '🔗 Step 3: Add to Token Lists',
-        text: '1. Submit to relevant token lists for your blockchain (Base, Ethereum, Arbitrum, etc.)\n2. Submit to community token lists\n3. Include metadata JSON with logo IPFS hash\n4. This enables automatic wallet integration'
-      },
-      {
-        title: '💡 Step 4: CoinMarketCap & CoinGecko Listing',
-        text: 'Requirements:\n• CoinMarketCap: https://coinmarketcap.com/request/\n• CoinGecko: https://www.coingecko.com/en/coins/new\n• ✅ Verified contract on block explorer (automatic!)\n• Active trading (DEX liquidity required)\n• Complete project information\n• Logo and social media presence'
-      },
-      {
-        title: '📄 Logo Specifications',
-        text: 'Requirements:\n• Format: PNG with transparent background\n• Size: 200x200px minimum, 400x400px recommended\n• File size: Under 100KB\n• No text in logo (use symbol for text)\n• High contrast and clear at small sizes\n• Professional design quality'
-      },
-      {
-        title: '🔍 Verification Benefits',
-        text: 'Benefits of completing these steps:\n✅ Green checkmark on block explorers\n✅ Logo display on all explorers\n✅ Trust indicators for users\n✅ Eligible for DEX listings\n✅ Better SEO and discoverability\n✅ Increased trading volume potential'
+        number: '03',
+        title: 'Integration Possibilities',
+        description: 'How to integrate your token with other protocols',
+        details: [
+          'Standard ERC20 interface works with all DeFi protocols',
+          'Compatible with DEXes like Uniswap, SushiSwap',
+          'Can be used in lending protocols like Aave',
+          'Works with bridges for cross-chain functionality'
+        ],
+        tip: 'Standard compliance = endless possibilities!'
       }
     ]
   }
 ]
 
-export type Guide = typeof guides[0]
-export type GuideContent = Guide['content'][0]
+/** Reading order used for "next guide" navigation */
+export const guideSequence = guides.map(guide => guide.id)
+
+export const guidesById: Record<string, Guide | undefined> = Object.fromEntries(
+  guides.map(guide => [guide.id, guide])
+)
+
+export const getGuidePath = (guide: Guide) => `/guides/${guide.id}`
+
+const detailText = (detail: string | GuideStepLink) =>
+  typeof detail === 'string' ? detail : detail.text
+
+const countWords = (text: string) => text.trim().split(/\s+/).filter(Boolean).length
+
+/**
+ * Word count of the prose the guide page actually renders — title, intro,
+ * every step (heading, summary, action items, pro tip) plus the optional
+ * warning and pool-type blocks. Measured, never estimated.
+ */
+export const countGuideWords = (guide: Guide) => {
+  const blocks: string[] = [guide.title, guide.description]
+
+  for (const step of guide.steps) {
+    blocks.push(step.title, step.description, step.tip)
+    for (const detail of step.details) blocks.push(detailText(detail))
+  }
+
+  for (const warning of guide.warnings ?? []) {
+    blocks.push(warning.title, warning.description)
+  }
+
+  for (const pool of guide.poolTypes ?? []) {
+    blocks.push(pool.title, pool.description, pool.bestFor, ...pool.pros, ...pool.cons)
+  }
+
+  return blocks.reduce((total, block) => total + countWords(block), 0)
+}
+
+/** schema.org HowTo for a guide, shared by the guide page and the guides index */
+export const buildGuideHowTo = (guide: Guide) => ({
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": guide.title,
+  "description": guide.description,
+  "url": `${SITE_URL}/guides/${guide.id}`,
+  "totalTime": guide.totalTime,
+  ...(guide.estimatedCost ? {
+    "estimatedCost": {
+      "@type": "MonetaryAmount",
+      "currency": guide.estimatedCost.currency,
+      "value": guide.estimatedCost.value
+    }
+  } : {}),
+  ...(guide.tools.length ? {
+    "tool": guide.tools.map(name => ({ "@type": "HowToTool", "name": name }))
+  } : {}),
+  ...(guide.supplies.length ? {
+    "supply": guide.supplies.map(name => ({ "@type": "HowToSupply", "name": name }))
+  } : {}),
+  "step": guide.steps.map((step, index) => ({
+    "@type": "HowToStep",
+    "position": index + 1,
+    "name": step.title,
+    "text": `${step.description}. ${step.details.map(detailText).join('. ')}.`,
+    "url": `${SITE_URL}/guides/${guide.id}`
+  })),
+  "image": `${SITE_URL}/og-image.png`
+})
