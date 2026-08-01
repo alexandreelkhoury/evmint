@@ -321,7 +321,12 @@ function NewsletterForm() {
       await setDoc(doc(db, 'subscribers', trimmed), {
         email: trimmed,
         subscribedAt: serverTimestamp(),
-        source: 'blog'
+        source: 'blog',
+        locale: navigator.language || 'unknown',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+        referrer: document.referrer || 'direct',
+        device: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        page: window.location.pathname,
       }, { merge: true })
       setStatus('success')
       setEmail('')
