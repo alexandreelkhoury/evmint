@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
@@ -26,13 +26,17 @@ interface TokenCardProps {
     decimals: number
     totalSupply: string
     imageUrl?: string
+    cachedBalance?: string
   }
   index: number
   chainId: number
+  onBalanceUpdate?: (address: string, chainId: number, balance: string) => void
 }
 
-function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
-  const { tokenInfo, balance } = useTokenDetails(tokenData.address)
+function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProps) {
+  const walletChainId = useChainId()
+  const isOnTokenChain = walletChainId === chainId
+  const { tokenInfo, balance } = useTokenDetails(isOnTokenChain ? tokenData.address : '') // Only fetch if on same chain
   const [isCopied, setIsCopied] = useState(false)
 
   const displayTokenInfo = tokenInfo || {
@@ -45,8 +49,18 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
 
   const chainConfig = getChainById(chainId)
   const truncatedAddress = `${tokenData.address.slice(0, 6)}...${tokenData.address.slice(-4)}`
-  const parsedBalance = parseFloat(balance || '0')
-  const parsedSupply = parseFloat(displayTokenInfo.totalSupply)
+  // Use live balance if available (same chain), otherwise cached, otherwise '0'
+  const liveBalance = isOnTokenChain && balance ? balance : null
+  const displayBalance = liveBalance ?? tokenData.cachedBalance ?? '0'
+  const parsedBalance = parseFloat(displayBalance) || 0
+
+  // Cache balance to localStorage when we get a live one
+  useEffect(() => {
+    if (liveBalance && onBalanceUpdate) {
+      onBalanceUpdate(tokenData.address, chainId, liveBalance)
+    }
+  }, [liveBalance, tokenData.address, chainId, onBalanceUpdate])
+  const parsedSupply = parseFloat(displayTokenInfo.totalSupply) || 0
 
   const handleCopyAddress = async () => {
     try {
@@ -165,7 +179,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
           Trade
         </Link>
         <Link
-          to={`/liquidity?token=${tokenData.address}`}
+          to={`/liquidity?token=${tokenData.address}&chain=${chainId}`}
           className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,8 +209,21 @@ export default function TokensPage() {
   const analytics = useFirebaseAnalytics()
   const { ready, authenticated, user } = usePrivy()
   const chainId = useChainId()
-  const { userTokens, refetchUserTokens, isCorrectChain, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
+  const { userTokens, allUserTokens, refetchUserTokens, updateCachedBalance, isCorrectChain, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
+  const [chainFilter, setChainFilter] = useState<number | 'all'>('all')
+
+  // Get unique chains from user's tokens
+  const userChains = useMemo(() => {
+    const chainIds = [...new Set(allUserTokens.map(t => t.chainId))]
+    return chainIds.map(id => ({ id, config: getChainById(id) })).filter(c => c.config)
+  }, [allUserTokens])
+
+  // Filter tokens by selected chain
+  const displayTokens = useMemo(() => {
+    if (chainFilter === 'all') return allUserTokens
+    return allUserTokens.filter(t => t.chainId === chainFilter)
+  }, [allUserTokens, chainFilter])
 
   useEffect(() => {
     trackPageView(analytics, 'tokens')
@@ -360,8 +387,8 @@ export default function TokensPage() {
           titleWhite="Dashboard"
           subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
           stats={[
-            { value: userTokens.length, label: userTokens.length === 1 ? 'Token' : 'Tokens', color: 'purple' },
-            { value: getChainById(chainId)?.name.split(' ')[0] || 'EVM', label: 'Network', color: 'blue' },
+            { value: allUserTokens.length, label: allUserTokens.length === 1 ? 'Token' : 'Tokens', color: 'purple' },
+            { value: userChains.length, label: userChains.length === 1 ? 'Chain' : 'Chains', color: 'blue' },
             { value: 'Live', label: 'Portfolio', color: 'cyan' }
           ]}
           chainId={chainId}
@@ -369,7 +396,7 @@ export default function TokensPage() {
           warningContent={!isCorrectChain ? (
             <div className="bg-orange-900/20 rounded-lg border border-orange-500/20 p-4">
               <p className="text-sm text-orange-200 text-center">
-                Please switch to a supported EVM network to view your tokens.
+                Switch to a supported network for live balance updates. Your tokens are still visible below.
               </p>
             </div>
           ) : undefined}
@@ -388,7 +415,7 @@ export default function TokensPage() {
             ))}
           </div>
         </div>
-      ) : userTokens.length === 0 ? (
+      ) : allUserTokens.length === 0 ? (
         <GlassCard className="text-center">
           <div className="mb-6">
             <motion.div
@@ -403,7 +430,7 @@ export default function TokensPage() {
             </motion.div>
             <h3 className={typography.cardTitle}>No Tokens Found</h3>
             <p className="text-gray-400 mb-6">
-              You haven't created any tokens yet. Ready to launch your first token on {getChainById(chainId)?.name || 'this network'}?
+              You haven't created any tokens yet. Ready to launch your first token?
             </p>
             <motion.div {...animations.buttonHover}>
               <Link
@@ -417,9 +444,35 @@ export default function TokensPage() {
         </GlassCard>
       ) : (
         <div className="space-y-8">
+          {/* Chain filter pills */}
+          {userChains.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              <button
+                onClick={() => setChainFilter('all')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-[background-color,color] duration-150 cursor-pointer ${
+                  chainFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                All ({allUserTokens.length})
+              </button>
+              {userChains.map(({ id, config }) => (
+                <button
+                  key={id}
+                  onClick={() => setChainFilter(id)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-[background-color,color] duration-150 cursor-pointer ${
+                    chainFilter === id ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <ChainIcon chainId={id} size={14} />
+                  {config?.name.split(' ')[0]} ({allUserTokens.filter(t => t.chainId === id).length})
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-2xl font-bold text-white">
-              Your Tokens ({userTokens.length})
+              Your Tokens ({displayTokens.length})
             </h2>
             <div className="flex items-center space-x-3">
               <motion.button
@@ -461,19 +514,21 @@ export default function TokensPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userTokens.map((token, index) => (
+            {displayTokens.map((token, index) => (
               <TokenCard
-                key={token.address}
+                key={`${token.chainId}-${token.address}`}
                 tokenData={{
                   address: token.address,
                   name: token.name,
                   symbol: token.symbol,
                   decimals: token.decimals,
                   totalSupply: token.totalSupply,
-                  imageUrl: token.imageUrl
+                  imageUrl: token.imageUrl,
+                  cachedBalance: token.cachedBalance
                 }}
                 index={index}
-                chainId={chainId}
+                chainId={token.chainId}
+                onBalanceUpdate={updateCachedBalance}
               />
             ))}
           </div>

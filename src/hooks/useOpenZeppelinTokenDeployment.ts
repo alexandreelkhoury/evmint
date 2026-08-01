@@ -41,7 +41,8 @@ export function useOpenZeppelinTokenDeployment() {
   
   const [createdTokenAddress, setCreatedTokenAddress] = useState<string | null>(null)
   const [error, setError] = useState<Error | null>(null)
-  const [userTokens, setUserTokens] = useState<CreatedToken[]>([])
+  const [userTokens, setUserTokens] = useState<CreatedToken[]>([]) // Current chain only
+  const [allUserTokens, setAllUserTokens] = useState<CreatedToken[]>([]) // All chains
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [isVerifying, setIsVerifying] = useState(false)
@@ -164,18 +165,14 @@ export function useOpenZeppelinTokenDeployment() {
           loggers.contract.info('Migrated existing tokens to include chainId')
         }
         
-        const userCreatedTokens = allTokens.filter(token => 
-          token.creator.toLowerCase() === userAddress.toLowerCase() &&
-          token.chainId === chainId
+        // All tokens by this user across all chains
+        const allByUser = allTokens.filter(token =>
+          token.creator.toLowerCase() === userAddress.toLowerCase()
         )
-        
-        loggers.contract.debug('Token filtering results:', {
-          currentChainId: chainId,
-          totalTokens: allTokens.length,
-          userTokensOnNetwork: userCreatedTokens.length,
-          filteredTokens: userCreatedTokens.map(t => ({ name: t.name, symbol: t.symbol, chainId: t.chainId, address: t.address }))
-        })
-        
+        setAllUserTokens(allByUser)
+
+        // Tokens on current chain only
+        const userCreatedTokens = allByUser.filter(token => token.chainId === chainId)
         setUserTokens(userCreatedTokens)
         
         // Check if any tokens need updating (have "Loading..." data)
@@ -480,13 +477,33 @@ export function useOpenZeppelinTokenDeployment() {
     }
   }
 
+  // Update cached balance in localStorage
+  const updateCachedBalance = useCallback((tokenAddress: string, tokenChainId: number, balance: string) => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (!stored) return
+      const allTokens: CreatedToken[] = JSON.parse(stored)
+      const idx = allTokens.findIndex(t =>
+        t.address.toLowerCase() === tokenAddress.toLowerCase() && t.chainId === tokenChainId
+      )
+      if (idx >= 0) {
+        allTokens[idx].cachedBalance = balance
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allTokens))
+      }
+    } catch {
+      // Silently fail
+    }
+  }, [])
+
   return {
     createToken,
     isCreating: isDeployPending || isConfirming,
     isSuccess: !!createdTokenAddress,
     createdTokenAddress,
     userTokens,
+    allUserTokens,
     refetchUserTokens: loadUserTokens,
+    updateCachedBalance,
     isRefreshing,
     isInitialLoading,
     error,
@@ -497,7 +514,7 @@ export function useOpenZeppelinTokenDeployment() {
     isVerifying,
     verificationStatus,
     verificationMethod,
-    feeAmount: getDeploymentFee(chainId), // Chain-specific fee for UI display
+    feeAmount: getDeploymentFee(chainId),
     feeRecipient: FEE_RECIPIENT,
   }
 }
