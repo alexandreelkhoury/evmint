@@ -6,7 +6,7 @@ export const faqs = [
   },
   {
     question: "Which blockchain should I choose for token creation?",
-    answer: "Choose based on your needs: Ethereum (largest ecosystem), Monad (ultra-fast 10,000 TPS, low fees), Layer 2s like Arbitrum (fast, low fees), Optimism (developer-friendly), Base (Coinbase ecosystem), Polygon (wide adoption), BSC (trading volume), Gnosis (stable USD fees with xDAI), Moonbeam (Polkadot connectivity). All EVM chains offer fast transactions and lower fees compared to Ethereum mainnet.",
+    answer: "Choose based on your needs: Ethereum (largest ecosystem, highest prestige), Base (Coinbase ecosystem, low fees), Arbitrum (highest L2 TVL), Optimism (developer-friendly, OP Stack), Robinhood Chain (trending, massive retail audience), MegaETH (100,000 TPS, real-time), Monad (10,000 TPS, ultra-fast L1), BSC (PancakeSwap, high trading volume), Polygon (near-zero gas, QuickSwap), Avalanche (fast finality, Trader Joe), Blast (native ETH yield), World Chain (human-verified users), Fantom (ultra-cheap), Gnosis (stable xDAI gas fees), Moonbeam (Polkadot bridge). All 15+ chains are EVM-compatible and work with MetaMask.",
     relatedGuide: "token-creation"
   },
   {

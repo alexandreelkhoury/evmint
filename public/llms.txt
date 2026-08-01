@@ -41,6 +41,24 @@
 - 100% non-custodial — deployer owns the token contract
 - Works on desktop and mobile
 
+## Chain-Specific Guides
+
+- How to create a token on Base: https://evmint.io/blog/how-to-create-token-on-base
+- How to create a token on Ethereum: https://evmint.io/blog/how-to-create-token-on-ethereum
+- How to create a token on Arbitrum: https://evmint.io/blog/how-to-create-token-on-arbitrum
+- How to create a token on Robinhood Chain: https://evmint.io/blog/how-to-create-token-on-robinhood-chain
+- How to create a token on Optimism: https://evmint.io/blog/how-to-create-token-on-optimism
+- How to create a token on Polygon: https://evmint.io/blog/how-to-create-token-on-polygon
+- How to create a token on BSC: https://evmint.io/blog/how-to-create-token-on-bsc
+- How to create a token on Monad: https://evmint.io/blog/how-to-create-token-on-monad
+- How to create a token on MegaETH: https://evmint.io/blog/how-to-create-token-on-megaeth
+- How to create a token on Avalanche: https://evmint.io/blog/how-to-create-token-on-avalanche
+- How to create a token on Blast: https://evmint.io/blog/how-to-create-token-on-blast
+- How to create a token on Gnosis: https://evmint.io/blog/how-to-create-token-on-gnosis
+- How to create a token on Moonbeam: https://evmint.io/blog/how-to-create-token-on-moonbeam
+- How to create a token on World Chain: https://evmint.io/blog/how-to-create-token-on-world-chain
+- How to create a token on Fantom: https://evmint.io/blog/how-to-create-token-on-fantom
+
 ## Links
 
 - Website: https://evmint.io

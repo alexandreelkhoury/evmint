@@ -1726,6 +1726,407 @@ Ethereum has the most liquid Uniswap V2 deployment. After creating your token, u
       description: "Deploy an ERC20 token on Ethereum mainnet. Auto-verified on Etherscan, Uniswap V2 liquidity, ~$80 + gas. The definitive guide for serious token projects.",
       keywords: "create token on ethereum, ethereum token creator, deploy erc20 ethereum mainnet, etherscan verified token, ethereum token deployment"
     }
+  },
+  {
+    slug: "how-to-create-token-on-optimism",
+    title: "How to Create a Token on Optimism",
+    excerpt: "Deploy an ERC20 token on Optimism with low fees and fast finality. Auto-verified on Optimistic Etherscan.",
+    content: `
+# How to Create a Token on Optimism
+
+Optimism is an Ethereum Layer 2 using optimistic rollups. It offers low fees, fast transactions, and full EVM compatibility. The Optimism ecosystem includes Uniswap, Aave, Velodrome, and hundreds of DeFi protocols.
+
+## Why Optimism?
+
+- **OP Stack**: The same technology powering Base, World Chain, and other L2s
+- **Retroactive Public Goods Funding**: Unique grants program for builders
+- **Low fees**: Token deployment gas under $2
+- **Strong DeFi**: Uniswap V2, Velodrome, and more
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Optimism** (chain ID 10)
+3. Enter token name, symbol, and supply
+4. Click **Create Token** — fee is 0.02 ETH (~$80)
+5. Contract auto-verifies on Optimistic Etherscan
+
+## Adding Liquidity
+
+EVMint routes to Uniswap V2 on Optimism for pool creation. Pair your token with WETH to enable trading.
+
+## Resources
+
+- Explorer: optimistic.etherscan.io
+- Bridge: app.optimism.io/bridge
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-25",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Optimism", "ERC20", "Layer 2", "OP Stack", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Optimism | ERC20 Guide | EVMint",
+      description: "Deploy an ERC20 token on Optimism L2 in 60 seconds. Low fees, auto-verified on Optimistic Etherscan, Uniswap V2 liquidity. No coding required.",
+      keywords: "create token on optimism, optimism token creator, deploy erc20 optimism, op stack token, optimism token deployment"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-monad",
+    title: "How to Create a Token on Monad",
+    excerpt: "Deploy on Monad — the high-performance EVM L1 with 10,000 TPS. Sub-second finality, ultra-low fees.",
+    content: `
+# How to Create a Token on Monad
+
+Monad is a high-performance Layer 1 blockchain with 10,000 TPS and sub-second finality. It's fully EVM-compatible, meaning all Ethereum tools (MetaMask, Solidity, etc.) work natively.
+
+## Why Monad?
+
+- **10,000 TPS**: One of the fastest EVM chains
+- **Sub-second finality**: Transactions confirm almost instantly
+- **EVM compatible**: Use MetaMask, deploy Solidity contracts, same tools
+- **Growing ecosystem**: Early mover advantage for token creators
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Monad** (chain ID 143)
+3. Enter token details and click **Create Token**
+4. Fee: 0.1 MON (~$80), auto-verified on MonadScan
+
+## Liquidity
+
+Monad has active Uniswap V2 forks for liquidity. Use EVMint's liquidity page to create pools.
+
+## Resources
+
+- Explorer: monadscan.com
+- RPC: rpc.monad.xyz
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-26",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Monad", "ERC20", "Layer 1", "high performance", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Monad | High-Performance EVM L1 | EVMint",
+      description: "Deploy an ERC20 token on Monad (10,000 TPS EVM L1). Sub-second finality, ~$80 fee, auto-verified on MonadScan. No coding required.",
+      keywords: "create token on monad, monad token creator, deploy erc20 monad, monad blockchain token, high performance evm token"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-megaeth",
+    title: "How to Create a Token on MegaETH",
+    excerpt: "Deploy on MegaETH — the real-time Ethereum L2 with 100,000 TPS and sub-10ms block times.",
+    content: `
+# How to Create a Token on MegaETH
+
+MegaETH is a real-time Ethereum Layer 2 with 100,000 TPS and sub-10ms block times. Backed by Paradigm and Vitalik Buterin, it launched in February 2026.
+
+## Why MegaETH?
+
+- **100,000 TPS**: The fastest EVM L2
+- **Sub-10ms blocks**: Near-instant confirmation
+- **ETH gas**: Use ETH you already have
+- **Growing DEX ecosystem**: Kumbaya, GTE, and more
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **MegaETH** (chain ID 4326)
+3. Enter token details and click **Create Token**
+4. Fee: 0.02 ETH (~$80), auto-verified on MegaScan
+
+## Note on Liquidity
+
+MegaETH currently has V3-only DEXes (Kumbaya). EVMint's built-in liquidity feature requires V2 routers, so liquidity must be added directly on Kumbaya or GTE for now.
+
+## Resources
+
+- Explorer: mega.etherscan.io
+- RPC: carrot.megaeth.com/rpc
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-27",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["MegaETH", "ERC20", "Layer 2", "real-time", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on MegaETH | Real-Time L2 | EVMint",
+      description: "Deploy an ERC20 token on MegaETH (100,000 TPS L2). Sub-10ms blocks, ~$80 fee, auto-verified on MegaScan. No coding needed.",
+      keywords: "create token on megaeth, megaeth token creator, deploy erc20 megaeth, real-time blockchain token, megaeth deployment"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-avalanche",
+    title: "How to Create a Token on Avalanche",
+    excerpt: "Deploy on Avalanche C-Chain with fast finality and Trader Joe DEX integration.",
+    content: `
+# How to Create a Token on Avalanche
+
+Avalanche's C-Chain is an EVM-compatible blockchain known for fast finality (~1 second) and a strong DeFi ecosystem led by Trader Joe.
+
+## Why Avalanche?
+
+- **Fast finality**: ~1 second confirmation
+- **Trader Joe**: The leading DEX on Avalanche
+- **Subnet architecture**: Scalable and flexible
+- **Established ecosystem**: Aave, GMX, and hundreds of protocols
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Avalanche** (chain ID 43114)
+3. Enter token details and click **Create Token**
+4. Fee: 4 AVAX (~$80), auto-verified on Snowtrace
+
+## Liquidity
+
+EVMint routes to Trader Joe (V2-style router) for pool creation on Avalanche.
+
+## Resources
+
+- Explorer: snowtrace.io
+- Bridge: core.app/bridge
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-28",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Avalanche", "ERC20", "Layer 1", "Trader Joe", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Avalanche | C-Chain ERC20 Guide | EVMint",
+      description: "Deploy an ERC20 token on Avalanche C-Chain. Fast finality, Trader Joe liquidity, 4 AVAX fee (~$80). Auto-verified on Snowtrace.",
+      keywords: "create token on avalanche, avalanche token creator, deploy erc20 avalanche, avax token deployment, trader joe token"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-fantom",
+    title: "How to Create a Token on Fantom",
+    excerpt: "Deploy on Fantom Opera with SpookySwap DEX integration and ultra-low gas.",
+    content: `
+# How to Create a Token on Fantom
+
+Fantom Opera is a fast, low-cost EVM chain with SpookySwap as its primary DEX. It's known for extremely cheap transactions.
+
+## Why Fantom?
+
+- **Ultra-low gas**: Fractions of a cent per transaction
+- **SpookySwap**: Active V2-style DEX
+- **Fast blocks**: ~1 second confirmation
+- **DeFi ecosystem**: Established protocols
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Fantom** (chain ID 250)
+3. Enter token details and click **Create Token**
+4. Fee: 500 FTM (~$75), auto-verified on FTMScan
+
+## Resources
+
+- Explorer: ftmscan.com
+- DEX: spooky.fi
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-28",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Fantom", "ERC20", "Layer 1", "SpookySwap", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Fantom | SpookySwap Guide | EVMint",
+      description: "Deploy an ERC20 token on Fantom Opera. Ultra-low gas, SpookySwap liquidity, 500 FTM fee (~$75). Auto-verified on FTMScan.",
+      keywords: "create token on fantom, fantom token creator, deploy erc20 fantom, ftm token deployment, spookyswap token"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-blast",
+    title: "How to Create a Token on Blast",
+    excerpt: "Deploy on Blast — the yield-generating L2 with native ETH staking rewards.",
+    content: `
+# How to Create a Token on Blast
+
+Blast is a unique Ethereum L2 that offers native yield on ETH and stablecoins. Your ETH earns staking rewards while it sits in your wallet.
+
+## Why Blast?
+
+- **Native yield**: ETH earns ~4% APY automatically
+- **Low fees**: Standard L2 gas costs
+- **Active community**: Strong meme coin and DeFi culture
+- **EVM compatible**: Standard Ethereum tooling
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Blast** (chain ID 81457)
+3. Enter token details and click **Create Token**
+4. Fee: 0.02 ETH (~$80), auto-verified on Blastscan
+
+## Liquidity
+
+Blast has active Uniswap V2 deployments. Use EVMint's liquidity page to create pools.
+
+## Resources
+
+- Explorer: blastscan.io
+- Bridge: blast.io/bridge
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-29",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Blast", "ERC20", "Layer 2", "yield", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Blast | Yield-Generating L2 | EVMint",
+      description: "Deploy an ERC20 token on Blast L2. Native ETH yield, low fees, 0.02 ETH (~$80). Auto-verified on Blastscan.",
+      keywords: "create token on blast, blast token creator, deploy erc20 blast, blast l2 token, blast blockchain deployment"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-gnosis",
+    title: "How to Create a Token on Gnosis Chain",
+    excerpt: "Deploy on Gnosis (xDAI) — stable gas fees paid in DAI, with SushiSwap liquidity.",
+    content: `
+# How to Create a Token on Gnosis Chain
+
+Gnosis Chain (formerly xDAI) is unique because gas fees are paid in xDAI (a stablecoin pegged to $1). This means predictable, stable costs regardless of crypto market volatility.
+
+## Why Gnosis?
+
+- **Stable gas fees**: Pay in xDAI ($1-pegged), no ETH price volatility
+- **Cheap transactions**: Fractions of a cent
+- **SushiSwap**: Active V2 DEX for liquidity
+- **Community-focused**: Strong governance and community
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Gnosis** (chain ID 100)
+3. Enter token details and click **Create Token**
+4. Fee: 80 xDAI (~$80), auto-verified on Gnosisscan
+
+## Resources
+
+- Explorer: gnosisscan.io
+- Bridge: bridge.gnosischain.com
+- DEX: SushiSwap on Gnosis
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-29",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Gnosis", "xDAI", "ERC20", "sidechain", "SushiSwap", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Gnosis Chain | Stable Gas Fees | EVMint",
+      description: "Deploy an ERC20 token on Gnosis Chain (xDAI). Stable gas fees, SushiSwap liquidity, 80 xDAI (~$80). Auto-verified on Gnosisscan.",
+      keywords: "create token on gnosis, gnosis chain token, deploy erc20 gnosis, xdai token creator, gnosis deployment"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-moonbeam",
+    title: "How to Create a Token on Moonbeam",
+    excerpt: "Deploy on Moonbeam — the Polkadot parachain with full EVM compatibility and cross-chain bridges.",
+    content: `
+# How to Create a Token on Moonbeam
+
+Moonbeam is a Polkadot parachain with full Ethereum compatibility. It bridges the Polkadot and Ethereum ecosystems, giving your token access to both.
+
+## Why Moonbeam?
+
+- **Polkadot + Ethereum**: Access both ecosystems
+- **Cross-chain bridges**: Built-in interoperability via XCM
+- **SushiSwap**: Active V2 DEX
+- **EVM compatible**: Standard Solidity, MetaMask, same tools
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **Moonbeam** (chain ID 1284)
+3. Enter token details and click **Create Token**
+4. Fee: 450 GLMR (~$81), auto-verified on Moonscan
+
+## Resources
+
+- Explorer: moonscan.io
+- Bridge: apps.moonbeam.network
+- DEX: SushiSwap on Moonbeam
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-30",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["Moonbeam", "ERC20", "parachain", "Polkadot", "SushiSwap", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on Moonbeam | Polkadot EVM | EVMint",
+      description: "Deploy an ERC20 token on Moonbeam (Polkadot parachain). Cross-chain bridges, SushiSwap liquidity, 450 GLMR (~$81). Auto-verified on Moonscan.",
+      keywords: "create token on moonbeam, moonbeam token creator, deploy erc20 moonbeam, polkadot evm token, moonbeam deployment"
+    }
+  },
+  {
+    slug: "how-to-create-token-on-world-chain",
+    title: "How to Create a Token on World Chain",
+    excerpt: "Deploy on World Chain — the L2 built for World ID and human-verified communities.",
+    content: `
+# How to Create a Token on World Chain
+
+World Chain is an Ethereum L2 built by the World (formerly Worldcoin) team. It integrates World ID for human verification and has Uniswap V2 for token trading.
+
+## Why World Chain?
+
+- **Human-verified users**: World ID integration reduces bots
+- **Ethereum L2**: Low fees, fast transactions
+- **ETH gas**: Use ETH you already have
+- **Uniswap V2**: Active DEX for liquidity
+
+## Deploy with EVMint
+
+1. Visit **evmint.io/create** and connect your wallet
+2. Switch to **World Chain** (chain ID 480)
+3. Enter token details and click **Create Token**
+4. Fee: 0.02 ETH (~$80), auto-verified on WorldScan
+
+## Resources
+
+- Explorer: worldscan.org
+- Bridge: worldchain bridge via Alchemy
+`,
+    author: { name: "EVMint", avatar: "/logo-icon.svg", role: "Platform" },
+    publishedAt: "2026-07-30",
+    updatedAt: "2026-08-01",
+    readTime: 3,
+    category: "Guides",
+    tags: ["World Chain", "ERC20", "Layer 2", "World ID", "token creation"],
+    featured: false,
+    image: "/og-image.png",
+    seo: {
+      title: "How to Create a Token on World Chain | World ID L2 | EVMint",
+      description: "Deploy an ERC20 token on World Chain. Human-verified community, Uniswap V2, 0.02 ETH (~$80). Auto-verified on WorldScan.",
+      keywords: "create token on world chain, world chain token, deploy erc20 world chain, worldcoin l2 token, world chain deployment"
+    }
   }
 ]
 
