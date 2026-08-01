@@ -90,8 +90,9 @@ export function Toast({ id, type, title, message, duration = 4000, onClose }: To
             
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-300 p-1 rounded transition-colors flex-shrink-0"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-400 hover:text-gray-300 rounded transition-colors flex-shrink-0 -mr-2 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
               aria-label="Close notification"
+              type="button"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -120,7 +121,7 @@ export function ToastContainer({ toasts, onRemove, position = 'top-right' }: Toa
   }
 
   return (
-    <div className={`fixed ${positionClasses[position]} z-50 space-y-3 pointer-events-none`}>
+    <div className={`fixed ${positionClasses[position]} z-[99999] space-y-3 pointer-events-none`}>
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">
           <Toast {...toast} onClose={onRemove} />
