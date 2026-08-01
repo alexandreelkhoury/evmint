@@ -87,10 +87,8 @@ export function useRemoveLiquidity(
         throw new Error('Could not get total supply')
       }
     } catch (error) {
-      loggers.liquidity.warn('⚠️ Could not calculate optimal minimums, using safe defaults:', error)
-      // Fallback: Use 0.1% of LP amount as minimum (very conservative)
-      amountTokenMin = lpAmount / 1000n || 1n // 0.1% or 1 wei minimum
-      amountETHMin = lpAmount / 1000n || 1n   // 0.1% or 1 wei minimum
+      loggers.liquidity.error('❌ Could not calculate minimum output amounts:', error)
+      throw new Error('Unable to estimate minimum output. Please try again — do not remove liquidity without slippage protection.')
     }
 
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200) // 20 minutes from now
