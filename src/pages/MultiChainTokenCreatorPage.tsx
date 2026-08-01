@@ -120,7 +120,7 @@ export default function MultiChainTokenCreatorPage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Ultra-Low Fees</h3>
               <p className="text-gray-300 leading-relaxed">
-                Save 90% on gas fees by deploying on Layer 2 networks. Fixed $75-100 platform fee + minimal gas costs. No hidden charges.
+                Save 90% on gas fees by deploying on Layer 2 networks. Fixed ~$80 total fee (deployment + gas + verification). No hidden charges.
               </p>
             </div>
 
@@ -338,7 +338,7 @@ export default function MultiChainTokenCreatorPage() {
                   </tr>
                   <tr className="border-b border-white/5">
                     <td className="py-3 px-4">Development Cost</td>
-                    <td className="text-center py-3 px-4 text-green-400">$75-100</td>
+                    <td className="text-center py-3 px-4 text-green-400">~$80</td>
                     <td className="text-center py-3 px-4">$5,000-50,000</td>
                   </tr>
                   <tr className="border-b border-white/5">

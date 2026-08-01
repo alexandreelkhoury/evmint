@@ -119,7 +119,7 @@ export default function MemeCoinCreatorPage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Ultra-Low Fees</h3>
               <p className="text-gray-300 leading-relaxed">
-                Deploy on Layer 2 networks for pennies. Perfect for meme projects. $75-100 platform fee + minimal gas. No hidden costs.
+                Deploy on Layer 2 networks for pennies. Perfect for meme projects. ~$80 platform fee + minimal gas. No hidden costs.
               </p>
             </div>
 
@@ -380,7 +380,7 @@ export default function MemeCoinCreatorPage() {
             <div className="space-y-6">
               <div>
                 <h4 className="text-white font-semibold mb-2">How much does it cost to create a meme coin?</h4>
-                <p className="text-gray-400">With EVMint, the platform fee is $75-100 plus minimal gas costs. On Layer 2 networks like Base, total cost can be under $80. Compare this to $5,000-20,000 for custom development.</p>
+                <p className="text-gray-400">With EVMint, the platform fee is ~$80 plus minimal gas costs. On Layer 2 networks like Base, total cost can be under $80. Compare this to $5,000-20,000 for custom development.</p>
               </div>
               <div>
                 <h4 className="text-white font-semibold mb-2">What makes a meme coin successful?</h4>

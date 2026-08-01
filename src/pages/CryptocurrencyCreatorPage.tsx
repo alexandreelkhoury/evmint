@@ -258,7 +258,7 @@ export default function CryptocurrencyCreatorPage() {
                   </div>
                   <div>
                     <h4 className="text-white font-semibold mb-1">Ultra-Low Fees</h4>
-                    <p className="text-gray-300 text-sm">$75-100 platform fee + minimal gas costs. Deploy on L2 networks to save 90% on transaction fees.</p>
+                    <p className="text-gray-300 text-sm">~$80 total fee (deployment + gas + verification). Deploy on L2 networks to save 90% on transaction fees.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -384,7 +384,7 @@ export default function CryptocurrencyCreatorPage() {
                 <tbody className="text-gray-300">
                   <tr className="border-b border-white/5 bg-cyan-500/5">
                     <td className="py-3 px-4 font-semibold text-cyan-400">EVMint Generator</td>
-                    <td className="text-center py-3 px-4">$75-100</td>
+                    <td className="text-center py-3 px-4">~$80</td>
                     <td className="text-center py-3 px-4">5 seconds</td>
                     <td className="text-center py-3 px-4">None</td>
                   </tr>

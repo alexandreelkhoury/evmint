@@ -150,9 +150,9 @@ export default function AboutPage() {
               </p>
 
               <p>
-                Today, EVMint has deployed over 10,000 tokens across 15+ blockchains. From meme coins that
-                went viral to governance tokens powering DAOs with millions in treasury, our platform has
-                enabled creators from all backgrounds to participate in the token economy.
+                Today, EVMint supports 15+ EVM blockchains including Ethereum, Base, Arbitrum, and the
+                recently launched Robinhood Chain. Our platform enables creators from all backgrounds
+                to deploy professional-grade tokens without writing a single line of code.
               </p>
 
               <p className="font-semibold text-white">

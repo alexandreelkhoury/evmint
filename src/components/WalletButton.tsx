@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { base, baseSepolia } from 'viem/chains'
 import { useState, useRef, useEffect } from 'react'
 import { colors } from '../styles/designSystem'
+import { getAddressUrl } from '../config/chains'
 import { useGlobalToasts } from '../App'
 import NetworkSelectorModal from './NetworkSelectorModal'
 import ChainIcon from './ChainIcon'
@@ -369,8 +370,8 @@ export default function WalletButton() {
                 <motion.button
                   whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
                   onClick={() => {
-                    const explorerUrl = chainInfo?.isBase
-                      ? (currentChain?.id === 8453 ? `https://basescan.org/address/${walletAddress}` : `https://sepolia.basescan.org/address/${walletAddress}`)
+                    const explorerUrl = currentChain?.id
+                      ? getAddressUrl(currentChain.id, walletAddress)
                       : `https://etherscan.io/address/${walletAddress}`
                     window.open(explorerUrl, '_blank')
                   }}

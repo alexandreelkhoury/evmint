@@ -250,7 +250,7 @@ export default function ERC20TokenGeneratorPage() {
                 <div className="text-2xl">💰</div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Affordable & Transparent</h4>
-                  <p className="text-gray-300">$75-100 platform fee + minimal gas costs. No hidden charges. Deploy on L2 networks to save 90% on gas.</p>
+                  <p className="text-gray-300">~$80 total fee (deployment + gas + verification). No hidden charges. Deploy on L2 networks to save 90% on gas.</p>
                 </div>
               </div>
             </div>
@@ -406,7 +406,7 @@ export default function ERC20TokenGeneratorPage() {
                   </tr>
                   <tr className="border-b border-white/5">
                     <td className="py-3 px-4">Cost</td>
-                    <td className="text-center py-3 px-4 text-green-400">$75-100 + gas</td>
+                    <td className="text-center py-3 px-4 text-green-400">~$80 total</td>
                     <td className="text-center py-3 px-4">$5,000-50,000+</td>
                   </tr>
                   <tr className="border-b border-white/5">

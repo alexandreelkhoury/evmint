@@ -1,18 +1,16 @@
-import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import SEO from '../../components/SEO'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
 import { trackPageView } from '../../utils/analytics'
-import { layout, colors } from '../../styles/designSystem'
+import { layout } from '../../styles/designSystem'
 import { useTokenCreationLogic } from './hooks/useTokenCreationLogic'
-import StandardPageHeader from '../../components/StandardPageHeader'
 import TokenForm from './components/TokenForm'
 import FeeDisclosure from './components/FeeDisclosure'
 import SubmitButton from './components/SubmitButton'
 import SuccessModal from './components/SuccessModal'
 import ErrorDisplay from './components/ErrorDisplay'
-import GettingStartedCTA from './components/GettingStartedCTA'
 import NetworkSelectorModal from '../../components/NetworkSelectorModal'
+import ChainBadge from '../../components/ChainBadge'
 
 export default function CreateTokenPage() {
   const analytics = useFirebaseAnalytics()
@@ -188,12 +186,11 @@ export default function CreateTokenPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
-        {/* Loading skeleton */}
-        <div className={`relative z-10 ${layout.pageContainer} pb-20`}>
-          <div className="animate-pulse space-y-8">
-            <div className="h-32 bg-white/5 rounded-2xl"></div>
-            <div className="h-96 bg-white/5 rounded-2xl"></div>
+      <div className="min-h-screen bg-gray-950">
+        <div className={`${layout.narrowContainer} pb-20`}>
+          <div className="animate-pulse space-y-6 pt-8">
+            <div className="h-8 w-48 bg-white/5 rounded-lg" />
+            <div className="h-[420px] bg-white/5 rounded-xl" />
           </div>
         </div>
       </div>
@@ -201,14 +198,7 @@ export default function CreateTokenPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-950">
       <SEO
         title="Create Token on Any EVM Chain - Multi-Chain ERC20 Deployment | Ultra-Low Fees"
         description="Launch your ERC20 token on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding needed. Ultra-low gas fees on L2, auto-verify on block explorers, multi-DEX liquidity support. Start your token today!"
@@ -217,96 +207,83 @@ export default function CreateTokenPage() {
         structuredData={createTokenStructuredData}
       />
 
-      <div className={`relative z-10 ${layout.pageContainer}`}>
-        {/* Page Header */}
-        <StandardPageHeader
-          badgeIcon="🚀"
-          badgeText="Token Creator"
-          titleGradient="Create Your Token"
-          titleWhite="on Any EVM Chain"
-          subtitle="Deploy your own ERC20 token on any EVM blockchain in seconds. No coding experience required! Ultra-low gas fees on Layer 2 networks."
-          stats={[
-            { value: '15+ Chains', label: 'Supported', color: 'blue' },
-            { value: 'Instant', label: 'Deployment', color: 'purple' },
-            { value: `$${feeAmount}`, label: 'Fee', color: 'cyan' }
-          ]}
-          chainId={chainId}
-          onNetworkClick={() => setIsNetworkModalOpen(true)}
-          warningContent={!isSupported ? (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
-              <div className="flex items-center space-x-3">
-                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <div className="text-red-300 font-semibold">Unsupported Network</div>
-                  <div className="text-red-200 text-sm">
-                    Please switch to a supported chain to deploy tokens.
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : undefined}
-        />
+      <div className={`${layout.narrowContainer} pb-20`}>
+        {/* Minimal page header — title + network selector inline */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-display font-bold text-white tracking-tight">
+              Create Token
+            </h1>
+            <p className="text-sm text-gray-400 mt-1">
+              Deploy an ERC-20 token on any supported EVM chain.
+            </p>
+          </div>
 
-        {/* Token Creation Form */}
-        <div className="max-w-4xl mx-auto mb-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className={`${colors.glassCard} rounded-3xl p-8 lg:p-12`}
-          >
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <TokenForm
-                formData={formData}
-                formErrors={formErrors}
-                handleInputChange={handleInputChange}
-                getFieldValidation={getFieldValidation}
-              />
-
-              <FeeDisclosure
-                feeAmount={feeAmount}
-                nativeTokenName={nativeTokenName}
-              />
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.3 }}
-                className="pt-6"
-              >
-                <SubmitButton
-                  authenticated={authenticated}
-                  isCorrectChain={isCorrectChain}
-                  isCreating={isCreating}
-                  isVerifying={isVerifying}
-                  formErrors={formErrors}
-                  chainName={chainName}
-                />
-
-                {/* Success/Error Messages */}
-                {showSuccess && createdTokenAddress && (
-                  <SuccessModal
-                    tokenAddress={createdTokenAddress}
-                    chainName={chainName}
-                    tokenName={formData.name}
-                    tokenSymbol={formData.symbol}
-                    totalSupply={formData.totalSupply}
-                  />
-                )}
-
-                {error && <ErrorDisplay error={error} />}
-              </motion.div>
-            </form>
-          </motion.div>
+          {chainId !== undefined && (
+            <button
+              type="button"
+              onClick={() => setIsNetworkModalOpen(true)}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/[0.08] transition-colors text-sm text-gray-300 self-start sm:self-auto"
+            >
+              <ChainBadge chainId={chainId} size="sm" />
+              <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
         </div>
 
-        {/* Getting Started CTA */}
-        <GettingStartedCTA />
+        {/* Unsupported network warning */}
+        {!isSupported && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm">
+            <svg className="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-red-300">
+              Unsupported network. Please switch to a supported chain to deploy tokens.
+            </p>
+          </div>
+        )}
+
+        {/* The form card — the hero of the page */}
+        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <TokenForm
+              formData={formData}
+              formErrors={formErrors}
+              handleInputChange={handleInputChange}
+              getFieldValidation={getFieldValidation}
+            />
+
+            <FeeDisclosure
+              feeAmount={feeAmount}
+              nativeTokenName={nativeTokenName}
+            />
+
+            <SubmitButton
+              authenticated={authenticated}
+              isCorrectChain={isCorrectChain}
+              isCreating={isCreating}
+              isVerifying={isVerifying}
+              formErrors={formErrors}
+              chainName={chainName}
+            />
+
+            {showSuccess && createdTokenAddress && (
+              <SuccessModal
+                tokenAddress={createdTokenAddress}
+                chainName={chainName}
+                tokenName={formData.name}
+                tokenSymbol={formData.symbol}
+                totalSupply={formData.totalSupply}
+              />
+            )}
+
+            {error && <ErrorDisplay error={error} />}
+          </form>
+        </div>
       </div>
 
-      {/* Network Selector Modal */}
       <NetworkSelectorModal
         isOpen={isNetworkModalOpen}
         onClose={() => setIsNetworkModalOpen(false)}

@@ -2,12 +2,12 @@ export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
     answer: "Token creation costs ~$80 USD equivalent on any chain, paid in native tokens (0.02 ETH on Ethereum/Base/Arbitrum/Optimism/Robinhood Chain/MegaETH, 0.075 BNB on BSC, 400 POL on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam, 0.1 MON on Monad). This single fee covers deployment, gas, and auto-verification. No subscription or hidden charges.",
-    relatedGuide: "getting-started"
+    relatedGuide: "token-creation"
   },
   {
     question: "Which blockchain should I choose for token creation?",
     answer: "Choose based on your needs: Ethereum (largest ecosystem), Monad (ultra-fast 10,000 TPS, low fees), Layer 2s like Arbitrum (fast, low fees), Optimism (developer-friendly), Base (Coinbase ecosystem), Polygon (wide adoption), BSC (trading volume), Gnosis (stable USD fees with xDAI), Moonbeam (Polkadot connectivity). All EVM chains offer fast transactions and lower fees compared to Ethereum mainnet.",
-    relatedGuide: "getting-started"
+    relatedGuide: "token-creation"
   },
   {
     question: "Can I create a token without coding experience?",
@@ -21,13 +21,13 @@ export const faqs = [
   },
   {
     question: "How to add liquidity for my tokens on DEXes?",
-    answer: "Add liquidity by connecting to your chain's DEX (Uniswap, SushiSwap, PancakeSwap, etc.), selecting your token pair (TOKEN/native), choosing price ranges if using concentrated liquidity, and depositing both tokens. This creates trading opportunities and generates swap fees.",
+    answer: "Use EVMint's built-in liquidity page: select your token, pair it with the chain's native wrapped token (WETH, WBNB, etc.), and complete the two-step process (approve + add). This creates a Uniswap V2 trading pool. You earn a share of swap fees from every trade.",
     relatedGuide: "liquidity-management"
   },
   {
     question: "What ERC20 token standards work across EVM blockchains?",
     answer: "All EVM chains support standard ERC20 tokens including standard tokens, deflationary tokens, reflection tokens, governance tokens, and upgradeable proxies. All tokens are compatible with MetaMask, major wallets, and DeFi protocols across chains.",
-    relatedGuide: "getting-started"
+    relatedGuide: "token-creation"
   },
   {
     question: "Will my token be automatically listed on exchanges?",
@@ -64,7 +64,7 @@ export const faqs = [
   {
     question: "What are gas fees across different blockchains?",
     answer: "Gas fees vary by chain: Layer 2s (Base, Arbitrum, Optimism) offer 90-95% savings vs Ethereum mainnet. Token transfers cost $0.001-0.01 on L2s, $1-5 on Ethereum. Token creation on EVMint costs ~$80 equivalent on any chain (one fee covers everything). Fees fluctuate with network congestion.",
-    relatedGuide: "getting-started"
+    relatedGuide: "token-creation"
   },
   {
     question: "How to create pausable tokens?",
@@ -91,7 +91,7 @@ export const faqs = [
   {
     question: "Which EVM chain is best for token creation?",
     answer: "Layer 2 chains (Arbitrum, Optimism, Base) and high-performance L1s like Monad offer faster transactions and 90% lower fees vs Ethereum mainnet. Ethereum has the largest ecosystem. BSC/Polygon offer wide adoption. Monad delivers 10,000 TPS with sub-second finality. Choose based on your priority: speed (Monad), cost (L2s), liquidity (Ethereum), or user base (BSC/Polygon).",
-    relatedGuide: "getting-started"
+    relatedGuide: "token-creation"
   },
   {
     question: "How do I bridge tokens between chains?",
