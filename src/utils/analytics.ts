@@ -1,4 +1,117 @@
-import { type Analytics, logEvent } from 'firebase/analytics'
+import type { Analytics } from 'firebase/analytics'
+
+/**
+ * Analytics Event Queue
+ *
+ * Events are queued when analytics isn't ready yet, then flushed
+ * once the Firebase Analytics SDK is loaded.
+ */
+interface QueuedEvent {
+  eventName: string
+  eventParams?: Record<string, any>
+  timestamp: number
+}
+
+// Event queue for events fired before analytics is ready
+const eventQueue: QueuedEvent[] = []
+const MAX_QUEUE_SIZE = 100
+
+// Global analytics instance reference (set by FirebaseProvider)
+let globalAnalyticsInstance: Analytics | null = null
+
+// Flag to track if logEvent function is available
+let logEventFn: ((analytics: Analytics, eventName: string, eventParams?: Record<string, any>) => void) | null = null
+
+/**
+ * Set the global analytics instance (called by FirebaseProvider after lazy load)
+ */
+export const setAnalyticsInstance = (analytics: Analytics) => {
+  globalAnalyticsInstance = analytics
+}
+
+/**
+ * Lazy load the logEvent function
+ */
+const getLogEvent = async () => {
+  if (!logEventFn) {
+    const { logEvent } = await import('firebase/analytics')
+    logEventFn = logEvent
+  }
+  return logEventFn
+}
+
+/**
+ * Flush queued events once analytics is ready
+ */
+export const flushEventQueue = async () => {
+  if (!globalAnalyticsInstance || eventQueue.length === 0) return
+
+  const logEvent = await getLogEvent()
+
+  if (import.meta.env.DEV) console.log(`[Analytics] Flushing ${eventQueue.length} queued events`)
+
+  while (eventQueue.length > 0) {
+    const event = eventQueue.shift()
+    if (event) {
+      try {
+        logEvent(globalAnalyticsInstance, event.eventName, {
+          ...event.eventParams,
+          queued: true,
+          queue_delay_ms: Date.now() - event.timestamp
+        })
+      } catch (error) {
+        console.error('[Analytics] Failed to flush event:', event.eventName, error)
+      }
+    }
+  }
+}
+
+/**
+ * Queue an event if analytics isn't ready yet
+ */
+const queueEvent = (eventName: string, eventParams?: Record<string, any>) => {
+  if (eventQueue.length >= MAX_QUEUE_SIZE) {
+    // Remove oldest event to make room
+    eventQueue.shift()
+  }
+
+  eventQueue.push({
+    eventName,
+    eventParams,
+    timestamp: Date.now()
+  })
+
+  if (import.meta.env.DEV) {
+    console.log('[Analytics] Event queued:', eventName)
+  }
+}
+
+/**
+ * Track an event - queues if analytics not ready
+ */
+const trackEvent = async (
+  analytics: Analytics | null,
+  eventName: string,
+  eventParams?: Record<string, any>
+) => {
+  // Use provided analytics or global instance
+  const instance = analytics || globalAnalyticsInstance
+
+  if (!instance) {
+    // Queue event for later
+    queueEvent(eventName, eventParams)
+    return
+  }
+
+  try {
+    const logEvent = await getLogEvent()
+    logEvent(instance, eventName, eventParams)
+  } catch (error) {
+    console.error('[Analytics] Failed to track event:', eventName, error)
+    // Queue for retry
+    queueEvent(eventName, eventParams)
+  }
+}
 
 // Enhanced error tracking with normalization and deduplication
 const errorCache = new Set<string>();
@@ -14,7 +127,7 @@ const normalizeErrorMessage = (message: string): string => {
   if (!message || typeof message !== 'string') {
     return 'Unknown error';
   }
-  
+
   // Clean up common error patterns
   return message
     .replace(/0x[a-fA-F0-9]{40,64}/g, '0x<ADDRESS>') // Replace addresses
@@ -28,24 +141,22 @@ const normalizeErrorMessage = (message: string): string => {
 // Helper function to check if analytics is available
 const isAnalyticsReady = (analytics: Analytics | null): boolean => {
   if (typeof window === 'undefined') {
-    console.warn('🚫 Analytics check: Not in browser environment');
+    console.warn('[Analytics] Not in browser environment');
     return false;
   }
-  
-  if (!analytics) {
-    console.warn('⚠️ Analytics check: Firebase Analytics not initialized');
+
+  const instance = analytics || globalAnalyticsInstance
+  if (!instance) {
+    // Not an error - we'll queue the event
     return false;
   }
-  
-  console.log('✅ Analytics ready');
+
   return true;
 };
 
 // Page tracking
 export const trackPageView = (analytics: Analytics | null, pageName: string) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'page_view', {
+  trackEvent(analytics, 'page_view', {
     page_name: pageName
   })
 }
@@ -57,9 +168,7 @@ export const trackTokenCreation = (analytics: Analytics | null, tokenData: {
   supply: string
   network: string
 }) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'token_created', {
+  trackEvent(analytics, 'token_created', {
     token_name: tokenData.name,
     token_symbol: tokenData.symbol,
     total_supply: tokenData.supply,
@@ -72,9 +181,7 @@ export const trackTokenResult = (analytics: Analytics | null, result: {
   tokenAddress?: string
   error?: string
 }) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'token_deployment_result', {
+  trackEvent(analytics, 'token_deployment_result', {
     success: result.success,
     token_address: result.tokenAddress,
     error: result.error
@@ -88,9 +195,7 @@ export const trackLiquidityAdded = (analytics: Analytics | null, data: {
   ethAmount: string
   network: string
 }) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'liquidity_added', {
+  trackEvent(analytics, 'liquidity_added', {
     token_address: data.tokenAddress,
     token_amount: data.tokenAmount,
     eth_amount: data.ethAmount,
@@ -103,9 +208,7 @@ export const trackLiquidityRemoved = (analytics: Analytics | null, data: {
   lpTokenAmount: string
   network: string
 }) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'liquidity_removed', {
+  trackEvent(analytics, 'liquidity_removed', {
     token_address: data.tokenAddress,
     lp_token_amount: data.lpTokenAmount,
     network: data.network
@@ -114,23 +217,17 @@ export const trackLiquidityRemoved = (analytics: Analytics | null, data: {
 
 // User interaction tracking
 export const trackWalletConnect = (analytics: Analytics | null, walletType: string) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'wallet_connected', {
+  trackEvent(analytics, 'wallet_connected', {
     wallet_type: walletType
   })
 }
 
 export const trackWalletDisconnect = (analytics: Analytics | null) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'wallet_disconnected')
+  trackEvent(analytics, 'wallet_disconnected', {})
 }
 
 export const trackNetworkSwitch = (analytics: Analytics | null, fromNetwork: string, toNetwork: string) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'network_switched', {
+  trackEvent(analytics, 'network_switched', {
     from_network: fromNetwork,
     to_network: toNetwork
   })
@@ -138,57 +235,47 @@ export const trackNetworkSwitch = (analytics: Analytics | null, fromNetwork: str
 
 // Enhanced error tracking with deduplication and comprehensive context
 export const trackError = (
-  analytics: Analytics | null, 
-  errorMessage: string, 
-  errorLocation: string, 
+  analytics: Analytics | null,
+  errorMessage: string,
+  errorLocation: string,
   additionalContext: Record<string, any> = {}
 ) => {
-  // FORCE TRACKING - Debug mode
-  console.log('🔥 BASE TOKEN LAUNCHER - TRACKERROR called:', { errorMessage, errorLocation, additionalContext });
-  
-  if (!isAnalyticsReady(analytics)) {
-    console.warn('⚠️ Analytics not ready - but attempting to track anyway:', { errorMessage, errorLocation });
-    return;
+  if (import.meta.env.DEV) {
+    console.log('[Analytics] trackError called:', { errorMessage, errorLocation, additionalContext });
   }
-  
+
   // Ensure we have valid parameters
   const normalizedMessage = normalizeErrorMessage(errorMessage);
   const location = errorLocation || 'unknown_location';
-  
+
   // Create a unique key for deduplication
   const errorKey = `${normalizedMessage}::${location}`;
-  
+
   // Skip if we've seen this exact error recently
   if (errorCache.has(errorKey)) {
-    console.log('🔄 Duplicate error blocked:', errorKey);
+    if (import.meta.env.DEV) {
+      console.log('[Analytics] Duplicate error blocked:', errorKey);
+    }
     return;
   }
-  
+
   // Add to cache to prevent duplicates
   errorCache.add(errorKey);
-  
-  try {
-    const errorData = {
-      error_message: normalizedMessage,
-      error_location: location,
-      original_message: errorMessage, // Keep original for detailed analysis
-      timestamp: Date.now(),
-      page_path: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
-      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-      ...additionalContext
-    };
-    
-    logEvent(analytics, 'error_occurred', errorData);
-    
-    // Also log to console for development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('GA4 Error Tracked:', errorData);
-    }
-    
-    console.log('✅ BASE TOKEN LAUNCHER - Error tracked successfully');
-    
-  } catch (error) {
-    console.error('❌ Failed to track error:', error);
+
+  const errorData = {
+    error_message: normalizedMessage,
+    error_location: location,
+    original_message: errorMessage,
+    timestamp: Date.now(),
+    page_path: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+    user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+    ...additionalContext
+  };
+
+  trackEvent(analytics, 'error_occurred', errorData);
+
+  if (import.meta.env.DEV) {
+    console.log('[Analytics] Error tracked:', errorData);
   }
 };
 
@@ -253,18 +340,14 @@ export const trackNetworkError = (analytics: Analytics | null, error: any, conte
 
 // User engagement tracking
 export const trackButtonClick = (analytics: Analytics | null, buttonName: string, location: string) => {
-  if (!analytics) return
-  
-  logEvent(analytics, 'button_clicked', {
+  trackEvent(analytics, 'button_clicked', {
     button_name: buttonName,
     location: location
   })
 }
 
 export const trackFormSubmission = (analytics: Analytics | null, formName: string, success: boolean) => {
-  if (!analytics) return
-
-  logEvent(analytics, 'form_submitted', {
+  trackEvent(analytics, 'form_submitted', {
     form_name: formName,
     success: success
   })
@@ -273,5 +356,16 @@ export const trackFormSubmission = (analytics: Analytics | null, formName: strin
 /**
  * Generic event logging wrapper
  * Use this for custom events in components
+ *
+ * Note: This is a re-export for backward compatibility.
+ * The function is loaded lazily, so it may not be immediately available.
+ * Prefer using the typed track* functions above.
  */
-export { logEvent }
+export const logEvent = async (
+  analytics: Analytics | null,
+  eventName: string,
+  eventParams?: Record<string, any>
+) => {
+  // Use trackEvent which handles null analytics and queuing
+  await trackEvent(analytics, eventName, eventParams)
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { usePrivy } from '@privy-io/react-auth'
-import { useOpenZeppelinTokenDeployment } from '../../../hooks/useOpenZeppelinTokenDeployment'
+import { useSafePrivy } from '../../../hooks/useSafePrivy'
+import { useSafeOpenZeppelinTokenDeployment } from '../../../hooks/useSafeOpenZeppelinTokenDeployment'
 import { useTokenForm } from '../../../hooks/useTokenForm'
 import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
 import { trackPageView, trackTokenCreation } from '../../../utils/analytics'
@@ -10,12 +10,15 @@ import { loggers } from '../../../utils/logger'
 /**
  * Custom hook containing all business logic for the HomePage
  * Handles token creation, form validation, modal states, and analytics
+ *
+ * Uses safe hooks that work even when Web3 providers aren't loaded,
+ * enabling lazy loading of the 2.5MB Web3 bundle.
  */
 export function useHomePageLogic() {
   const analytics = useFirebaseAnalytics()
 
-  // Token creation functionality
-  const { authenticated } = usePrivy()
+  // Token creation functionality - using safe wrappers for lazy loading
+  const { authenticated } = useSafePrivy()
   const {
     createToken,
     isCreating,
@@ -24,7 +27,7 @@ export function useHomePageLogic() {
     isConnected,
     isCorrectChain,
     chainId
-  } = useOpenZeppelinTokenDeployment()
+  } = useSafeOpenZeppelinTokenDeployment()
 
   // Helper function to get network name
   const getNetworkName = () => {
@@ -77,11 +80,6 @@ export function useHomePageLogic() {
     setShowSuccess(false)
     resetForm()
   }
-
-  // Track page view on mount
-  useEffect(() => {
-    trackPageView(analytics, 'home')
-  }, [analytics])
 
   return {
     // Form state

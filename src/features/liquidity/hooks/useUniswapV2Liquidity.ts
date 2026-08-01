@@ -151,7 +151,7 @@ export function useUniswapV2Liquidity() {
     if (currentTxHash) {
       const isTestnet = chainId === baseSepolia.id
       const baseUrl = isTestnet ? 'https://sepolia.basescan.org' : 'https://basescan.org'
-      console.log(`🔗 Transaction submitted! View on explorer: ${baseUrl}/tx/${currentTxHash}`)
+      loggers.liquidity.info(`Transaction submitted! View on explorer: ${baseUrl}/tx/${currentTxHash}`)
       loggers.liquidity.info('Transaction hash received:', {
         hash: currentTxHash,
         currentStep,
@@ -627,7 +627,7 @@ export function useUniswapV2Liquidity() {
 
       // Wait for token decimals to load if still loading
       if (decimalsLoading) {
-        console.log('⏳ Waiting for token decimals to load...')
+        loggers.liquidity.debug('Waiting for token decimals to load...')
         // Try manual refetch first
         await refetchDecimals()
 
@@ -673,7 +673,7 @@ export function useUniswapV2Liquidity() {
             const currentAllowance = (allowance as bigint) || 0n
 
             if (currentAllowance < tokenAmountWei) {
-              console.log('❌ Insufficient allowance, requesting approval...', {
+              loggers.liquidity.info('Insufficient allowance, requesting approval...', {
                 current: currentAllowance.toString(),
                 needed: tokenAmountWei.toString()
               })
@@ -709,7 +709,7 @@ export function useUniswapV2Liquidity() {
 
       if (currentAllowance < tokenAmountWei) {
         // Need approval first
-        console.log('❌ Insufficient allowance, requesting approval...', {
+        loggers.liquidity.info('Insufficient allowance, requesting approval...', {
           current: currentAllowance.toString(),
           needed: tokenAmountWei.toString()
         })
@@ -969,7 +969,7 @@ export function useUniswapV2Liquidity() {
 
       if (currentLpAllowance < finalLpBalance) {
         // Need LP approval first
-        console.log('❌ Insufficient LP allowance, requesting approval...', {
+        loggers.liquidity.info('Insufficient LP allowance, requesting approval...', {
           current: currentLpAllowance.toString(),
           needed: finalLpBalance.toString()
         })

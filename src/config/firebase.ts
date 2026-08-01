@@ -1,7 +1,11 @@
-import { initializeApp } from 'firebase/app'
-import { getAnalytics, isSupported } from 'firebase/analytics'
+/**
+ * Firebase Configuration - Deferred Loading
+ *
+ * Firebase Analytics is lazy-loaded to improve initial page load performance.
+ * The SDK (~150KB) is loaded after the app becomes interactive.
+ */
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -13,7 +17,7 @@ const firebaseConfig = {
 
 // Validate Firebase config in development
 if (import.meta.env.DEV) {
-  const missingVars = []
+  const missingVars: string[] = []
   if (!firebaseConfig.apiKey) missingVars.push('VITE_FIREBASE_API_KEY')
   if (!firebaseConfig.authDomain) missingVars.push('VITE_FIREBASE_AUTH_DOMAIN')
   if (!firebaseConfig.projectId) missingVars.push('VITE_FIREBASE_PROJECT_ID')
@@ -24,16 +28,50 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Only initialize Firebase if required config is present
-let app = null
-let analytics = null
-
-if (firebaseConfig.apiKey && firebaseConfig.projectId) {
-  app = initializeApp(firebaseConfig)
-  // Initialize Analytics only if supported
-  analytics = isSupported().then(yes => yes ? getAnalytics(app) : null)
-} else {
-  console.warn('[Firebase] Skipping initialization due to missing configuration')
+/**
+ * Check if Firebase config is valid
+ */
+export const isFirebaseConfigured = (): boolean => {
+  return !!(firebaseConfig.apiKey && firebaseConfig.projectId)
 }
 
-export { app, analytics }
+/**
+ * Lazy load Firebase Analytics
+ * Returns a promise that resolves to the Analytics instance or null
+ */
+export const loadFirebaseAnalytics = async (): Promise<import('firebase/analytics').Analytics | null> => {
+  if (!isFirebaseConfigured()) {
+    console.warn('[Firebase] Skipping initialization due to missing configuration')
+    return null
+  }
+
+  try {
+    // Dynamic imports - these won't be in the initial bundle
+    const [{ initializeApp }, { getAnalytics, isSupported }] = await Promise.all([
+      import('firebase/app'),
+      import('firebase/analytics')
+    ])
+
+    // Check if analytics is supported in this environment
+    const supported = await isSupported()
+    if (!supported) {
+      console.warn('[Firebase] Analytics not supported in this environment')
+      return null
+    }
+
+    // Initialize Firebase app and analytics
+    const app = initializeApp(firebaseConfig)
+    const analytics = getAnalytics(app)
+
+    loggers.ui.debug('Firebase Analytics initialized')
+    return analytics
+  } catch (error) {
+    console.error('[Firebase] Failed to initialize analytics:', error)
+    return null
+  }
+}
+
+// For backward compatibility - these are now null/undefined by default
+// Use the lazy loading approach instead
+export const app = null
+export const analytics = null

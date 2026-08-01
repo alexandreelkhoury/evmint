@@ -65,7 +65,7 @@ function DefaultFallback({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onConnect}
-            className={`${colors.primaryButton} px-6 py-2`}
+            className={`${colors.primaryButton} px-6 py-2 cursor-pointer`}
           >
             Connect Wallet
           </motion.button>

@@ -21,11 +21,6 @@ export function useRemoveLiquidity(
   // SIMPLIFIED: Handle LP token approval using wagmi async pattern
   const handleApproveLpToken = async (lpAmount: bigint, pool: LiquidityPool) => {
     const contracts = getContracts()
-    console.log('🔑 Approving LP tokens for Uniswap V2 Router...', {
-      lpToken: pool.poolAddress,
-      amount: lpAmount.toString(),
-      router: contracts.router
-    })
 
     // Let wagmi handle gas estimation automatically
     const hash = await writeContractAsync({

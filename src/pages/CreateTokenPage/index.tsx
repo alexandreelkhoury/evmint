@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SEO from '../../components/SEO'
+import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
+import { trackPageView } from '../../utils/analytics'
 import { layout, colors } from '../../styles/designSystem'
 import { useTokenCreationLogic } from './hooks/useTokenCreationLogic'
 import StandardPageHeader from '../../components/StandardPageHeader'
@@ -13,7 +15,12 @@ import GettingStartedCTA from './components/GettingStartedCTA'
 import NetworkSelectorModal from '../../components/NetworkSelectorModal'
 
 export default function CreateTokenPage() {
+  const analytics = useFirebaseAnalytics()
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
+
+  useEffect(() => {
+    trackPageView(analytics, 'create')
+  }, [analytics])
   const {
     ready,
     authenticated,

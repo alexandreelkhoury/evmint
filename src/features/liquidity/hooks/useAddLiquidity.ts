@@ -49,12 +49,6 @@ export function useAddLiquidity(
     const finalDecimals = tokenDecimals ?? 18
     const tokenAmountWei = parseUnits(tokenInfo.tokenAmount, finalDecimals)
 
-    console.log('🔑 Approving token for Uniswap V2 Router...', {
-      token: tokenInfo.address,
-      amount: tokenAmountWei.toString(),
-      router: getContracts().router,
-      decimals: finalDecimals
-    })
 
     // wagmi handles errors automatically via mutation callback
     const hash = await writeContractAsync({

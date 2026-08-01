@@ -55,7 +55,7 @@ export default function Footer() {
                     <li key={link.to}>
                       <Link
                         to={link.to}
-                        className="text-sm text-gray-500 hover:text-white transition-colors block py-0.5"
+                        className="text-sm text-gray-500 hover:text-white transition-colors block py-1.5"
                       >
                         {link.label}
                       </Link>
