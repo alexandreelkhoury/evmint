@@ -112,7 +112,7 @@ export default function LiquidityPage() {
       <div className={`relative z-10 ${layout.pageContainer}`}>
         {/* Header */}
         <StandardPageHeader
-          badgeIcon="💧"
+          badgeIcon=""
           badgeText="Liquidity Provider"
           titleGradient="Liquidity Management"
           titleWhite="on Uniswap V2"

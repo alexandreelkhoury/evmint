@@ -12,7 +12,7 @@ interface SEOProps {
 
 export default function SEO({
   title = "EVMint - Multi-Chain EVM Token Launcher | Deploy on 15+ Chains",
-  description = "Create ERC20 tokens on 15+ EVM blockchains instantly! No coding required. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. Ultra-low fees. Auto-verify. Start your crypto project today! 🚀",
+  description = "Create ERC20 tokens on 15+ EVM blockchains instantly! No coding required. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. Ultra-low fees. Auto-verify. Start your crypto project today! ",
   keywords = "evmint, evm token creator, multi-chain token launcher, erc20 token generator, create cryptocurrency, meme coin creator, no code crypto, defi token maker, ethereum token, base token, arbitrum token, polygon token, bsc token, multi-chain deployment, cheap token deployment",
   canonical,
   ogImage = "/og-image.png",

@@ -85,7 +85,7 @@ export default function CryptocurrencyCreatorPage() {
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_cryptocurrency', 'hero_section')}>
               <button className={`group relative px-12 py-5 ${colors.primaryButton} text-lg active:scale-[0.97]`}>
                 <span className="relative z-10 flex items-center gap-3">
-                  🚀 Create Your Cryptocurrency Now
+                  Create Your Cryptocurrency Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -104,7 +104,7 @@ export default function CryptocurrencyCreatorPage() {
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-cyan-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🎮</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Gaming Tokens</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -114,7 +114,7 @@ export default function CryptocurrencyCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-blue-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🏦</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">DeFi Projects</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -124,7 +124,7 @@ export default function CryptocurrencyCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🏆</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Reward Programs</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -134,7 +134,7 @@ export default function CryptocurrencyCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-pink-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🌐</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">DAO Governance</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -300,7 +300,7 @@ export default function CryptocurrencyCreatorPage() {
             className="p-6 bg-cyan-500/10 border border-cyan-500/20 rounded-xl mb-12"
           >
             <p className="text-cyan-200">
-              🔒 <strong>Security First:</strong> All tokens are created using audited OpenZeppelin smart contracts,
+               <strong>Security First:</strong> All tokens are created using audited OpenZeppelin smart contracts,
               the industry standard trusted by Coinbase, Aave, Compound, and thousands of other projects. Your cryptocurrency is production-ready from day one.
             </p>
           </motion.div>

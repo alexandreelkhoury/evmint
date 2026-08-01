@@ -14,6 +14,7 @@ import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDep
 import { useTokenDetails } from '../hooks/useTokenDetails'
 import { animations, typography, colors, layout } from '../styles/designSystem'
 import { getChainById } from '../config/chains'
+import ChainIcon from '../components/ChainIcon'
 import StandardPageHeader from '../components/StandardPageHeader'
 import NetworkSelectorModal from '../components/NetworkSelectorModal'
 
@@ -34,7 +35,6 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
   const { tokenInfo, balance } = useTokenDetails(tokenData.address)
   const [isCopied, setIsCopied] = useState(false)
 
-  // Use stored data as primary source, live contract data as fallback
   const displayTokenInfo = tokenInfo || {
     name: tokenData.name,
     symbol: tokenData.symbol,
@@ -43,156 +43,160 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
     imageUrl: tokenData.imageUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${tokenData.address}&backgroundColor=3b82f6,8b5cf6,10b981&size=100`
   }
 
+  const chainConfig = getChainById(chainId)
+  const truncatedAddress = `${tokenData.address.slice(0, 6)}...${tokenData.address.slice(-4)}`
+  const parsedBalance = parseFloat(balance || '0')
+  const parsedSupply = parseFloat(displayTokenInfo.totalSupply)
+
   const handleCopyAddress = async () => {
     try {
       await navigator.clipboard.writeText(tokenData.address)
       setIsCopied(true)
-      // Reset after 2 seconds
       setTimeout(() => setIsCopied(false), 2000)
-    } catch (error) {
-      loggers.ui.error('Failed to copy address:', error)
+    } catch {
+      // Silently handle copy failure
     }
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className={`${colors.glassCard} p-6 hover:border-white/40 transition-[border-color,box-shadow] duration-200 group`}
-      whileHover={{ scale: 1.02, y: -5 }}
+      transition={{ duration: 0.4, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="bg-gradient-to-br from-white/[0.07] via-white/[0.03] to-transparent backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-xl shadow-black/20 hover:border-white/[0.18] hover:shadow-2xl hover:shadow-blue-500/[0.06] transition-all duration-300 ease-out group"
+      whileHover={{ y: -3 }}
     >
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
+      {/* Header: avatar + name/symbol + chain pill */}
+      <div className="p-5 pb-0">
+        <div className="flex items-center gap-3.5">
+          {/* Token avatar with chain icon overlay */}
+          <div className="relative shrink-0">
             {displayTokenInfo.imageUrl ? (
               <img
                 src={displayTokenInfo.imageUrl}
                 alt={displayTokenInfo.name}
-                className="w-14 h-14 rounded-full border-2 border-gray-600 group-hover:border-blue-400 transition-colors"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                }}
+                className="w-10 h-10 rounded-full ring-1 ring-white/10 group-hover:ring-blue-500/30 transition-all duration-300 object-cover"
+                onError={(e) => { e.currentTarget.style.display = 'none' }}
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center border-2 border-gray-600 group-hover:border-blue-400 transition-colors">
-                <span className="text-white font-bold text-lg">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center ring-1 ring-white/10 group-hover:ring-blue-500/30 transition-all duration-300">
+                <span className="text-white font-semibold text-sm">
                   {displayTokenInfo.symbol.charAt(0)}
                 </span>
               </div>
             )}
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
-              <span className="text-xs">✓</span>
+            <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full bg-gray-900 ring-1 ring-gray-800 flex items-center justify-center overflow-hidden">
+              <ChainIcon chainId={chainId} size={14} />
             </div>
           </div>
-          <div>
-            <h3 className={`${typography.cardTitleSmall} mb-1`}>{displayTokenInfo.name}</h3>
-            <div className={`${colors.badgeInfo} px-2 py-1 rounded-md text-xs font-mono inline-block`}>
-              ${displayTokenInfo.symbol}
-            </div>
+
+          {/* Name and symbol */}
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[15px] font-display font-semibold text-white truncate leading-tight">
+              {displayTokenInfo.name}
+            </h3>
+            <span className="text-xs text-gray-500 font-mono tracking-wide">
+              {displayTokenInfo.symbol}
+            </span>
           </div>
-        </div>
-        <div className="text-right">
-          <p className={`${typography.metadata} mb-1`}>Your Balance</p>
-          <p className={`${typography.success} text-lg font-bold`}>
-            {parseFloat(balance || '0').toLocaleString()} {displayTokenInfo.symbol}
-          </p>
+
+          {/* Chain name pill */}
+          <div className="shrink-0">
+            <span className="text-[10px] font-medium text-gray-500 bg-white/[0.04] border border-white/[0.06] rounded-md px-2 py-0.5 uppercase tracking-wider">
+              {chainConfig?.name.split(' ')[0] || 'EVM'}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-black/20 rounded-lg p-3">
-          <p className={typography.metadata}>Total Supply</p>
-          <p className="text-white font-semibold">
-            {parseFloat(displayTokenInfo.totalSupply).toLocaleString()}
-          </p>
-        </div>
-        <div className="bg-black/20 rounded-lg p-3">
-          <p className={typography.metadata}>Decimals</p>
-          <p className="text-white font-semibold">{displayTokenInfo.decimals}</p>
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <p className={typography.metadata}>Contract Address</p>
-        <div className={`${colors.infoBg} p-2 rounded flex items-center justify-between`}>
-          <span className="text-blue-300 font-mono text-sm truncate">
-            {tokenData.address}
+      {/* Balance -- the hero number */}
+      <div className="px-5 pt-4 pb-3">
+        <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest mb-1">
+          Balance
+        </p>
+        <div className="flex items-baseline gap-2">
+          <span className="text-2xl font-display font-bold text-white tabular-nums leading-none">
+            {parsedBalance > 0 ? parsedBalance.toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'}
           </span>
-          <motion.button
-            onClick={handleCopyAddress}
-            className={`ml-2 px-3 min-h-[44px] min-w-[44px] rounded transition-[border-color,box-shadow] duration-200 flex items-center justify-center space-x-1 cursor-pointer ${
-              isCopied
-                ? 'bg-green-600/20 text-green-400'
-                : 'hover:bg-blue-600/20 text-blue-400'
-            }`}
-            title={isCopied ? "Copied!" : "Copy address"}
-            whileHover={{ scale: isCopied ? 1 : 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              key={isCopied ? 'copied' : 'copy'}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isCopied ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              )}
-            </motion.div>
-            <motion.span 
-              className="text-xs font-medium"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ 
-                width: isCopied ? 'auto' : 0, 
-                opacity: isCopied ? 1 : 0 
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              {isCopied && 'Copied!'}
-            </motion.span>
-          </motion.button>
+          <span className="text-xs font-medium text-gray-500">
+            {displayTokenInfo.symbol}
+          </span>
         </div>
       </div>
 
-      <div className="flex space-x-3">
-        <Link
-          to="/liquidity"
-          className={`flex-1 px-4 min-h-[44px] ${colors.tertiaryButton} hover:bg-gradient-to-r hover:from-green-600/20 hover:to-blue-600/20 text-sm rounded-lg flex items-center justify-center space-x-2 transition-[border-color,box-shadow] duration-200 cursor-pointer`}
+      {/* Stats: supply + decimals */}
+      <div className="mx-5 flex items-center gap-px rounded-lg overflow-hidden mb-4">
+        <div className="flex-1 bg-white/[0.03] px-3 py-2.5 rounded-l-lg">
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-0.5">Supply</p>
+          <p className="text-sm font-semibold text-gray-200 tabular-nums">
+            {parsedSupply > 1_000_000
+              ? `${(parsedSupply / 1_000_000).toFixed(1)}M`
+              : parsedSupply > 1_000
+                ? `${(parsedSupply / 1_000).toFixed(1)}K`
+                : parsedSupply.toLocaleString()}
+          </p>
+        </div>
+        <div className="flex-1 bg-white/[0.03] px-3 py-2.5 rounded-r-lg">
+          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium mb-0.5">Decimals</p>
+          <p className="text-sm font-semibold text-gray-200 tabular-nums">{displayTokenInfo.decimals}</p>
+        </div>
+      </div>
+
+      {/* Contract address -- clickable to copy */}
+      <div className="mx-5 mb-4">
+        <button
+          onClick={handleCopyAddress}
+          className="w-full flex items-center justify-between gap-2 bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12] rounded-lg px-3 py-2 transition-all duration-200 cursor-pointer group/addr"
+          title={isCopied ? 'Copied!' : `Copy ${tokenData.address}`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-          </svg>
-          <span>Liquidity</span>
-        </Link>
+          <span className="text-xs font-mono text-gray-400 group-hover/addr:text-gray-300 transition-colors">
+            {truncatedAddress}
+          </span>
+          <span className={`shrink-0 transition-colors duration-200 ${isCopied ? 'text-green-400' : 'text-gray-600 group-hover/addr:text-gray-400'}`}>
+            {isCopied ? (
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            ) : (
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            )}
+          </span>
+        </button>
+      </div>
+
+      {/* Action buttons */}
+      <div className="px-5 pb-5 flex items-center gap-2">
         <Link
           to={`/token/${tokenData.address}?chain=${chainId}`}
-          className={`flex-1 px-4 min-h-[44px] ${colors.primaryButton} text-sm rounded-lg flex items-center justify-center space-x-2 cursor-pointer`}
+          className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-semibold rounded-lg transition-colors duration-150 cursor-pointer"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
           </svg>
-          <span>Trade</span>
+          Trade
+        </Link>
+        <Link
+          to="/liquidity"
+          className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-all duration-150 cursor-pointer"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+          </svg>
+          Liquidity
         </Link>
         <button
           onClick={() => {
-            const chainConfig = getChainById(chainId)
             const explorerUrl = chainConfig?.explorer.url || 'https://basescan.org'
             window.open(`${explorerUrl}/token/${tokenData.address}`, '_blank')
           }}
-          className={`px-3 min-h-[44px] min-w-[44px] ${colors.tertiaryButton} text-sm rounded-lg flex items-center justify-center cursor-pointer`}
-          title="View on block explorer"
+          className="shrink-0 inline-flex items-center justify-center w-9 h-9 bg-white/[0.03] hover:bg-white/[0.08] text-gray-500 hover:text-gray-300 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-all duration-150 cursor-pointer"
+          title="View on explorer"
           aria-label="View on block explorer"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
         </button>
@@ -229,11 +233,11 @@ export default function TokensPage() {
           keywords="multi-chain tokens management, erc20 token dashboard, blockchain portfolio, token management interface, base ethereum arbitrum polygon"
           canonical="/tokens"
         />
-        
+
         <div className={`relative z-10 ${layout.pageContainer} pb-12`}>
           {/* Modern Token Dashboard Header */}
           <StandardPageHeader
-            badgeIcon="💎"
+            badgeIcon=""
             badgeText="Token Portfolio"
             badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
             titleGradient="Your Tokens"
@@ -274,11 +278,11 @@ export default function TokensPage() {
           keywords="multi-chain tokens management, erc20 token dashboard, blockchain portfolio, token management interface, base ethereum arbitrum polygon"
           canonical="/tokens"
         />
-        
+
         <div className={`relative z-10 ${layout.pageContainer} pb-12`}>
           {/* Modern Token Dashboard Header */}
           <StandardPageHeader
-            badgeIcon="💎"
+            badgeIcon=""
             badgeText="Token Portfolio"
             badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
             titleGradient="Your Tokens"
@@ -301,7 +305,7 @@ export default function TokensPage() {
             className={`${colors.glassCard} rounded-3xl p-8 lg:p-12 text-center mb-8`}
           >
             <div className="mb-8">
-              <motion.div 
+              <motion.div
                 className="mx-auto w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center mb-6"
                 whileHover={{ scale: 1.1, rotate: 10 }}
                 transition={{ duration: 0.5 }}
@@ -322,17 +326,17 @@ export default function TokensPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
               <div className="bg-black/20 rounded-lg p-4">
-                <div className="text-blue-400 mb-2">💎</div>
+                <div className="text-blue-400 mb-2"></div>
                 <h4 className="text-white font-semibold mb-2">Token Overview</h4>
                 <p className="text-gray-400 text-sm">View all your created tokens with real-time data</p>
               </div>
               <div className="bg-black/20 rounded-lg p-4">
-                <div className="text-green-400 mb-2">📊</div>
+                <div className="text-green-400 mb-2"></div>
                 <h4 className="text-white font-semibold mb-2">Balance Tracking</h4>
                 <p className="text-gray-400 text-sm">Monitor your token balances and holdings</p>
               </div>
               <div className="bg-black/20 rounded-lg p-4">
-                <div className="text-purple-400 mb-2">🔗</div>
+                <div className="text-purple-400 mb-2"></div>
                 <h4 className="text-white font-semibold mb-2">Quick Actions</h4>
                 <p className="text-gray-400 text-sm">Copy addresses, view on explorer, manage liquidity</p>
               </div>
@@ -359,11 +363,11 @@ export default function TokensPage() {
         keywords="token management, my erc20 tokens, multi-chain token dashboard, blockchain portfolio, token management interface"
         canonical="/tokens"
       />
-      
+
       <div className={`relative z-10 ${layout.pageContainer} pb-12`}>
         {/* Modern Token Dashboard Header */}
         <StandardPageHeader
-          badgeIcon="💎"
+          badgeIcon=""
           badgeText="Token Portfolio"
           badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
           titleGradient="Your Tokens"
@@ -379,7 +383,7 @@ export default function TokensPage() {
           warningContent={!isCorrectChain ? (
             <div className="bg-orange-900/20 rounded-lg border border-orange-500/20 p-4">
               <p className="text-sm text-orange-200 text-center">
-                ⚠️ Please switch to a supported EVM network to view your tokens.
+                Please switch to a supported EVM network to view your tokens.
               </p>
             </div>
           ) : undefined}
@@ -401,7 +405,7 @@ export default function TokensPage() {
       ) : userTokens.length === 0 ? (
         <GlassCard className="text-center">
           <div className="mb-6">
-            <motion.div 
+            <motion.div
               className="mx-auto w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center mb-4"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -420,7 +424,7 @@ export default function TokensPage() {
                 to="/create"
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
               >
-                🚀 Create Your First Token
+                Create Your First Token
               </Link>
             </motion.div>
           </div>
@@ -454,7 +458,7 @@ export default function TokensPage() {
                   </>
                 ) : (
                   <>
-                    <span>🔄</span>
+
                     <span>Refresh</span>
                   </>
                 )}
@@ -464,7 +468,7 @@ export default function TokensPage() {
                   to="/create"
                   className="flex items-center px-4 min-h-[44px] bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-500 transition-[border-color,box-shadow] duration-200 cursor-pointer"
                 >
-                  ➕ Create New Token
+                  Create New Token
                 </Link>
               </motion.div>
             </div>
@@ -472,8 +476,8 @@ export default function TokensPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {userTokens.map((token, index) => (
-              <TokenCard 
-                key={token.address} 
+              <TokenCard
+                key={token.address}
                 tokenData={{
                   address: token.address,
                   name: token.name,

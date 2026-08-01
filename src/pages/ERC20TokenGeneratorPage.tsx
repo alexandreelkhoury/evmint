@@ -85,7 +85,7 @@ export default function ERC20TokenGeneratorPage() {
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_erc20', 'hero_section')}>
               <button className={`group relative px-12 py-5 ${colors.primaryButton} text-lg active:scale-[0.97]`}>
                 <span className="relative z-10 flex items-center gap-3">
-                  ⚡ Generate Your ERC20 Token Now
+                  Generate Your ERC20 Token Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -104,7 +104,7 @@ export default function ERC20TokenGeneratorPage() {
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">⚙️</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Fully Customizable</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -114,7 +114,7 @@ export default function ERC20TokenGeneratorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-pink-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🔒</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">OpenZeppelin Security</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -124,7 +124,7 @@ export default function ERC20TokenGeneratorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-red-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🌍</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Any EVM Blockchain</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -134,7 +134,7 @@ export default function ERC20TokenGeneratorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-orange-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">✅</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Auto-Verified</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -226,28 +226,28 @@ export default function ERC20TokenGeneratorPage() {
             </h2>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <div className="text-2xl">🚀</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Launch in 5 Seconds</h4>
                   <p className="text-gray-300">No complex setup, no waiting. Connect your wallet, fill the form, and your ERC20 token is live.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="text-2xl">💼</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Production-Ready</h4>
                   <p className="text-gray-300">Built with audited OpenZeppelin contracts. Compatible with all wallets, exchanges, and DeFi protocols.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="text-2xl">🎯</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">No Coding Required</h4>
                   <p className="text-gray-300">Simple form interface. If you can fill out a web form, you can create an ERC20 token.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="text-2xl">💰</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Affordable & Transparent</h4>
                   <p className="text-gray-300">~$80 total fee (deployment + gas + verification). No hidden charges. Deploy on L2 networks to save 90% on gas.</p>

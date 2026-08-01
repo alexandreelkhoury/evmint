@@ -87,7 +87,7 @@ export default function MultiChainTokenCreatorPage() {
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_multi_chain', 'hero_section')}>
               <button className={`group relative px-12 py-5 ${colors.primaryButton} text-lg active:scale-[0.97]`}>
                 <span className="relative z-10 flex items-center gap-3">
-                  🚀 Create Your Multi-Chain Token Now
+                  Create Your Multi-Chain Token Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -106,7 +106,7 @@ export default function MultiChainTokenCreatorPage() {
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-blue-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🌐</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">15+ EVM Blockchains</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -116,7 +116,7 @@ export default function MultiChainTokenCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-cyan-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">💰</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Ultra-Low Fees</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -126,7 +126,7 @@ export default function MultiChainTokenCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-green-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">⚡</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Instant Deployment</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -136,7 +136,7 @@ export default function MultiChainTokenCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">✅</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Auto-Verified</h3>
               <p className="text-gray-300 leading-relaxed">

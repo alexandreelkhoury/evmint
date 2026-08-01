@@ -60,7 +60,7 @@ export default function PricingSection() {
             className="inline-block mb-6"
           >
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold">
-              <span className="text-lg">💰</span>
+              
               Transparent Pricing
             </span>
           </motion.div>

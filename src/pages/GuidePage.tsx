@@ -72,7 +72,7 @@ const guidesData: Record<string, GuideData> = {
           'Select your preferred blockchain network',
           'Ensure you have native tokens for gas fees (usually ~$1 worth)'
         ],
-        tip: '💡 Need native tokens? Send directly from a CEX or bridge from Ethereum mainnet!'
+        tip: 'Need native tokens? Send directly from a CEX or bridge from Ethereum mainnet!'
       },
       {
         number: '02',
@@ -96,7 +96,7 @@ const guidesData: Record<string, GuideData> = {
           'Click "Create Token" to start deployment',
           'Approve the transaction in your wallet'
         ],
-        tip: '🚀 Your token will be live on the blockchain within seconds!'
+        tip: 'Your token will be live on the blockchain within seconds!'
       },
       {
         number: '04',
@@ -114,7 +114,7 @@ const guidesData: Record<string, GuideData> = {
             }
           }
         ],
-        tip: '✅ Congratulations! Your token is now live on the blockchain!'
+        tip: 'Congratulations! Your token is now live on the blockchain!'
       }
     ]
   },
@@ -152,7 +152,7 @@ const guidesData: Record<string, GuideData> = {
           'Ensure you have both your token and native tokens in your wallet',
           'Select your token from the dropdown list'
         ],
-        tip: '💡 You need both your token and native tokens to create a trading pair!'
+        tip: 'You need both your token and native tokens to create a trading pair!'
       },
       {
         number: '02',
@@ -176,7 +176,7 @@ const guidesData: Record<string, GuideData> = {
           'Click "Add Liquidity" to create the pool',
           'Confirm the transaction in your wallet'
         ],
-        tip: '🚀 Your pool will be live on the DEX within minutes!'
+        tip: 'Your pool will be live on the DEX within minutes!'
       },
       {
         number: '04',
@@ -188,7 +188,7 @@ const guidesData: Record<string, GuideData> = {
           'You can add more liquidity or remove it anytime',
           'LP tokens can be used for farming opportunities'
         ],
-        tip: '📊 Track your pool performance and adjust as needed!'
+        tip: 'Track your pool performance and adjust as needed!'
       }
     ]
   },
@@ -209,7 +209,7 @@ const guidesData: Record<string, GuideData> = {
           'Users can inspect the contract before interacting',
           'Verification builds trust with your community'
         ],
-        tip: '🔒 Verified contracts are essential for building trust!'
+        tip: 'Verified contracts are essential for building trust!'
       },
       {
         number: '02',
@@ -221,7 +221,7 @@ const guidesData: Record<string, GuideData> = {
           'Don\'t include backdoors or admin functions',
           'Our contracts are immutable after deployment'
         ],
-        tip: '✅ Immutable contracts provide the highest security!'
+        tip: 'Immutable contracts provide the highest security!'
       },
       {
         number: '03',
@@ -233,7 +233,7 @@ const guidesData: Record<string, GuideData> = {
           'Engage regularly with your community',
           'Never promise guaranteed returns'
         ],
-        tip: '🤝 Transparency builds lasting community trust!'
+        tip: 'Transparency builds lasting community trust!'
       }
     ]
   },
@@ -254,7 +254,7 @@ const guidesData: Record<string, GuideData> = {
           'No ongoing fees after deployment',
           'Your token contract is completely independent'
         ],
-        tip: '💰 One-time fee for lifetime token ownership!'
+        tip: 'One-time fee for lifetime token ownership!'
       },
       {
         number: '02',
@@ -266,7 +266,7 @@ const guidesData: Record<string, GuideData> = {
           'No admin keys or backdoors exist',
           'Code is law - what you deploy is what you get'
         ],
-        tip: '🔐 Immutability = maximum security and trust!'
+        tip: 'Immutability = maximum security and trust!'
       },
       {
         number: '03',
@@ -278,7 +278,7 @@ const guidesData: Record<string, GuideData> = {
           'Can be used in lending protocols like Aave',
           'Works with bridges for cross-chain functionality'
         ],
-        tip: '🌐 Standard compliance = endless possibilities!'
+        tip: 'Standard compliance = endless possibilities!'
       }
     ]
   }

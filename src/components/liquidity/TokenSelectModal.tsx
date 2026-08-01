@@ -78,7 +78,7 @@ export default function TokenSelectModal({
         {showTokenInput && (
           <div className="mb-6 space-y-3">
             <div className="text-sm text-gray-400 mb-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-              💡 <strong>Don't see your token?</strong> Paste your token address below to add it!
+              Don't see your token? Paste your token address below to add it!
             </div>
             <div className="flex space-x-2">
               <label htmlFor="token-address-input" className="sr-only">Token address</label>
@@ -117,7 +117,7 @@ export default function TokenSelectModal({
           {mode === 'withdraw' && userLPTokens.length > 0 && (
             <>
               <div className="text-sm text-yellow-400 font-medium mb-2 px-2">
-                🔄 Your LP Tokens
+                Your LP Tokens
               </div>
               {userLPTokens.map((token) => (
                 <motion.button
@@ -158,7 +158,7 @@ export default function TokenSelectModal({
           {/* Show regular tokens (hide LP tokens in add mode) */}
           {mode === 'add' && (
             <div className="text-sm text-blue-400 font-medium mb-2 px-2">
-              💰 Available Tokens
+              Available Tokens
             </div>
           )}
           

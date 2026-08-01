@@ -288,7 +288,7 @@ export default function GuidesPage() {
       {/* SEO Header */}
       <div className="px-4">
         <StandardPageHeader
-          badgeIcon="📚"
+          badgeIcon=""
           badgeText="Learning Center"
           badgeColors="from-cyan-500/10 to-purple-500/10 border-cyan-500/20"
           titleGradient="Token Creation"

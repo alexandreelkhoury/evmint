@@ -79,22 +79,22 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
   }
 
   // MAIN VIRAL SHARE - After liquidity (token is NOW tradable!)
-  const tweetText = `🚀 $${pool.tokenSymbol} is NOW LIVE on ${chainName}!
+  const tweetText = `$${pool.tokenSymbol} is NOW LIVE on ${chainName}!
 
-💧 Liquidity added on Uniswap V2
-💎 ${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ${nativeTokenSymbol}
+Liquidity added on Uniswap V2
+${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ${nativeTokenSymbol}
 
 🔥 BUY NOW:
 ${uniswapUrl}
 
-📊 Chart: ${dexscreenerUrl}
+Chart: ${dexscreenerUrl}
 
 #${pool.tokenSymbol} #${chainName.replace(/\s+/g, '')} #DeFi #crypto`
 
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
 
   const handleCopyShareMessage = async () => {
-    const shareMessage = `🚀 $${pool.tokenSymbol} is NOW LIVE on ${chainName}!
+    const shareMessage = `$${pool.tokenSymbol} is NOW LIVE on ${chainName}!
 
 Liquidity added on Uniswap V2
 ${pool.tokenAmount} ${pool.tokenSymbol} + ${pool.ethAmount} ${nativeTokenSymbol}
@@ -243,9 +243,9 @@ Contract: ${pool.tokenAddress}`
           >
             <div className="text-center mb-4">
               <h3 className="text-2xl font-bold text-white mb-2 flex items-center justify-center gap-2">
-                <span>🎉</span>
+                <span></span>
                 <span>Your Token is NOW Tradable!</span>
-                <span>🚀</span>
+                <span></span>
               </h3>
               <p className="text-sm text-gray-300">
                 Share with your community so they can buy ${ pool.tokenSymbol}!
@@ -320,7 +320,7 @@ Contract: ${pool.tokenAddress}`
               className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl"
             >
               <p className="text-xs text-gray-300 text-center">
-                💰 <strong className="text-green-300">More buyers = More volume = Higher price!</strong> Share now!
+                <strong className="text-green-300">More buyers = More volume = Higher price!</strong> Share now!
               </p>
             </motion.div>
           </motion.div>
@@ -338,7 +338,7 @@ Contract: ${pool.tokenAddress}`
               whileTap={{ scale: 0.98 }}
               className={`w-full py-4 text-lg font-semibold rounded-xl transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${colors.primaryButton} flex items-center justify-center space-x-2`}
             >
-              <span>📊</span>
+              <span></span>
               <span>View Chart on DEXScreener</span>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

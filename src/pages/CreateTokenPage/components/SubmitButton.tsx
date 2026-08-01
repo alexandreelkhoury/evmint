@@ -79,7 +79,7 @@ export default function SubmitButton({
       ) : (
         <div className="flex flex-col items-center justify-center space-y-1">
           <div className="flex items-center space-x-2">
-            <span>🚀</span>
+            
             <span>Create Token</span>
           </div>
           <span className="text-sm text-blue-200 opacity-80">

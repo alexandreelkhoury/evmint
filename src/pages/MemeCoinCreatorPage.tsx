@@ -64,7 +64,7 @@ export default function MemeCoinCreatorPage() {
             <span className="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 bg-clip-text text-transparent">
               To The Moon!
             </span>{' '}
-            <span className="inline-block">🚀🌕</span>
+            <span className="inline-block"></span>
           </motion.h1>
 
           <motion.p
@@ -86,7 +86,7 @@ export default function MemeCoinCreatorPage() {
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_meme_coin', 'hero_section')}>
               <button className={`group relative px-12 py-5 ${colors.primaryButton} text-lg active:scale-[0.97]`}>
                 <span className="relative z-10 flex items-center gap-3">
-                  🚀 Create Your Meme Coin Now
+                  Create Your Meme Coin Now
                   <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -105,7 +105,7 @@ export default function MemeCoinCreatorPage() {
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-green-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">⚡</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">5-Second Launch</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -115,7 +115,7 @@ export default function MemeCoinCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-yellow-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">💰</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Ultra-Low Fees</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -125,7 +125,7 @@ export default function MemeCoinCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-orange-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🦄</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Add Liquidity on Uniswap</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -135,7 +135,7 @@ export default function MemeCoinCreatorPage() {
 
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-red-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
               <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">🌐</span>
+                <span className="text-2xl"></span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Build Your Community</h3>
               <p className="text-gray-300 leading-relaxed">
@@ -152,7 +152,7 @@ export default function MemeCoinCreatorPage() {
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              How to Launch a Successful Meme Coin 📈
+              How to Launch a Successful Meme Coin 
             </h2>
             <div className="space-y-5">
               <div className="flex items-start gap-4">
@@ -210,32 +210,32 @@ export default function MemeCoinCreatorPage() {
             transition={{ delay: 0.8 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12 bg-gradient-to-br from-green-500/5 via-yellow-500/5 to-orange-500/5 border-green-500/20`}>
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              Why Create a Meme Coin? 🤔
+              Why Create a Meme Coin? 
             </h2>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <div className="text-2xl">🎯</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Build a Movement</h4>
                   <p className="text-gray-300">Meme coins aren't just tokens - they're communities. Rally people around a shared joke, cause, or vision.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="text-2xl">💸</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Viral Potential</h4>
                   <p className="text-gray-300">DOGE started as a joke. SHIB made millionaires. PEPE reached $1B market cap. Your meme coin could be next.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="text-2xl">🌟</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Low Barrier to Entry</h4>
                   <p className="text-gray-300">No coding required. Deploy in 5 seconds. Ultra-low fees on L2. Anyone can launch a meme coin empire.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="text-2xl">🔥</div>
+                <div className="text-2xl"></div>
                 <div>
                   <h4 className="text-white font-semibold mb-1">Marketing Tools Built-In</h4>
                   <p className="text-gray-300">Share on Twitter with one click. Add liquidity on Uniswap. Track on DEXScreener. Everything you need to go viral.</p>
@@ -252,8 +252,8 @@ export default function MemeCoinCreatorPage() {
             className="p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mb-12"
           >
             <p className="text-yellow-200">
-              💡 <strong>Pro Tip:</strong> Successful meme coins focus on community building, viral marketing, and transparent liquidity.
-              Use our built-in tools to add liquidity and share your token on social media. Remember: diamond hands 💎🙌
+               <strong>Pro Tip:</strong> Successful meme coins focus on community building, viral marketing, and transparent liquidity.
+              Use our built-in tools to add liquidity and share your token on social media. Remember: diamond hands 
             </p>
           </motion.div>
 

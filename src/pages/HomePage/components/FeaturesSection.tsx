@@ -28,7 +28,7 @@ export default function FeaturesSection() {
             transition={{ duration: 0.3, delay: 0.2 }}
             className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 mb-6"
           >
-            <span className="text-sm font-medium text-purple-400">🛠️ Features</span>
+            <span className="text-sm font-medium text-purple-400">Features</span>
           </motion.div>
 
           <h2 className={`${typography.sectionTitle} text-3xl lg:text-4xl mb-6`}>

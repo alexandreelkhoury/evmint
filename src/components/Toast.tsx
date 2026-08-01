@@ -32,22 +32,22 @@ export function Toast({ id, type, title, message, duration = 4000, onClose }: To
     success: {
       bg: colors.successBg,
       text: typography.success,
-      icon: '✅'
+      icon: ''
     },
     error: {
       bg: colors.errorBg,
       text: typography.error,
-      icon: '❌'
+      icon: ''
     },
     warning: {
       bg: colors.warningBg,
       text: typography.warning,
-      icon: '⚠️'
+      icon: ''
     },
     info: {
       bg: colors.infoBg,
       text: typography.info,
-      icon: '💡'
+      icon: ''
     }
   }
 

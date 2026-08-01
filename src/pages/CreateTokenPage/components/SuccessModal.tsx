@@ -154,7 +154,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
           </svg>
         </motion.div>
         <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          🎉 Token Created Successfully!
+          Token Created Successfully!
         </h3>
         <p className="text-green-200 text-base sm:text-lg">
           Your token is now live on {chainName}
@@ -194,9 +194,9 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
       >
         <div className="text-center mb-4">
           <h4 className="text-xl font-bold text-white mb-2 flex items-center justify-center gap-2">
-            <span>📢</span>
+            
             <span>Announce Your Launch!</span>
-            <span>🚀</span>
+            
           </h4>
           <p className="text-sm text-gray-300">
             Share your token creation! (Add liquidity next to make it tradable)
@@ -272,7 +272,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
           className="mt-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl"
         >
           <p className="text-xs text-gray-300 text-center">
-            💡 <strong className="text-purple-300">Pro tip:</strong> Share your contract address so people can find and buy your token!
+            <strong className="text-purple-300">Pro tip:</strong> Share your contract address so people can find and buy your token!
           </p>
         </motion.div>
       </motion.div>
@@ -280,7 +280,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
       {/* Next Steps Section */}
       <div className="mb-6">
         <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-          <span className="mr-2">🗺️</span>
+          
           Next Steps
         </h4>
         <div className="space-y-3">
@@ -348,14 +348,14 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
             to="/liquidity"
             className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.primaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
-            <span>💧</span>
+            
             <span className="ml-2">Add Liquidity</span>
           </Link>
           <Link
             to="/tokens"
             className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.secondaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
-            <span>💎</span>
+            
             <span className="ml-2">View My Tokens</span>
           </Link>
         </div>
@@ -366,7 +366,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
             to="/guides"
             className="flex-1 text-center px-4 min-h-[44px] flex items-center justify-center text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
           >
-            📚 Read Guides
+            Read Guides
           </Link>
           <button
             type="button"
@@ -376,7 +376,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
             }}
             className="flex-1 text-center px-4 min-h-[44px] flex items-center justify-center text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
           >
-            ➕ Create Another Token
+            Create Another Token
           </button>
         </div>
       </div>

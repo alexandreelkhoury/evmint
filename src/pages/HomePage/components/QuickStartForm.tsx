@@ -65,7 +65,7 @@ export default function QuickStartForm({
             transition={{ duration: 0.3, delay: 0.2 }}
             className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 mb-8"
           >
-            <span className="text-sm font-medium text-blue-400">⚡ Quick Start</span>
+            <span className="text-sm font-medium text-blue-400">Quick Start</span>
           </motion.div>
 
           <h2 className={`${typography.sectionTitle} text-3xl lg:text-4xl mb-6`}>
@@ -274,7 +274,7 @@ export default function QuickStartForm({
                     </div>
                   ) : (
                     <div className="flex items-center justify-center space-x-3">
-                      <span>🚀</span>
+                      
                       <span>Create Token on {getNetworkName()}</span>
                     </div>
                   )}
@@ -308,7 +308,7 @@ export default function QuickStartForm({
                         to="/tokens"
                         className="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl font-medium text-white cursor-pointer"
                       >
-                        <span>💎</span>
+                        
                         <span className="ml-2">View My Tokens</span>
                       </Link>
                       <button

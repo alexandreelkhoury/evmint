@@ -220,7 +220,7 @@ export default function CreateTokenPage() {
       <div className={`relative z-10 ${layout.pageContainer}`}>
         {/* Page Header */}
         <StandardPageHeader
-          badgeIcon="🚀"
+          badgeIcon=""
           badgeText="Token Creator"
           titleGradient="Create Your Token"
           titleWhite="on Any EVM Chain"

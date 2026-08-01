@@ -150,7 +150,7 @@ export default function WalletButton() {
 
       // Robinhood Chain
       case 4663:
-        return { name: 'Robinhood 🔥', color: 'text-orange-400', isBase: false, chainId: numChainId }
+        return { name: 'Robinhood', color: 'text-orange-400', isBase: false, chainId: numChainId }
       case 46630:
         return { name: 'Robinhood Testnet', color: 'text-green-400', isBase: false, chainId: numChainId }
 
