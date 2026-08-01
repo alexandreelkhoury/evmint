@@ -30,7 +30,7 @@ export default function HowItWorksSection() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.25 }}
           className="text-center mb-12"
         >
           <h2 id="how-it-works-heading" className="text-3xl sm:text-4xl font-bold text-white mb-3">
@@ -48,7 +48,7 @@ export default function HowItWorksSection() {
               key={step.num}
               initial={{ opacity: 0, y: 12 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.1 + i * 0.1, duration: 0.3 }}
+              transition={{ delay: 0.05 + i * 0.05, duration: 0.25 }}
               className="flex gap-4 items-start p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]"
             >
               <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
@@ -66,7 +66,7 @@ export default function HowItWorksSection() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.5, duration: 0.3 }}
+          transition={{ delay: 0.2, duration: 0.25 }}
           className="text-center mt-10"
         >
           <Link

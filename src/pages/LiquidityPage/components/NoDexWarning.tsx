@@ -41,9 +41,9 @@ export default function NoDexWarning({ isV2Available }: NoDexWarningProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.6 }}
+      transition={{ duration: 0.25, delay: 0.1 }}
       className="mt-8 max-w-2xl mx-auto"
     >
       <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">

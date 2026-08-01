@@ -19,6 +19,11 @@ interface ActivityTableProps {
   chainId: number
 }
 
+// Invisible hit areas for the compact row actions. The row stays visually dense
+// while the maker link and the explorer icon both reach the 44px tap minimum.
+const hitAreaRow = "relative inline-block after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']"
+const hitAreaIcon = "relative after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']"
+
 /** Fields both the table row and the mobile card render — derived once, in one place. */
 function readTrade(trade: GeckoTradeData) {
   const isBuy = trade.attributes.kind === 'buy'
@@ -47,7 +52,7 @@ export default function ActivityTable({
     <motion.div
       initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.2 }}
+      transition={{ duration: 0.25, delay: 0.2 }}
       className={colors.glassCard + ' overflow-hidden'}
     >
       {/* Header */}
@@ -68,7 +73,7 @@ export default function ActivityTable({
           </div>
         </div>
         <div className="flex items-center gap-2 mt-2 sm:mt-0">
-          <span className="text-xs text-gray-500 font-sans">Auto-refresh 15s</span>
+          <span className="text-xs text-gray-400 font-sans">Auto-refresh 15s</span>
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
         </div>
       </div>
@@ -77,7 +82,7 @@ export default function ActivityTable({
       {loading && trades.length === 0 && (
         <div className="px-5 py-12 text-center">
           <div className="inline-block w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-3" />
-          <p className="text-sm text-gray-500 font-sans">Loading trades...</p>
+          <p className="text-sm text-gray-400 font-sans">Loading trades...</p>
         </div>
       )}
 
@@ -97,7 +102,7 @@ export default function ActivityTable({
       {!loading && !error && trades.length === 0 && (
         <div className="px-5 py-12 text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
             </svg>
           </div>
@@ -121,7 +126,7 @@ export default function ActivityTable({
                   key={trade.id}
                   initial={isNew && !prefersReducedMotion ? { opacity: 0, y: -8 } : false}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.25 }}
                   className={`px-5 py-3.5 ${
                     isNew ? (isBuy ? 'bg-green-500/[0.06]' : 'bg-red-500/[0.06]') : ''
                   }`}
@@ -152,13 +157,13 @@ export default function ActivityTable({
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-4 flex-shrink-0">
                       {maker && (
                         <a
                           href={getAddressUrl(chainId, maker)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-gray-400 hover:text-blue-400 transition-colors duration-200 font-mono cursor-pointer focus:outline-none focus:text-blue-400"
+                          className={`text-xs text-gray-400 hover:text-blue-400 transition-colors duration-200 font-mono cursor-pointer focus:outline-none focus:text-blue-400 ${hitAreaRow}`}
                         >
                           {abbreviateAddress(maker)}
                         </a>
@@ -168,7 +173,7 @@ export default function ActivityTable({
                           href={getTxUrl(chainId, txHash)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-blue-400 transition-colors duration-200 cursor-pointer inline-flex focus:outline-none focus:text-blue-400"
+                          className={`text-gray-400 hover:text-blue-400 transition-colors duration-200 cursor-pointer inline-flex focus:outline-none focus:text-blue-400 ${hitAreaIcon}`}
                           aria-label="View transaction on block explorer"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,7 +199,7 @@ export default function ActivityTable({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[540px]">
               <thead>
-                <tr className="text-xs text-gray-500 uppercase tracking-wider font-sans border-b border-white/5">
+                <tr className="text-xs text-gray-400 uppercase tracking-wider font-sans border-b border-white/5">
                   <th className="text-left px-5 py-3 font-medium">Type</th>
                   <th className="text-right px-4 py-3 font-medium">USD</th>
                   <th className="text-right px-4 py-3 font-medium">Amount</th>
@@ -215,7 +220,7 @@ export default function ActivityTable({
                         // Issue #12: Use opacity + translateY only (no backgroundColor animation)
                         initial={isNew && !prefersReducedMotion ? { opacity: 0, y: -8 } : false}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.25 }}
                         className={`border-b border-white/5 hover:bg-white/5 transition-colors duration-150 ${
                           isNew ? (isBuy ? 'bg-green-500/[0.06]' : 'bg-red-500/[0.06]') : ''
                         }`}
@@ -250,7 +255,7 @@ export default function ActivityTable({
                               href={getAddressUrl(chainId, maker)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-gray-500 hover:text-blue-400 transition-colors duration-200 font-mono cursor-pointer focus:outline-none focus:text-blue-400"
+                              className={`text-sm text-gray-400 hover:text-blue-400 transition-colors duration-200 font-mono cursor-pointer focus:outline-none focus:text-blue-400 ${hitAreaRow}`}
                             >
                               {abbreviateAddress(maker)}
                             </a>
@@ -260,7 +265,7 @@ export default function ActivityTable({
                         </td>
 
                         {/* Age */}
-                        <td className="text-right px-4 py-3 text-sm text-gray-500 font-sans">
+                        <td className="text-right px-4 py-3 text-sm text-gray-400 font-sans">
                           {time ? timeAgo(time) : '\u2014'}
                         </td>
 
@@ -271,7 +276,7 @@ export default function ActivityTable({
                               href={getTxUrl(chainId, txHash)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-gray-500 hover:text-blue-400 transition-colors duration-200 cursor-pointer inline-flex focus:outline-none focus:text-blue-400"
+                              className={`text-gray-400 hover:text-blue-400 transition-colors duration-200 cursor-pointer inline-flex focus:outline-none focus:text-blue-400 ${hitAreaIcon}`}
                               aria-label="View transaction on block explorer"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

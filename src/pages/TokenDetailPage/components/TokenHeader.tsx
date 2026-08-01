@@ -107,13 +107,17 @@ export default function TokenHeader({
   }
 
   const shareButtonBase =
-    'inline-flex items-center gap-1.5 px-3.5 min-h-[40px] rounded-xl text-xs font-semibold font-sans border transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30'
+    'inline-flex items-center gap-1.5 px-3.5 min-h-[44px] rounded-xl text-xs font-semibold font-sans border transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30'
+
+  // Invisible 44x44 hit area so the icon-only copy button meets the tap-target
+  // minimum without stretching the address row it sits in.
+  const hitArea44 = "relative after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']"
 
   return (
     <motion.div
       initial={prefersReducedMotion ? false : { opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.25 }}
       className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6"
     >
       {/* Token icon — fixed size to prevent layout shift */}
@@ -147,12 +151,12 @@ export default function TokenHeader({
 
         {/* Address row */}
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-sm text-gray-500 font-mono">
+          <span className="text-sm text-gray-400 font-mono">
             {abbreviateAddress(tokenAddress)}
           </span>
           <button
             onClick={handleCopy}
-            className="text-gray-500 hover:text-white transition-colors duration-200 cursor-pointer p-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            className={`text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer p-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500/30 ${hitArea44}`}
             aria-label="Copy token address"
           >
             {copied ? (
@@ -183,7 +187,7 @@ export default function TokenHeader({
               >
                 {isPositive ? '+' : ''}
                 {changeNum.toFixed(2)}%
-                <span className="text-gray-500 ml-1 font-normal">24h</span>
+                <span className="text-gray-400 ml-1 font-normal">24h</span>
               </span>
             )}
           </div>

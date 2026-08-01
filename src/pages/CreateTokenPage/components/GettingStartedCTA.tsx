@@ -62,7 +62,7 @@ export default function GettingStartedCTA() {
         }
       ]}
       gradientColors="from-blue-600/20 via-purple-600/20 to-cyan-600/20"
-      delay={1.4}
+      delay={0.3}
     />
   )
 }

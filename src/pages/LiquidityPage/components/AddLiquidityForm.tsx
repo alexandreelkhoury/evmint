@@ -45,6 +45,11 @@ interface AddLiquidityFormProps {
   onSubmit: () => void
 }
 
+// Invisible 44px-tall hit area for the compact text controls in this form. The
+// pill stays visually small while the tap target meets the mobile minimum; the
+// overflow always lands inside the surrounding padding, never on a neighbour.
+const hitArea44 = "relative after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']"
+
 const formatBalance = (balance: string, decimals: number, symbol: string): string => {
   try {
     const balanceFormatted = formatUnits(BigInt(balance), decimals)
@@ -88,13 +93,13 @@ function TokenPanel({
       <div className={`bg-white/[0.03] border border-white/[0.08] ${roundedClass} p-4 transition-colors duration-150 focus-within:border-blue-500/30 focus-within:bg-white/[0.04]`}>
         {/* Label row */}
         <div className="flex items-center justify-between mb-3">
-          <label htmlFor={id} className="text-[13px] font-medium text-gray-500">
+          <label htmlFor={id} className="text-[13px] font-medium text-gray-400">
             {label}
           </label>
           {balance && token && (
             <button
               onClick={() => onSetPercentageAmount(token, 100, onAmountChange)}
-              className="text-[13px] text-gray-500 hover:text-gray-300 transition-colors duration-150 cursor-pointer"
+              className={`text-[13px] text-gray-400 hover:text-gray-200 transition-colors duration-150 cursor-pointer ${hitArea44}`}
               aria-label={`Use max ${token.symbol} balance`}
             >
               Balance: <span className="text-gray-300 tabular-nums">{formatBalance(balance.value.toString(), balance.decimals, token.symbol)}</span>
@@ -111,14 +116,14 @@ function TokenPanel({
             placeholder="0.0"
             value={amount}
             onChange={(e) => onAmountChange(e.target.value)}
-            className="flex-1 min-w-0 text-[28px] font-semibold bg-transparent border-none outline-none text-white placeholder-gray-700 focus:outline-none focus:ring-0"
+            className="flex-1 min-w-0 text-[28px] font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:outline-none focus:ring-0"
             style={{ boxShadow: 'none' }}
           />
 
           <button
             onClick={onTokenClick}
             aria-label={`Select ${label.toLowerCase()}`}
-            className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full transition-colors duration-150 cursor-pointer flex-shrink-0 ${
+            className={`flex items-center gap-2 pl-2 pr-3 py-1.5 min-h-[44px] rounded-full transition-colors duration-150 cursor-pointer flex-shrink-0 ${
               token
                 ? 'bg-white/[0.06] hover:bg-white/[0.1]'
                 : 'bg-blue-500/15 hover:bg-blue-500/25 text-blue-300'
@@ -141,7 +146,7 @@ function TokenPanel({
                 <span className="text-sm font-medium">Select token</span>
               </>
             )}
-            <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -155,7 +160,7 @@ function TokenPanel({
                 key={pct}
                 onClick={() => onSetPercentageAmount(token, pct, onAmountChange)}
                 aria-label={`Set ${pct} percent of ${token.symbol} balance`}
-                className="px-2 py-0.5 text-xs text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] rounded transition-colors duration-150 cursor-pointer"
+                className={`px-2 py-1.5 min-w-[44px] text-xs text-gray-400 hover:text-gray-200 hover:bg-white/[0.04] rounded transition-colors duration-150 cursor-pointer ${hitArea44}`}
               >
                 {pct}%
               </button>
@@ -163,7 +168,7 @@ function TokenPanel({
             <button
               onClick={() => onSetPercentageAmount(token, 100, onAmountChange)}
               aria-label={`Set maximum ${token.symbol} balance`}
-              className="px-2 py-0.5 text-xs font-semibold text-blue-400/80 hover:text-blue-300 hover:bg-blue-500/10 rounded transition-colors duration-150 cursor-pointer"
+              className={`px-2 py-1.5 min-w-[44px] text-xs font-semibold text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded transition-colors duration-150 cursor-pointer ${hitArea44}`}
             >
               MAX
             </button>
@@ -416,34 +421,34 @@ function LiquiditySummary({
       <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl px-3.5 py-3">
         <div className="space-y-1.5">
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-[12px] text-gray-500 flex-shrink-0">
+            <span className="text-[12px] text-gray-400 flex-shrink-0">
               {summary.isLivePool ? 'Pool price' : 'Starting price'}
             </span>
             {summary.price !== null ? (
               <span className="text-[13px] font-medium text-white text-right tabular-nums break-all">
                 1 {customToken.symbol} = {formatDecimal(summary.price)} {nativeSymbol}
                 {summary.priceUsd !== null && (
-                  <span className="font-normal text-gray-500"> ({formatUsdValue(summary.priceUsd)})</span>
+                  <span className="font-normal text-gray-400"> ({formatUsdValue(summary.priceUsd)})</span>
                 )}
               </span>
             ) : (
-              <span className="text-[13px] text-gray-600">Enter both amounts</span>
+              <span className="text-[13px] text-gray-400">Enter both amounts</span>
             )}
           </div>
 
           {summary.showMarketCapRow && (
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[12px] text-gray-500 flex-shrink-0">Implied market cap</span>
+              <span className="text-[12px] text-gray-400 flex-shrink-0">Implied market cap</span>
               <span className="text-[13px] font-medium text-white text-right tabular-nums">
-                {summary.marketCapLabel ?? <span className="font-normal text-gray-600">—</span>}
+                {summary.marketCapLabel ?? <span className="font-normal text-gray-400">—</span>}
               </span>
             </div>
           )}
 
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-[12px] text-gray-500 flex-shrink-0">Your pool share</span>
+            <span className="text-[12px] text-gray-400 flex-shrink-0">Your pool share</span>
             <span className="text-[13px] font-medium text-white text-right tabular-nums">
-              {summary.shareLabel ?? <span className="font-normal text-gray-600">—</span>}
+              {summary.shareLabel ?? <span className="font-normal text-gray-400">—</span>}
             </span>
           </div>
         </div>
@@ -451,7 +456,7 @@ function LiquiditySummary({
         {/* What it actually means */}
         <div className="mt-2.5 pt-2.5 border-t border-white/[0.06]">
           {isCheckingPool ? (
-            <p className="text-[12px] leading-snug text-gray-500">Checking for an existing pool…</p>
+            <p className="text-[12px] leading-snug text-gray-400">Checking for an existing pool…</p>
           ) : summary.isLivePool ? (
             <p className="text-[12px] leading-snug text-gray-400">
               This pool already exists, so <span className="text-gray-300">its reserves set the price</span> — your amounts don't.
@@ -515,7 +520,7 @@ export default function AddLiquidityForm({
         <h2 className="text-lg font-display font-bold text-white">
           Add Liquidity
         </h2>
-        <p className="text-[13px] text-gray-500 mt-0.5">
+        <p className="text-[13px] text-gray-400 mt-0.5">
           Make your token tradeable — these amounts set its opening price
         </p>
       </div>
@@ -586,7 +591,7 @@ export default function AddLiquidityForm({
             whileTap={isFormValid && !isAddingLiquidity && isV2Available ? { scale: 0.99 } : undefined}
             className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
               !isFormValid || isAddingLiquidity || !isV2Available
-                ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+                ? 'bg-white/[0.04] text-gray-500 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 active:bg-blue-700'
             }`}
           >

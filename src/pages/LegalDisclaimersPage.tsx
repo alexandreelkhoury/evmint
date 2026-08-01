@@ -23,7 +23,7 @@ export default function LegalDisclaimersPage() {
 
           <div className="mb-12">
             <h1 className="text-3xl font-bold text-white mb-2">Legal Disclaimers</h1>
-            <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-gray-400">Last updated: {new Date().toLocaleDateString()}</p>
           </div>
 
           <div className="space-y-8 text-sm leading-relaxed">

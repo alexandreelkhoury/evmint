@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
 function LogoMark({ width = 64 }: { width?: number }) {
   const height = width * (140 / 180)
   return (
-    <svg viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg" width={width} height={height} style={{ filter: 'drop-shadow(0 0 20px rgba(59,130,246,0.3))' }}>
+    <svg viewBox="0 0 180 140" fill="none" xmlns="http://www.w3.org/2000/svg" width={width} height={height} aria-hidden="true" style={{ filter: 'drop-shadow(0 0 20px rgba(59,130,246,0.3))' }}>
       <g transform="translate(50,0)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#06B6D4" opacity=".9"/></g>
       <g transform="translate(10,40) scale(.9)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#A855F7" opacity=".85"/></g>
       <g transform="translate(90,40) scale(.9)"><path d="M50 0L93.3 25V75L50 100L6.7 75V25Z" fill="#3B82F6" opacity=".9"/></g>
@@ -51,9 +51,9 @@ export default function LoadingSpinner({
       {message && (
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.4 }}
-          className="text-gray-500 text-xs font-medium tracking-widest uppercase"
+          className="text-gray-400 text-xs font-medium tracking-widest uppercase"
         >
           {message}
         </motion.p>

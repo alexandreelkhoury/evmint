@@ -112,6 +112,11 @@ function formatAmount(amount: bigint, decimals: number, maximumFractionDigits: n
   return parseFloat(formatUnits(amount, decimals)).toLocaleString(undefined, { maximumFractionDigits })
 }
 
+// Invisible 44x44 hit area centred on a visually compact control, so the MAX
+// pill inside the amount field meets the mobile tap-target minimum without
+// growing into a block that competes with the input itself.
+const hitArea44 = "relative after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 after:content-['']"
+
 const QUOTE_UNAVAILABLE_MESSAGE =
   'No on-chain quote available for this pair (no pool, no liquidity, or no route). Swapping is disabled — without a quote we cannot protect you from slippage.'
 
@@ -457,7 +462,7 @@ export default function SwapPanel({
     <motion.div
       initial={prefersReducedMotion ? false : { opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4, delay: 0.1 }}
+      transition={{ duration: 0.25, delay: 0.1 }}
       className={colors.glassCard + ' p-5'}
     >
       {/* Buy / Sell tabs — Issue #2: focus rings, Issue #3: proper labels */}
@@ -466,7 +471,7 @@ export default function SwapPanel({
           role="tab"
           aria-selected={isBuy}
           onClick={() => { setIsBuy(true); setInputAmount(''); setTxStatus('idle'); setTxError(null); setQuotedAmountOut(null); setQuoteError(null); setPriceImpact(null) }}
-          className={`flex-1 py-2.5 rounded-xl font-display font-bold text-sm transition-colors duration-200 cursor-pointer ${focusRing} ${
+          className={`flex-1 py-2.5 min-h-[44px] rounded-xl font-display font-bold text-sm transition-colors duration-200 cursor-pointer ${focusRing} ${
             isBuy
               ? 'bg-green-500/20 text-green-400 border border-green-500/40'
               : 'bg-white/5 text-gray-400 border border-transparent hover:bg-white/10'
@@ -478,7 +483,7 @@ export default function SwapPanel({
           role="tab"
           aria-selected={!isBuy}
           onClick={() => { setIsBuy(false); setInputAmount(''); setTxStatus('idle'); setTxError(null); setQuotedAmountOut(null); setQuoteError(null); setPriceImpact(null) }}
-          className={`flex-1 py-2.5 rounded-xl font-display font-bold text-sm transition-colors duration-200 cursor-pointer ${focusRing} ${
+          className={`flex-1 py-2.5 min-h-[44px] rounded-xl font-display font-bold text-sm transition-colors duration-200 cursor-pointer ${focusRing} ${
             !isBuy
               ? 'bg-red-500/20 text-red-400 border border-red-500/40'
               : 'bg-white/5 text-gray-400 border border-transparent hover:bg-white/10'
@@ -516,14 +521,14 @@ export default function SwapPanel({
             value={inputAmount}
             onChange={(e) => setInputAmount(e.target.value)}
             placeholder="0.0"
-            className={`w-full px-4 py-3 pr-24 bg-white/5 border border-white/15 rounded-xl text-white text-lg font-sans placeholder-gray-600 transition-colors duration-200 ${focusRing} focus:border-blue-500/50`}
+            className={`w-full px-4 py-3 pr-24 bg-white/5 border border-white/15 rounded-xl text-white text-lg font-sans placeholder-gray-400 transition-colors duration-200 ${focusRing} focus:border-blue-500/50`}
             min="0"
             step="any"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
             <button
               onClick={handleMax}
-              className={`text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer px-1.5 py-0.5 rounded bg-blue-500/10 transition-colors duration-200 ${focusRing}`}
+              className={`text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer px-1.5 py-0.5 rounded bg-blue-500/10 transition-colors duration-200 ${focusRing} ${hitArea44}`}
               aria-label={`Set maximum ${isBuy ? nativeSymbol : tokenSymbol} balance`}
             >
               MAX
@@ -547,19 +552,19 @@ export default function SwapPanel({
           className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-300 text-lg font-sans"
         >
           {quoteLoading ? (
-            <span className="text-gray-500 animate-pulse">Estimating...</span>
+            <span className="text-gray-400 animate-pulse">Estimating...</span>
           ) : quotedAmountOut !== null ? (
             <span>
               ~{formatAmount(quotedAmountOut, outputDecimals, isBuy ? 4 : 6)}{' '}
-              <span className="text-sm text-gray-500">{outputSymbol}</span>
+              <span className="text-sm text-gray-400">{outputSymbol}</span>
               {estimatedUsdValue !== null && (
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-400">
                   {' '}(~${estimatedUsdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })})
                 </span>
               )}
             </span>
           ) : (
-            <span className="text-gray-600">&mdash;</span>
+            <span className="text-gray-400">&mdash;</span>
           )}
         </div>
 
@@ -567,14 +572,14 @@ export default function SwapPanel({
         {minimumReceived !== null && !quoteLoading && (
           <dl className="mt-2 space-y-1 text-xs font-sans">
             <div className="flex items-center justify-between">
-              <dt className="text-gray-500">Minimum received ({slippage}% slippage)</dt>
+              <dt className="text-gray-400">Minimum received ({slippage}% slippage)</dt>
               <dd className="text-gray-300 font-semibold">
                 {formatAmount(minimumReceived, outputDecimals, isBuy ? 4 : 6)} {outputSymbol}
               </dd>
             </div>
             {priceImpact !== null && (
               <div className="flex items-center justify-between">
-                <dt className="text-gray-500">Price impact</dt>
+                <dt className="text-gray-400">Price impact</dt>
                 <dd className={priceImpact >= 5 ? 'text-red-400 font-semibold' : priceImpact >= 1 ? 'text-yellow-400 font-semibold' : 'text-gray-300 font-semibold'}>
                   {priceImpact < 0.01 ? '<0.01' : priceImpact.toFixed(2)}%
                 </dd>
@@ -590,14 +595,14 @@ export default function SwapPanel({
 
       {/* Slippage — Issue #3: label association */}
       <fieldset className="mb-4">
-        <legend className="text-xs text-gray-500 mb-1.5 block font-sans">Slippage Tolerance</legend>
+        <legend className="text-xs text-gray-400 mb-1.5 block font-sans">Slippage Tolerance</legend>
         <div className="flex gap-1.5">
           {SLIPPAGE_OPTIONS.map((val) => (
             <button
               key={val}
               onClick={() => setSlippage(val)}
               aria-pressed={slippage === val}
-              className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer ${focusRing} ${
+              className={`flex-1 py-1.5 min-h-[44px] rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer ${focusRing} ${
                 slippage === val
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
                   : 'bg-white/5 text-gray-400 border border-transparent hover:bg-white/10'
@@ -615,7 +620,7 @@ export default function SwapPanel({
           Connect wallet to swap
         </div>
       ) : !routerAddress ? (
-        <div className="text-center text-sm text-gray-500 py-3 font-sans">
+        <div className="text-center text-sm text-gray-400 py-3 font-sans">
           No DEX router available for this chain
         </div>
       ) : (
@@ -626,7 +631,7 @@ export default function SwapPanel({
             txStatus === 'success'
               ? 'bg-green-500/20 text-green-400 border border-green-500/40'
               : isBlocked
-                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                 : isBuy
                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white shadow-lg shadow-green-500/30'
                   : 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500 text-white shadow-lg shadow-red-500/30'
@@ -657,7 +662,7 @@ export default function SwapPanel({
       {txStatus === 'success' && (
         <button
           onClick={() => setTxStatus('idle')}
-          className={`w-full mt-3 py-2 text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/15 rounded-lg cursor-pointer transition-colors duration-200 font-sans ${focusRing}`}
+          className={`w-full mt-3 py-2 min-h-[44px] text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/15 rounded-lg cursor-pointer transition-colors duration-200 font-sans ${focusRing}`}
         >
           New swap
         </button>

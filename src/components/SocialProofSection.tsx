@@ -32,7 +32,7 @@ export default function SocialProofSection() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.25 }}
           className="mb-12"
         >
           <h2 id="trust-heading" className="text-sm font-semibold text-gray-500 uppercase tracking-wider text-center mb-6">
@@ -44,7 +44,7 @@ export default function SocialProofSection() {
                 key={item.name}
                 initial={{ opacity: 0, y: 12 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.1 + i * 0.05, duration: 0.3 }}
+                transition={{ delay: 0.05 + i * 0.03, duration: 0.25 }}
                 className="text-center py-3 px-2 rounded-lg bg-white/[0.03] border border-white/[0.06]"
               >
                 <p className="text-sm font-semibold text-gray-200">{item.name}</p>
@@ -58,7 +58,7 @@ export default function SocialProofSection() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.3, duration: 0.4 }}
+          transition={{ delay: 0.2, duration: 0.25 }}
           className="grid sm:grid-cols-3 gap-6"
         >
           {qualities.map((q) => (

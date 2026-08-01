@@ -1,15 +1,20 @@
-# EVMint - Multi-Chain Token Creator - Optimized for Maximum SEO Revenue 🚀
+# EVMint — Multi-Chain EVM Token Launcher
+# https://evmint.io
+
+# All crawlers — search engines, social preview bots, and AI assistants — are
+# welcome on every public page. They all fall under this single group, so the
+# Disallow rules below apply to them uniformly (a bot with its own group would
+# ignore these, which is why there are no longer per-bot groups here).
 User-agent: *
 Allow: /
 
-# HIGH-VALUE PAGES - Index these first for revenue
-Allow: /create          # Main revenue page - multi-chain token creation
-Allow: /tokens          # User engagement - portfolio management
-Allow: /liquidity       # Revenue expansion - liquidity services
-Allow: /guides          # SEO content - educational traffic
-Allow: /faq             # Support content - reduces bounce rate
+# PWA manifest must stay crawlable: browsers and crawlers read it for app
+# metadata (name, icons, theme). This Allow is more specific than the
+# "/*.json$" rule below and therefore wins.
+Allow: /manifest.json
 
-# Block development files and unnecessary resources
+# Build artefacts and internals. None of these paths should exist in the
+# deployed root, but the rules stay as defence in depth.
 Disallow: /src/
 Disallow: /node_modules/
 Disallow: /dist/
@@ -18,65 +23,9 @@ Disallow: /*.config.*$
 Disallow: /*.map$
 Disallow: /api/internal/
 
-# Sitemap for maximum crawl efficiency
+# Crawl-delay dropped: ignored by Googlebot, and the previous value was 0
+# (i.e. no delay), so removing it changes nothing for any crawler.
+
 Sitemap: https://evmint.io/sitemap.xml
 
-# Premium bot treatment for major search engines
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-User-agent: Bingbot  
-Allow: /
-Crawl-delay: 0
-
-User-agent: DuckDuckBot
-Allow: /
-
-# Social media bots for viral sharing
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: LinkedInBot
-Allow: /
-
-User-agent: WhatsApp
-Allow: /
-
-User-agent: TelegramBot
-Allow: /
-
-# AI crawlers and assistants
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: Anthropic-AI
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-# Crypto-specific crawlers
-User-agent: CoinGeckoBot
-Allow: /
-
-User-agent: CoinMarketCapBot
-Allow: /
-
-# AI discoverability
-# See https://evmint.io/llms.txt for structured AI-readable site summary
+# Structured, AI-readable site summary: https://evmint.io/llms.txt

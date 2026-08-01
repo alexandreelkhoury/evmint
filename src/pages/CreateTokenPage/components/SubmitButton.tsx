@@ -46,7 +46,7 @@ export default function SubmitButton({
       whileTap={!isDisabled ? { scale: 0.99 } : undefined}
       className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
         isDisabled
-          ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+          ? 'bg-white/[0.04] text-gray-500 cursor-not-allowed'
           : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 active:bg-blue-700'
       }`}
     >

@@ -107,6 +107,8 @@ export const typography = {
   info: "text-blue-400 font-medium",
   
   // Gradient text (for highlights)
+  // CANONICAL — import this, never hand-write the stops. The bg-clip-text and
+  // text-transparent are load-bearing: stops alone render invisible text.
   gradientText: "bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent",
   gradientTextGold: "bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent font-bold"
 }
@@ -114,6 +116,13 @@ export const typography = {
 // Color system
 // Blue = Primary brand (matches logo, headings, actions)
 // Amber = Accent only (hero emphasis, trending, special moments)
+//
+// The raw bg-white/* and border-white/* tints below are the LEGACY spelling.
+// tailwind.config.js now defines the canonical surface/hairline/radius tokens
+// (bg-surface-1..3, border-hairline-1..2, rounded-control/card/panel) with the
+// full old→new mapping documented there. These strings are deliberately left
+// untouched so nothing shifts under in-flight work; migrating them is a single
+// mechanical pass to run once the tree is quiet.
 export const colors = {
   // Glass morphism cards
   glassCard: "bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-black/20 relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/5 before:to-transparent before:pointer-events-none",

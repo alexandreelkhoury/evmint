@@ -15,7 +15,7 @@ export default function ProblemSolutionSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.25 }}
           className="text-center mb-14"
         >
           <h2 id="why-heading" className="text-3xl sm:text-4xl font-bold text-white mb-4">
@@ -32,7 +32,7 @@ export default function ProblemSolutionSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.1, duration: 0.4 }}
+            transition={{ delay: 0.05, duration: 0.25 }}
             className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6"
           >
             <h3 className="text-sm font-semibold text-red-400 uppercase tracking-wider mb-4">The old way</h3>
@@ -61,7 +61,7 @@ export default function ProblemSolutionSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.4 }}
+            transition={{ delay: 0.1, duration: 0.25 }}
             className="rounded-xl border border-green-500/20 bg-green-500/[0.03] p-6"
           >
             <h3 className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-4">With EVMint</h3>
@@ -91,7 +91,7 @@ export default function ProblemSolutionSection() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.4, duration: 0.4 }}
+          transition={{ delay: 0.2, duration: 0.25 }}
           className="text-center text-sm text-gray-500 mt-8"
         >
           Works on Ethereum, Base, Arbitrum, Optimism, Robinhood Chain, Polygon, BSC, Avalanche, Monad, MegaETH, and more.

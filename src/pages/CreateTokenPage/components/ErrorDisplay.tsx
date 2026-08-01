@@ -10,8 +10,9 @@ interface ErrorDisplayProps {
 export default function ErrorDisplay({ error }: ErrorDisplayProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
       className={`mt-6 ${colors.errorBg} rounded-2xl p-6 text-center`}
     >
       <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center">

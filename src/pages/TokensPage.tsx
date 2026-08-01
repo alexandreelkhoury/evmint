@@ -74,7 +74,7 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.25, delay: Math.min(index * 0.03, 0.15), ease: [0.25, 0.46, 0.45, 0.94] }}
       className="bg-gray-800/60 border border-white/[0.06] rounded-xl hover:border-white/[0.14] transition-[border-color] duration-200 group"
     >
       {/* Header: avatar + name/symbol + chain pill */}
@@ -106,14 +106,14 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
             <h3 className="text-[15px] font-display font-semibold text-white truncate leading-tight">
               {displayTokenInfo.name}
             </h3>
-            <span className="text-xs text-gray-500 font-mono tracking-wide">
+            <span className="text-xs text-gray-400 font-mono tracking-wide">
               {displayTokenInfo.symbol}
             </span>
           </div>
 
           {/* Chain name pill */}
           <div className="shrink-0">
-            <span className="text-[10px] font-medium text-gray-500 bg-white/[0.04] border border-white/[0.06] rounded-md px-2 py-0.5 uppercase tracking-wider">
+            <span className="text-[10px] font-medium text-gray-400 bg-white/[0.04] border border-white/[0.06] rounded-md px-2 py-0.5 uppercase tracking-wider">
               {chainConfig?.name.split(' ')[0] || 'EVM'}
             </span>
           </div>
@@ -126,11 +126,11 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
           <span className="text-xl font-semibold text-white tabular-nums leading-none">
             {parsedBalance > 0 ? parsedBalance.toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'}
           </span>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-gray-400">
             {displayTokenInfo.symbol}
           </span>
         </div>
-        <p className="text-xs text-gray-600 mt-1.5 tabular-nums">
+        <p className="text-xs text-gray-400 mt-1.5 tabular-nums">
           Supply: {parsedSupply > 1_000_000
             ? `${(parsedSupply / 1_000_000).toFixed(1)}M`
             : parsedSupply > 1_000
@@ -150,7 +150,7 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
           <span className="text-xs font-mono text-gray-400 group-hover/addr:text-gray-300 transition-colors">
             {truncatedAddress}
           </span>
-          <span className={`shrink-0 transition-colors duration-200 ${isCopied ? 'text-green-400' : 'text-gray-600 group-hover/addr:text-gray-400'}`}>
+          <span className={`shrink-0 transition-colors duration-200 ${isCopied ? 'text-green-400' : 'text-gray-400 group-hover/addr:text-gray-300'}`}>
             {isCopied ? (
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -190,7 +190,7 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
             const explorerUrl = chainConfig?.explorer.url || 'https://basescan.org'
             window.open(`${explorerUrl}/token/${tokenData.address}`, '_blank')
           }}
-          className="shrink-0 inline-flex items-center justify-center w-9 h-9 bg-white/[0.03] hover:bg-white/[0.08] text-gray-500 hover:text-gray-300 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
+          className="shrink-0 inline-flex items-center justify-center w-9 h-9 bg-white/[0.03] hover:bg-white/[0.08] text-gray-400 hover:text-gray-200 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
           title="View on explorer"
           aria-label="View on block explorer"
         >
@@ -240,11 +240,9 @@ export default function TokensPage() {
   if (!ready) {
     return (
       <div className="relative">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        {/* Static background */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)]" />
         </div>
 
         <SEO
@@ -284,11 +282,9 @@ export default function TokensPage() {
   if (!authenticated) {
     return (
       <div className="relative">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        {/* Static background */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)]" />
         </div>
 
         <SEO
@@ -319,14 +315,14 @@ export default function TokensPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
             className={`${colors.glassCard} rounded-3xl p-8 lg:p-12 text-center mb-8`}
           >
             <div className="mb-8">
               <motion.div
                 className="mx-auto w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center mb-6"
                 whileHover={{ scale: 1.1, rotate: 10 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.25 }}
               >
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -368,11 +364,9 @@ export default function TokensPage() {
   // Connected state - show tokens
   return (
     <div className="relative">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      {/* Static background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)]" />
       </div>
 
       <SEO
@@ -418,7 +412,7 @@ export default function TokensPage() {
               className="mx-auto w-16 h-16 rounded-full bg-gray-600 flex items-center justify-center mb-4"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.25, delay: 0.1 }}
             >
               <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />

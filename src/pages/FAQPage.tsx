@@ -100,11 +100,9 @@ export default function FAQPage() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      {/* Static background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)]" />
       </div>
 
       <SEO
@@ -135,7 +133,7 @@ export default function FAQPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
           className="max-w-4xl mx-auto mb-16"
         >
           {/* Search Bar */}
@@ -228,7 +226,7 @@ export default function FAQPage() {
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.02 }}
+                    transition={{ duration: 0.25, delay: Math.min(index * 0.02, 0.2) }}
                     className="group relative"
                   >
                     {/* Modern card with design system glassmorphism */}

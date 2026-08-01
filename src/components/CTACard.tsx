@@ -48,12 +48,12 @@ export default function CTACard({
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay }}
+      transition={{ duration: 0.25, delay }}
       className={`mt-20 ${className}`}
     >
       <div className="relative max-w-4xl mx-auto">
-        {/* Background gradient */}
-        <div className={`absolute inset-0 bg-gradient-to-r ${gradientColors} rounded-3xl blur-3xl`}></div>
+        {/* Background gradient — static, halved intensity */}
+        <div className={`absolute inset-0 bg-gradient-to-r ${gradientColors} rounded-3xl blur-3xl opacity-50`}></div>
 
         {/* CTA Card */}
         <div className={`relative ${colors.glassCard} rounded-3xl p-8 lg:p-12 text-center border-white/[0.2]`}>

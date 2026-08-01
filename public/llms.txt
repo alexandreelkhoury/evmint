@@ -41,6 +41,14 @@
 - 100% non-custodial — deployer owns the token contract
 - Works on desktop and mobile
 
+## In-Depth Guides
+
+- How to create an ERC20 token in 2026 (complete guide): https://evmint.io/blog/how-to-create-erc20-token-2026
+- Ethereum vs Base: best chain for token deployment in 2026: https://evmint.io/blog/ethereum-vs-base-best-chain-token-deployment
+- Complete meme coin launch guide: from idea to moon: https://evmint.io/blog/complete-meme-coin-launch-guide
+- Adding liquidity to Uniswap: complete step-by-step guide: https://evmint.io/blog/adding-liquidity-uniswap-step-by-step
+- Multi-chain token strategy for 2026: maximize your reach: https://evmint.io/blog/multi-chain-token-strategy-2026
+
 ## Chain-Specific Guides
 
 - How to create a token on Base: https://evmint.io/blog/how-to-create-token-on-base

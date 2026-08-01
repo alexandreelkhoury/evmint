@@ -32,6 +32,19 @@ export default defineConfig({
          */
         manualChunks(id) {
           // Web3 core libraries - should be lazily loaded
+          //
+          // Deliberately kept as ONE chunk. Splitting it along package lines
+          // (viem / wagmi / privy / walletconnect / react-query) was measured
+          // and rejected: every chunk that reaches any of these reaches all of
+          // them — @privy-io/react-auth statically pulls the connector set, and
+          // wagmi pulls privy back — so the five chunks are always fetched
+          // together and the wire cost is identical (1,054 kB gzip either way).
+          // The split only converted cycles that Rollup was ordering safely
+          // *inside* the chunk into cross-chunk cycles ordered by the ESM
+          // loader (vendor-viem -> vendor-privy -> vendor-wagmi -> vendor-viem),
+          // which is the classic source of TDZ init errors in production.
+          // Shrinking this needs a source change (dropping the eager connector
+          // set), not a chunking change.
           if (
             id.includes('node_modules/wagmi') ||
             id.includes('node_modules/viem') ||

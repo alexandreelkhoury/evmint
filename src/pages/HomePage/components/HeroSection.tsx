@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 import ChainIcon from '../../../components/ChainIcon'
 import { MAINNET_CHAINS } from '../../../config/chains'
 import OrbitingCircles from '../../../components/ui/OrbitingCircles'
@@ -30,10 +30,10 @@ function OrbitChainIcon({ chain, iconSize }: { chain: typeof ORBIT_CHAINS[0]; ic
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Trending persistent glow */}
+      {/* Trending glow — static, no permanent animation */}
       {isTrending && (
         <div
-          className="absolute inset-[-50%] rounded-full blur-xl animate-pulse"
+          className="absolute inset-[-50%] rounded-full blur-xl"
           style={{ background: 'rgba(249,115,22,0.15)' }}
         />
       )}
@@ -85,42 +85,43 @@ function OrbitChainIcon({ chain, iconSize }: { chain: typeof ORBIT_CHAINS[0]; ic
 // Inner: Fantom, Gnosis, Moonbeam (indices 9-11)
 
 function Constellation() {
+  const ref = useRef<HTMLDivElement>(null)
+  // Orbits only run while the hero is actually on screen — scrolling away
+  // parks the animation instead of burning frames for the whole session.
+  const inView = useInView(ref, { amount: 0.1 })
+
   return (
-    <div className="relative w-[480px] h-[480px] mx-auto hidden lg:flex items-center justify-center">
-      {/* Center star — pulsing gold energy */}
-      <motion.div
+    <div ref={ref} className="relative w-[480px] h-[480px] mx-auto hidden lg:flex items-center justify-center">
+      {/* Center star — static gold glow */}
+      <div
         className="absolute rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(251,191,36,0.03) 50%, transparent 70%)', width: 100, height: 100 }}
-        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.9, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.18) 0%, rgba(251,191,36,0.03) 50%, transparent 70%)', width: 130, height: 130, opacity: 0.8 }}
       />
-      <motion.div
+      <div
         className="absolute rounded-full"
         style={{
           width: 8, height: 8,
           background: 'rgba(251,191,36,0.6)',
           boxShadow: '0 0 24px rgba(251,191,36,0.4), 0 0 60px rgba(251,191,36,0.15)',
         }}
-        animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       {/* Outer ring — 5 chains */}
-      <OrbitingCircles radius={190} duration={30} path iconSize={44}>
+      <OrbitingCircles radius={190} duration={30} path iconSize={44} paused={!inView}>
         {ORBIT_CHAINS.slice(0, 5).map(chain => (
           <OrbitChainIcon key={chain.id} chain={chain} iconSize={26} />
         ))}
       </OrbitingCircles>
 
       {/* Middle ring — 4 chains, reverse */}
-      <OrbitingCircles radius={130} duration={24} reverse iconSize={40}>
+      <OrbitingCircles radius={130} duration={24} reverse iconSize={40} paused={!inView}>
         {ORBIT_CHAINS.slice(5, 9).map(chain => (
           <OrbitChainIcon key={chain.id} chain={chain} iconSize={22} />
         ))}
       </OrbitingCircles>
 
       {/* Inner ring — 3 chains */}
-      <OrbitingCircles radius={75} duration={18} iconSize={36}>
+      <OrbitingCircles radius={75} duration={18} iconSize={36} paused={!inView}>
         {ORBIT_CHAINS.slice(9, 12).map(chain => (
           <OrbitChainIcon key={chain.id} chain={chain} iconSize={20} />
         ))}
@@ -158,10 +159,10 @@ function ChainRotator() {
       <AnimatePresence mode="wait">
         <motion.span
           key={chain.id}
-          initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: -24, filter: 'blur(8px)' }}
-          transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -24 }}
+          transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
           className="inline-block bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 bg-clip-text text-transparent"
         >
           {displayName}
@@ -208,7 +209,7 @@ function Stat({ value, label, delay }: { value: string; label: string; delay: nu
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
+      transition={{ duration: 0.25, delay }}
       className="flex flex-col items-center px-5 sm:px-7"
     >
       <span className="text-2xl sm:text-3xl font-display font-bold text-white tracking-tight">{value}</span>
@@ -230,7 +231,7 @@ export default function HeroSection() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.25, delay: 0.05 }}
               className="mb-7"
             >
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/[0.08] border border-blue-500/20 text-blue-400 text-sm font-medium tracking-wide">
@@ -242,7 +243,7 @@ export default function HeroSection() {
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.35 }}
+              transition={{ duration: 0.25 }}
               className="text-[3.25rem] sm:text-6xl lg:text-[4.25rem] xl:text-7xl font-display font-black tracking-tight leading-[1.08] mb-7"
             >
               <span className="block text-white">Create Tokens.</span>
@@ -256,7 +257,7 @@ export default function HeroSection() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
+              transition={{ duration: 0.25, delay: 0.08 }}
               className="text-lg sm:text-xl text-gray-400 leading-relaxed max-w-lg mb-10"
             >
               Deploy an ERC20, get it verified on the block explorer,
@@ -267,7 +268,7 @@ export default function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+              transition={{ duration: 0.25, delay: 0.12 }}
               className="flex flex-col sm:flex-row gap-4 mb-12"
             >
               <motion.div
@@ -307,12 +308,12 @@ export default function HeroSection() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 1.1 }}
+              transition={{ duration: 0.25, delay: 0.16 }}
               className="flex items-center divide-x divide-white/[0.08]"
             >
-              <Stat value="15+" label="Chains" delay={1.2} />
-              <Stat value="<30s" label="Deploy Time" delay={1.3} />
-              <Stat value="6+" label="DEXes" delay={1.4} />
+              <Stat value="15+" label="Chains" delay={0.16} />
+              <Stat value="<30s" label="Deploy Time" delay={0.18} />
+              <Stat value="6+" label="DEXes" delay={0.2} />
             </motion.div>
           </div>
 
@@ -320,7 +321,7 @@ export default function HeroSection() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.4 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
             className="flex items-center justify-center"
           >
             <Constellation />
@@ -331,7 +332,7 @@ export default function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1.6 }}
+        transition={{ duration: 0.25, delay: 0.2 }}
         className="relative z-10 mt-auto border-t border-b border-white/[0.04]"
       >
         <ChainStrip />

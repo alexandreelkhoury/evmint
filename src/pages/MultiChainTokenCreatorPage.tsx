@@ -47,7 +47,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.25, delay: 0.044 }}
             className="mb-8"
           >
             <div className="inline-block px-6 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full mb-6">
@@ -58,7 +58,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.067 }}
             className={`${typography.pageTitle} mb-6`}
           >
             Deploy on 15+ Blockchains
@@ -71,7 +71,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ duration: 0.25, delay: 0.089 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
             The ultimate multi-chain token launcher. Deploy your ERC20 token on Ethereum, Base, Arbitrum, Optimism, Polygon, BSC, Avalanche, and 10+ more chains in just 5 seconds.
@@ -81,7 +81,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ duration: 0.25, delay: 0.111 }}
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_multi_chain', 'hero_section')}>
@@ -101,7 +101,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ duration: 0.25, delay: 0.133 }}
             className="grid md:grid-cols-2 gap-6 mb-12"
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-blue-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
@@ -149,7 +149,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65 }}
+            transition={{ duration: 0.25, delay: 0.144 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6">
@@ -180,7 +180,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ duration: 0.25, delay: 0.156 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -230,7 +230,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.75 }}
+            transition={{ duration: 0.25, delay: 0.167 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -280,7 +280,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.25, delay: 0.178 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -310,7 +310,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85 }}
+            transition={{ duration: 0.25, delay: 0.189 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -365,7 +365,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -395,7 +395,7 @@ export default function MultiChainTokenCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.25, delay: 0.178 }}
             className="text-center"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_multi_chain', 'bottom_section')}>

@@ -45,7 +45,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.25, delay: 0.036 }}
             className="mb-8"
           >
             <div className="inline-block px-6 py-2 bg-green-500/10 border border-green-500/20 rounded-full mb-6">
@@ -56,7 +56,7 @@ export default function MemeCoinCreatorPage() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.055 }}
             className={`${typography.pageTitle} mb-6`}
           >
             Launch Your Viral Meme Coin
@@ -70,7 +70,7 @@ export default function MemeCoinCreatorPage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ duration: 0.25, delay: 0.073 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
             The ultimate meme coin launcher. Create your DOGE, SHIB, or PEPE successor in 5 seconds. Deploy on Base, Ethereum, or any EVM chain. Add liquidity, build your community, and go viral!
@@ -80,7 +80,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ duration: 0.25, delay: 0.091 }}
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_meme_coin', 'hero_section')}>
@@ -100,7 +100,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ duration: 0.25, delay: 0.109 }}
             className="grid md:grid-cols-2 gap-6 mb-12"
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-green-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
@@ -148,7 +148,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ duration: 0.25, delay: 0.127 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -207,7 +207,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.25, delay: 0.145 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12 bg-gradient-to-br from-green-500/5 via-yellow-500/5 to-orange-500/5 border-green-500/20`}>
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
               Why Create a Meme Coin? 
@@ -248,7 +248,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.25, delay: 0.164 }}
             className="p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mb-12"
           >
             <p className="text-yellow-200">
@@ -261,7 +261,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.95 }}
+            transition={{ duration: 0.25, delay: 0.173 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6">
@@ -287,7 +287,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ duration: 0.25, delay: 0.182 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -321,7 +321,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.05 }}
+            transition={{ duration: 0.25, delay: 0.191 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -371,7 +371,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -401,7 +401,7 @@ export default function MemeCoinCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ duration: 0.25, delay: 0.182 }}
             className="text-center"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_meme_coin', 'bottom_section')}>

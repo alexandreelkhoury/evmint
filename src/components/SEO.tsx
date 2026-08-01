@@ -1,4 +1,45 @@
 import { Helmet } from 'react-helmet-async'
+import { useLocation } from 'react-router-dom'
+
+/**
+ * Query params that genuinely define a distinct page and therefore have to
+ * survive into the canonical URL. Everything else — utm_*, ref, fbclid, gclid,
+ * and UI-state params such as /liquidity?token= — is noise that would split one
+ * page into a family of near-duplicate canonicals.
+ *
+ * Keyed by path so a param that is page-defining on one route does not leak
+ * into routes where it is only prefill state: the same contract address exists
+ * on every chain, so /token/:address?chain= is a different page per chain,
+ * while /liquidity?chain= is just a preselected dropdown.
+ */
+const PAGE_DEFINING_PARAMS: ReadonlyArray<readonly [RegExp, readonly string[]]> = [
+  [/^\/token\//, ['chain']]
+]
+
+/**
+ * Build a self-referential canonical path from the route the user is actually
+ * on. Used only when a page forgets to pass `canonical` — the previous fallback
+ * was the bare origin, which told every such page "I am the homepage".
+ */
+function canonicalPathFrom(pathname: string, search: string): string {
+  // Collapse trailing slashes (root excepted) so /blog and /blog/ agree.
+  const path = pathname.replace(/\/+$/, '') || '/'
+
+  const allowed = PAGE_DEFINING_PARAMS.find(([pattern]) => pattern.test(path))?.[1]
+  if (!allowed || !search) return path
+
+  const incoming = new URLSearchParams(search)
+  const kept = new URLSearchParams()
+  // Iterate the allowlist, not the incoming params, so the canonical is stable
+  // regardless of the order the params happened to arrive in.
+  for (const key of allowed) {
+    const value = incoming.get(key)
+    if (value) kept.set(key, value)
+  }
+
+  const query = kept.toString()
+  return query ? `${path}?${query}` : path
+}
 
 interface SEOProps {
   title?: string
@@ -20,7 +61,14 @@ export default function SEO({
   structuredData
 }: SEOProps) {
   const siteUrl = "https://evmint.io"
-  const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl
+
+  // Router state, not window.location. Both work under the Puppeteer prerender
+  // (it renders the real client app in a real browser), but useLocation also
+  // stays correct across client-side navigation and in-page query changes.
+  // Only the path is ever taken from the location: the prerender crawls
+  // http://localhost:4173, so the origin must always be the hardcoded one.
+  const { pathname, search } = useLocation()
+  const fullCanonical = `${siteUrl}${canonical ?? canonicalPathFrom(pathname, search)}`
 
   return (
     <Helmet>

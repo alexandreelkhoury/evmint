@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+/* Fonts are loaded from index.html so the request starts immediately after the
+   preconnects, in parallel with this stylesheet. A CSS @import here would
+   serialise: the browser must download and parse this file before it even
+   discovers the font request. Do not re-add an @import — edit index.html. */
 
 @tailwind base;
 @tailwind components;
@@ -26,11 +29,23 @@
     background-color: #111827;
     color: #ffffff;
     min-height: 100vh;
-    overflow: hidden;
+    /* Contains the decorative absolutely-positioned blur blobs (see
+       floatingElements in src/styles/designSystem.ts) that would otherwise
+       push a horizontal scrollbar. This was `overflow: hidden`, which made
+       body a scroll container in BOTH axes — that kills scroll anchoring and
+       silently breaks `position: sticky` for anything inside body.
+       `overflow-x: clip` clips without creating a scroll container, so the
+       y axis stays `visible` and sticky works.
+       Modal scroll-lock is unaffected: useScrollLock locks documentElement,
+       not body. */
+    overflow-x: hidden; /* fallback for Safari < 16 */
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Page scrolling lives on <html>. Always reserving the scrollbar gutter
+     stops layout shift between short and tall pages. */
   html {
     overflow-y: scroll;
   }

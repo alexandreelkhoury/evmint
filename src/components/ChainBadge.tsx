@@ -25,8 +25,8 @@ export default function ChainBadge({ chainId, size = 'md', showName = true, clas
   if (!isSupported) {
     return (
       <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-gray-700 text-gray-400 text-xs ${className}`}>
-        <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center text-[10px]">?</div>
-        {showName && <span>Unknown Chain</span>}
+        <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center text-[10px]" aria-hidden="true">?</div>
+        <span className={showName ? undefined : 'sr-only'}>Unknown Chain</span>
       </span>
     )
   }
@@ -58,13 +58,16 @@ export default function ChainBadge({ chainId, size = 'md', showName = true, clas
       title={`${name}${isTestnet ? ' (Testnet)' : ''}`}
     >
       <ChainIconComponent chainId={chainId} size={iconSizesPx[size]} />
-      {showName && (
+      {showName ? (
         <span className="font-medium whitespace-nowrap">
           {name}
           {isTestnet && size !== 'sm' && (
             <span className="ml-1 opacity-70 text-xs">(Test)</span>
           )}
         </span>
+      ) : (
+        // The icon is decorative, so icon-only badges still need a text name
+        <span className="sr-only">{name}{isTestnet ? ' (Testnet)' : ''}</span>
       )}
     </span>
   )
@@ -107,11 +110,13 @@ export function ChainBadgeGradient({ chainId, size = 'md', showName = true, clas
       title={`${name}${isTestnet ? ' (Testnet)' : ''}`}
     >
       <ChainIconComponent chainId={chainId} size={iconSizesPx[size]} />
-      {showName && (
+      {showName ? (
         <span className="whitespace-nowrap">
           {name}
           {isTestnet && size !== 'sm' && <span className="ml-1 opacity-90 text-xs">(Test)</span>}
         </span>
+      ) : (
+        <span className="sr-only">{name}{isTestnet ? ' (Testnet)' : ''}</span>
       )}
     </span>
   )

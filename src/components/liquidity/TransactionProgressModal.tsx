@@ -185,11 +185,12 @@ export default function TransactionProgressModal({
   }
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Transaction Progress" ref={modalRef}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4" role="dialog" aria-modal="true" aria-label="Transaction Progress" ref={modalRef}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={() => {
           if (isProcessing || currentStep) {
@@ -199,10 +200,11 @@ export default function TransactionProgressModal({
         }}
       />
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        initial={{ opacity: 0, scale: 0.97, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className={`relative ${colors.glassCard} rounded-2xl p-8 w-full max-w-lg`}
+        exit={{ opacity: 0, scale: 0.97, y: 12 }}
+        transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className={`relative ${colors.glassCard} rounded-2xl p-5 sm:p-8 w-full max-w-lg max-h-full overflow-y-auto overscroll-contain`}
       >
         {errorCopy ? (
           // Error State
@@ -217,7 +219,7 @@ export default function TransactionProgressModal({
               {errorCopy.body}
             </p>
             {errorCopy.reference && (
-              <p className="text-gray-500 mb-6 text-xs">
+              <p className="text-gray-400 mb-6 text-xs">
                 Reference: <span className="font-mono text-gray-400">{errorCopy.reference}</span>
               </p>
             )}
@@ -251,13 +253,13 @@ export default function TransactionProgressModal({
             {/* Transaction Details */}
             <div className="bg-white/5 rounded-xl p-4 mb-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-white">{amountA}</div>
-                  <div className="text-sm text-gray-400">{tokenA?.symbol || 'Token A'}</div>
+                <div className="text-center min-w-0">
+                  <div className="text-lg font-semibold text-white break-all">{amountA}</div>
+                  <div className="text-sm text-gray-400 break-all">{tokenA?.symbol || 'Token A'}</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-semibold text-white">{amountB}</div>
-                  <div className="text-sm text-gray-400">{tokenB?.symbol || 'Token B'}</div>
+                <div className="text-center min-w-0">
+                  <div className="text-lg font-semibold text-white break-all">{amountB}</div>
+                  <div className="text-sm text-gray-400 break-all">{tokenB?.symbol || 'Token B'}</div>
                 </div>
               </div>
             </div>

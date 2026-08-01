@@ -443,7 +443,7 @@ export default function GuidePage() {
       className="bg-gradient-to-br from-gray-900 via-gray-900 to-black"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.25 }}
     >
       <SEO
         title={`${guide.title} | Token Creation Guide`}
@@ -454,10 +454,9 @@ export default function GuidePage() {
       />
 
       <div className="relative py-12">
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        {/* Static background */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.05)_0%,_transparent_60%)]" />
         </div>
 
         <div className="relative z-10">
@@ -475,7 +474,7 @@ export default function GuidePage() {
             <motion.div
               initial={{ y: -30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.25 }}
             >
               <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-4">
                 {guide.title}
@@ -515,7 +514,7 @@ export default function GuidePage() {
                     className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.2 }}
+                    transition={{ duration: 0.25, delay: Math.min(index * 0.05, 0.2) }}
                   >
                     <h3 className="text-xl font-bold text-white mb-2">{pool.title}</h3>
                     <p className="text-gray-300 mb-4">{pool.description}</p>
@@ -565,7 +564,7 @@ export default function GuidePage() {
                     className="bg-yellow-500/10 border-yellow-500/20 border rounded-xl p-6 backdrop-blur-sm"
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    transition={{ duration: 0.25, delay: Math.min(index * 0.04, 0.2) }}
                   >
                     <div className="flex items-start">
                       <ExclamationTriangleIcon className="h-6 w-6 mr-3 mt-0.5 text-yellow-400 flex-shrink-0" />
@@ -589,7 +588,7 @@ export default function GuidePage() {
                 className="mb-12"
                 initial={{ x: -50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                transition={{ duration: 0.25, delay: Math.min(index * 0.05, 0.2) }}
               >
                 <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-8 hover:border-white/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200">
                   {/* Step Header */}
@@ -653,7 +652,7 @@ export default function GuidePage() {
             className="max-w-4xl mx-auto px-4 mt-16"
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
           >
             <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl p-8 text-center backdrop-blur-sm">
               <SparklesIcon className="h-12 w-12 text-blue-400 mx-auto mb-4" />
@@ -696,7 +695,7 @@ export default function GuidePage() {
             className="max-w-4xl mx-auto px-4 mt-16"
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
           >
             <div className="flex justify-between items-center">
               <div className="flex-1">

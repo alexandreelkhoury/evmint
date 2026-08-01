@@ -8,6 +8,7 @@ import ChainIcon from './ChainIcon'
 import { useFirebaseAnalytics } from './FirebaseProvider'
 import { trackNetworkSwitch } from '../utils/analytics'
 import { useScrollLock } from '../hooks/useScrollLock'
+import { FOCUSABLE_SELECTOR } from '../hooks/useModalA11y'
 
 interface NetworkSelectorModalProps {
   isOpen: boolean
@@ -63,21 +64,33 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
     }
   }, [isOpen, onClose, switchingTo])
 
-  // Focus trap
+  // Focus trap — the focusable list is re-queried on each Tab because the
+  // chain list re-renders on every keystroke in the search box
   useEffect(() => {
     if (!isOpen || !modalRef.current) return
     const modal = modalRef.current
-    const focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
-    const first = focusable[0] as HTMLElement
-    const last = focusable[focusable.length - 1] as HTMLElement
     const handleTab = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus() }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus() }
+      const focusable = modal.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
     }
     modal.addEventListener('keydown', handleTab)
-    setTimeout(() => closeButtonRef.current?.focus(), 100)
     return () => modal.removeEventListener('keydown', handleTab)
+  }, [isOpen])
+
+  // Move focus in on open, hand it back to the trigger on close (WCAG 2.4.3)
+  useEffect(() => {
+    if (!isOpen) return
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    const timer = setTimeout(() => closeButtonRef.current?.focus(), 100)
+    return () => {
+      clearTimeout(timer)
+      previouslyFocused?.focus?.()
+    }
   }, [isOpen])
 
   const filteredChains = useMemo(() => {
@@ -153,11 +166,11 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
                 >
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-14 h-14 rounded-full bg-green-500 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-base font-semibold text-white">Switched to {currentChainName}</p>
+                    <p className="text-base font-semibold text-white" role="status">Switched to {currentChainName}</p>
                   </div>
                 </motion.div>
               )}
@@ -174,14 +187,14 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
                   ref={closeButtonRef}
                   onClick={handleClose}
                   disabled={switchingTo !== null}
-                  className={`min-h-[36px] min-w-[36px] flex items-center justify-center rounded-lg transition-[color,background-color] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
+                  className={`min-h-[44px] min-w-[44px] -mr-2 flex items-center justify-center rounded-lg transition-[color,background-color] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
                     switchingTo !== null
                       ? 'text-gray-600 cursor-not-allowed'
                       : 'text-gray-400 hover:text-white hover:bg-white/10 cursor-pointer'
                   }`}
                   aria-label="Close"
                 >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -196,18 +209,19 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-2.5 pl-9 pr-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-[border-color,box-shadow] duration-150"
+                  className="w-full py-2.5 pl-9 pr-12 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/50 transition-[border-color,box-shadow] duration-150"
                 />
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-white transition-colors cursor-pointer"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
                     aria-label="Clear search"
+                    type="button"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -221,14 +235,16 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-[background-color,color] duration-150 cursor-pointer ${
+                      className={`flex-1 min-h-[44px] rounded-lg text-xs font-semibold transition-[background-color,color] duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
                         activeTab === tab
                           ? 'bg-white/10 text-white'
-                          : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+                          : 'text-gray-400 hover:text-white hover:bg-white/5'
                       }`}
+                      type="button"
+                      aria-pressed={activeTab === tab}
                     >
                       {tab === 'mainnet' ? 'Mainnets' : 'Testnets'}
-                      <span className="ml-1.5 text-gray-500 tabular-nums">
+                      <span className="ml-1.5 text-gray-400 tabular-nums">
                         {tab === 'mainnet' ? MAINNET_CHAINS.length : TESTNET_CHAINS.length}
                       </span>
                     </button>
@@ -241,7 +257,7 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
             <div className="flex-1 overflow-y-auto p-2 min-h-0 custom-scrollbar">
               {filteredChains.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-sm text-gray-500">No networks found</p>
+                  <p className="text-sm text-gray-400">No networks found</p>
                 </div>
               ) : (
                 <div className="flex flex-col gap-0.5">
@@ -260,11 +276,11 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
 
             {/* Footer */}
             <div className="flex-shrink-0 px-4 py-3 border-t border-white/[0.06] flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-2 text-xs text-gray-400">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
                 <span>Connected to <span className="text-gray-300 font-medium">{currentChainName}</span></span>
               </div>
-              <span className="text-xs text-gray-600 tabular-nums">
+              <span className="text-xs text-gray-400 tabular-nums">
                 {filteredChains.length} {filteredChains.length === 1 ? 'network' : 'networks'}
               </span>
             </div>
@@ -295,7 +311,7 @@ function ChainRow({
     <button
       onClick={onClick}
       disabled={isSwitching}
-      className={`group w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-[background-color,box-shadow] duration-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
+      className={`group w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-[background-color,box-shadow] duration-100 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none ${
         isActive
           ? 'bg-blue-500/10'
           : chain.trending
@@ -323,7 +339,7 @@ function ChainRow({
 
       {/* Trending */}
       {chain.trending && !isActive && (
-        <span className="text-[10px] text-orange-400 flex-shrink-0">🔥</span>
+        <span className="text-[10px] text-orange-400 flex-shrink-0" aria-hidden="true">🔥</span>
       )}
 
       {/* Right side */}
@@ -332,7 +348,7 @@ function ChainRow({
           <div className="w-2 h-2 rounded-full bg-blue-400"></div>
         )}
         {isSwitching && (
-          <span className="text-[10px] text-gray-500">...</span>
+          <span className="text-[10px] text-gray-400">...</span>
         )}
       </div>
     </button>

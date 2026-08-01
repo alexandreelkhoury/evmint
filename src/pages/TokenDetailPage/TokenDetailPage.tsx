@@ -276,7 +276,7 @@ export default function TokenDetailPage() {
             {!probing && !poolConfirmed && (
               <button
                 onClick={retry}
-                className="mt-5 text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 rounded"
+                className="mt-3 px-3 min-h-[44px] inline-flex items-center justify-center text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 rounded"
               >
                 Already added liquidity? Check again
               </button>

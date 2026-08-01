@@ -62,6 +62,7 @@ export function Toast({ id, type, title, message, duration = 4000, onClose }: To
           exit={{ opacity: 0, x: 300, scale: 0.8 }}
           transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
           className={`${config.bg} p-4 rounded-lg shadow-lg max-w-sm w-full`}
+          role={type === 'error' ? 'alert' : 'status'}
           style={{
             background: type === 'success' ? 'rgba(5, 46, 22, 0.95)' : 
                        type === 'error' ? 'rgba(69, 10, 10, 0.95)' :
@@ -94,7 +95,7 @@ export function Toast({ id, type, title, message, duration = 4000, onClose }: To
               aria-label="Close notification"
               type="button"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -113,15 +114,22 @@ export interface ToastContainerProps {
 }
 
 export function ToastContainer({ toasts, onRemove, position = 'top-right' }: ToastContainerProps) {
+  // Top positions clear the fixed header (h-14 / sm:h-16) instead of overlapping it
   const positionClasses = {
-    'top-right': 'top-4 right-4',
-    'top-left': 'top-4 left-4',
+    'top-right': 'top-[4.5rem] right-4',
+    'top-left': 'top-[4.5rem] left-4',
     'bottom-right': 'bottom-4 right-4',
     'bottom-left': 'bottom-4 left-4'
   }
 
   return (
-    <div className={`fixed ${positionClasses[position]} z-[99999] space-y-3 pointer-events-none`}>
+    <div
+      className={`fixed ${positionClasses[position]} z-[99999] space-y-3 pointer-events-none`}
+      role="region"
+      aria-label="Notifications"
+      aria-live="polite"
+      aria-atomic="false"
+    >
       {toasts.map((toast) => (
         <div key={toast.id} className="pointer-events-auto">
           <Toast {...toast} onClose={onRemove} />

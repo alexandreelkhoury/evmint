@@ -32,7 +32,7 @@ export default function Footer() {
               <HexagonStackIcon size={24} />
               <span className="text-sm font-bold text-white">EVMint</span>
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed">
+            <p className="text-xs text-gray-400 leading-relaxed">
               Multi-chain token launcher. Deploy ERC-20 tokens on 15+ EVM blockchains.
             </p>
             <a
@@ -46,7 +46,7 @@ export default function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="flex-1 grid grid-cols-3 gap-6 sm:gap-8">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8">
             {Object.entries(footerLinks).map(([heading, links]) => (
               <div key={heading}>
                 <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{heading}</h4>
@@ -55,7 +55,7 @@ export default function Footer() {
                     <li key={link.to}>
                       <Link
                         to={link.to}
-                        className="text-sm text-gray-500 hover:text-white transition-colors block py-1.5"
+                        className="text-sm text-gray-400 hover:text-white transition-colors block py-1.5"
                       >
                         {link.label}
                       </Link>
@@ -68,11 +68,11 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-gray-600">
+        <div className="mt-6 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-gray-400">
           <span>© 2026 EVMint</span>
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-            <span className="text-gray-500">All networks operational</span>
+            <span className="text-gray-400">All networks operational</span>
           </div>
         </div>
       </div>

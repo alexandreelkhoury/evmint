@@ -15,7 +15,7 @@ export default function CTASection() {
       ref={ctaRef}
       initial={{ opacity: 0, y: 20 }}
       animate={ctaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.3, delay: 0.1 }}
+      transition={{ duration: 0.25, delay: 0.1 }}
     >
       <CTACard
         title="Ready to launch your token?"
@@ -71,7 +71,7 @@ export default function CTASection() {
             color: 'text-purple-400'
           }
         ]}
-        gradientColors="from-blue-600/20 via-purple-600/20 to-cyan-600/20"
+        gradientColors="from-blue-600/15 via-blue-600/10 to-blue-600/15"
       />
     </motion.div>
   )

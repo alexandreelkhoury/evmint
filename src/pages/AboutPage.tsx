@@ -36,10 +36,9 @@ export default function AboutPage() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      {/* Static background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(236,72,153,0.05)_0%,_transparent_60%)]" />
       </div>
 
       <SEO
@@ -55,13 +54,13 @@ export default function AboutPage() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.25 }}
           className="text-center mb-20 pt-8"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
             className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 mb-6"
           >
             <span className="text-sm font-medium text-pink-400">About Us</span>
@@ -81,7 +80,7 @@ export default function AboutPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.25, delay: 0.15 }}
           className="mb-20"
         >
           <div className="grid md:grid-cols-2 gap-8">
@@ -122,7 +121,7 @@ export default function AboutPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.25, delay: 0.15 }}
           className="mb-20"
         >
           <div className={`${colors.glassCard} rounded-2xl p-8 lg:p-12`}>
@@ -167,7 +166,7 @@ export default function AboutPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
           className="mb-20"
         >
           <h2 className="text-2xl lg:text-3xl font-bold text-white mb-8 text-center">
@@ -208,7 +207,7 @@ export default function AboutPage() {
                 key={value.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                transition={{ duration: 0.25, delay: Math.min(0.1 + index * 0.03, 0.2) }}
                 className={`${colors.glassCard} rounded-2xl p-6 text-center`}
               >
                 <div className="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4 text-purple-400">
@@ -231,7 +230,7 @@ export default function AboutPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
           className={`${colors.glassCard} rounded-2xl p-8 lg:p-12 text-center mt-16`}
         >
           <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4">

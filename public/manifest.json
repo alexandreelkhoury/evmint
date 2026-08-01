@@ -1,7 +1,7 @@
 {
-  "name": "Base Token Creator - #1 Cryptocurrency & Meme Coin Generator",
-  "short_name": "Base Token Creator",
-  "description": "Create ERC20 tokens & meme coins on Base blockchain instantly! No coding, <$1 fees, 10,000+ successful launches.",
+  "name": "EVMint — Multi-Chain ERC20 Token Launcher",
+  "short_name": "EVMint",
+  "description": "Deploy ERC20 tokens on 15+ EVM chains without writing code. Connect a wallet, set name, symbol and supply, and the contract is deployed and verified on the block explorer. Includes built-in liquidity management via Uniswap V2 and compatible DEXes.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111827",
@@ -29,7 +29,7 @@
       "sizes": "1200x630",
       "type": "image/png",
       "platform": "wide",
-      "label": "Base Token Creator Dashboard"
+      "label": "EVMint token creation interface"
     }
   ],
   "shortcuts": [
@@ -60,7 +60,7 @@
     {
       "name": "Add Liquidity",
       "short_name": "Liquidity", 
-      "description": "Add liquidity to Uniswap",
+      "description": "Add or remove liquidity on the chain's DEX",
       "url": "/liquidity",
       "icons": [
         {

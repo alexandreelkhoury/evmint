@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import ChainBadge from './ChainBadge'
+import { typography } from '../styles/designSystem'
 
 interface Stat {
   value: string | number
@@ -65,7 +66,7 @@ export default function StandardPageHeader({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
-        <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+        <span className={typography.gradientText}>
           {titleGradient}
         </span>
         <br />

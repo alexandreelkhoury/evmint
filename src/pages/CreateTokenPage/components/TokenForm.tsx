@@ -46,12 +46,12 @@ function FormField({
           {error}
         </p>
       )}
-      <p className="mt-1.5 text-xs text-gray-600">{hint}</p>
+      <p className="mt-1.5 text-xs text-gray-400">{hint}</p>
     </div>
   )
 }
 
-const inputBase = "w-full px-4 py-3 bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/10 transition-all duration-150 text-[15px]"
+const inputBase = "w-full px-4 py-3 min-h-[44px] bg-white/[0.03] border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/10 transition-all duration-150 text-[15px]"
 
 export default function TokenForm({
   formData,
@@ -67,13 +67,13 @@ export default function TokenForm({
           <h2 className="text-lg font-display font-bold text-white">
             Token Configuration
           </h2>
-          <p className="text-[13px] text-gray-500 mt-0.5">
+          <p className="text-[13px] text-gray-400 mt-0.5">
             Configure your new ERC20 token
           </p>
         </div>
         <Link
           to="/tokens"
-          className="text-sm text-blue-400/80 hover:text-blue-300 transition-colors duration-150 flex items-center gap-1"
+          className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-150 flex items-center gap-1 px-2 -mr-2 min-h-[44px] flex-shrink-0"
         >
           My tokens
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -45,7 +45,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.25, delay: 0.042 }}
             className="mb-8"
           >
             <div className="inline-block px-6 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-6">
@@ -56,7 +56,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.062 }}
             className={`${typography.pageTitle} mb-6`}
           >
             Generate Professional ERC20 Tokens
@@ -69,7 +69,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ duration: 0.25, delay: 0.083 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
             The easiest ERC20 token generator. Create custom tokens with your own name, symbol, supply, and decimals. Built with OpenZeppelin security standards for production-ready deployment.
@@ -79,7 +79,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ duration: 0.25, delay: 0.104 }}
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_erc20', 'hero_section')}>
@@ -99,7 +99,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ duration: 0.25, delay: 0.125 }}
             className="grid md:grid-cols-2 gap-6 mb-12"
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-purple-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
@@ -147,7 +147,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ duration: 0.25, delay: 0.146 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -219,7 +219,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.25, delay: 0.167 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}>
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
               Why Use Our ERC20 Generator?
@@ -260,7 +260,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.85 }}
+            transition={{ duration: 0.25, delay: 0.177 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6">
@@ -286,7 +286,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.25, delay: 0.188 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -345,7 +345,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.92 }}
+            transition={{ duration: 0.25, delay: 0.192 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -383,7 +383,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.94 }}
+            transition={{ duration: 0.25, delay: 0.196 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -438,7 +438,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.96 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -472,7 +472,7 @@ export default function ERC20TokenGeneratorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.25, delay: 0.188 }}
             className="text-center"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_erc20', 'bottom_section')}>

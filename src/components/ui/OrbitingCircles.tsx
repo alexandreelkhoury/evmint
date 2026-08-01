@@ -6,6 +6,8 @@ interface OrbitingCirclesProps {
   reverse?: boolean
   path?: boolean
   iconSize?: number
+  /** Freeze the orbit animation (e.g. while scrolled off-screen) without unmounting. */
+  paused?: boolean
   children: React.ReactNode
 }
 
@@ -15,6 +17,7 @@ export default function OrbitingCircles({
   reverse = false,
   path = false,
   iconSize = 40,
+  paused = false,
   children,
 }: OrbitingCirclesProps) {
   const items = React.Children.toArray(children)
@@ -52,6 +55,7 @@ export default function OrbitingCircles({
             marginLeft: -(iconSize / 2),
             marginTop: -(iconSize / 2),
             animationDirection: reverse ? 'reverse' : 'normal',
+            animationPlayState: paused ? 'paused' : 'running',
           } as React.CSSProperties}
         >
           {child}

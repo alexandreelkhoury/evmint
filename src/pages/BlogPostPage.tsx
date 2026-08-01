@@ -176,10 +176,9 @@ export default function BlogPostPage() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+      {/* Static background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)]" />
       </div>
 
       <SEO
@@ -204,7 +203,7 @@ export default function BlogPostPage() {
         <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.25 }}
           className="max-w-4xl mx-auto mb-12"
         >
           {/* Category and Meta */}
@@ -212,8 +211,8 @@ export default function BlogPostPage() {
             <span className="px-4 py-1.5 bg-purple-500/20 rounded-full text-sm font-medium text-purple-400">
               {post.category}
             </span>
-            <span className="text-gray-500 text-sm font-mono">{post.readTime} min read</span>
-            <span className="text-gray-500 text-sm">
+            <span className="text-gray-400 text-sm font-mono">{post.readTime} min read</span>
+            <span className="text-gray-400 text-sm">
               Updated {new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
             </span>
           </div>
@@ -235,7 +234,7 @@ export default function BlogPostPage() {
             </div>
             <div>
               <p className="text-white font-semibold">{post.author.name}</p>
-              <p className="text-gray-500 text-sm">{post.author.role}</p>
+              <p className="text-gray-400 text-sm">{post.author.role}</p>
             </div>
           </div>
         </motion.header>
@@ -244,7 +243,7 @@ export default function BlogPostPage() {
         <motion.article
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.25, delay: 0.15 }}
           className="max-w-4xl mx-auto mb-16"
         >
           <div className="prose prose-invert prose-lg max-w-none">
@@ -256,11 +255,11 @@ export default function BlogPostPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
           className="max-w-4xl mx-auto mb-12"
         >
           <div className="flex flex-wrap gap-2 pb-8 border-b border-white/10">
-            <span className="text-gray-500 mr-2">Tags:</span>
+            <span className="text-gray-400 mr-2">Tags:</span>
             {post.tags.map(tag => (
               <span key={tag} className="px-3 py-1 bg-white/5 rounded-full text-sm text-gray-400 hover:bg-white/10 transition-colors cursor-pointer">
                 {tag}
@@ -273,7 +272,7 @@ export default function BlogPostPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
           className={`${colors.glassCard} rounded-2xl p-8 max-w-4xl mx-auto mb-16 text-center`}
         >
           <h2 className="text-2xl font-bold text-white mb-4">Ready to Create Your Token?</h2>
@@ -298,7 +297,7 @@ export default function BlogPostPage() {
           <motion.section
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
             className="max-w-6xl mx-auto"
           >
             <h2 className="text-2xl font-bold text-white mb-8">Related Articles</h2>
@@ -319,7 +318,7 @@ function RelatedPostCard({ post, index }: { post: BlogPost; index: number }) {
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 * index }}
+      transition={{ duration: 0.25, delay: Math.min(0.05 * index, 0.2) }}
       whileHover={{ y: -5 }}
       className="group"
     >
@@ -334,7 +333,7 @@ function RelatedPostCard({ post, index }: { post: BlogPost; index: number }) {
           </h3>
 
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500 font-mono">{post.readTime} min</span>
+            <span className="text-gray-400 font-mono">{post.readTime} min</span>
             <span className="text-purple-400 font-medium group-hover:translate-x-1 transition-transform flex items-center gap-1">
               Read
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

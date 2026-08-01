@@ -151,16 +151,17 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`mt-6 ${colors.successBg} rounded-2xl p-6 sm:p-8`}
+      transition={{ duration: 0.25 }}
+      className={`mt-6 ${colors.successBg} rounded-2xl p-5 sm:p-8`}
     >
       {/* Success Header */}
       <div className="text-center mb-6">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: 'spring' }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 22 }}
           className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/50"
         >
           <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +241,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
                   <button
                     type="button"
                     onClick={onRetryVerification}
-                    className="px-3 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-200 transition-colors"
+                    className="px-3 min-h-[44px] flex items-center justify-center rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-200 transition-colors"
                   >
                     Retry verification
                   </button>
@@ -249,7 +250,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
                   href={sourceCodeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-medium border border-gray-600 hover:border-gray-500 text-gray-300 transition-colors"
+                  className="px-3 min-h-[44px] flex items-center justify-center rounded-lg text-xs font-medium border border-gray-600 hover:border-gray-500 text-gray-300 transition-colors"
                 >
                   Verify on {explorerName}
                 </a>
@@ -261,16 +262,14 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
 
       {/* VIRAL SHARING SECTION - Most Prominent */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.97 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mb-6 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 border-2 border-blue-500/30 rounded-2xl p-6"
+        transition={{ duration: 0.25, delay: 0.15 }}
+        className="mb-6 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 border-2 border-blue-500/30 rounded-2xl p-4 sm:p-6"
       >
         <div className="text-center mb-4">
-          <h4 className="text-xl font-bold text-white mb-2 flex items-center justify-center gap-2">
-            
-            <span>Announce Your Launch!</span>
-            
+          <h4 className="text-xl font-bold text-white mb-2 text-balance">
+            Announce Your Launch!
           </h4>
           <p className="text-sm text-gray-300">
             Share your token creation! (Add liquidity next to make it tradable)
@@ -298,7 +297,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
               className="text-xs bg-white/20 px-2 py-1 rounded-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
+              transition={{ duration: 0.2, delay: 0.2 }}
             >
               Get buyers!
             </motion.span>
@@ -342,7 +341,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ duration: 0.2, delay: 0.2 }}
           className="mt-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl"
         >
           <p className="text-xs text-gray-300 text-center">
@@ -353,8 +352,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
 
       {/* Next Steps Section */}
       <div className="mb-6">
-        <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-          
+        <h4 className="text-lg font-semibold text-white mb-4">
           Next Steps
         </h4>
         <div className="space-y-3">
@@ -362,7 +360,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
             className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4"
           >
             <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -380,7 +378,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.25, delay: 0.15 }}
             className="flex items-start gap-3 bg-purple-500/10 border border-purple-500/20 rounded-xl p-4"
           >
             <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -398,7 +396,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
             className="flex items-start gap-3 bg-orange-500/10 border border-orange-500/20 rounded-xl p-4"
           >
             <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -422,15 +420,13 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
             to={`/liquidity?token=${tokenAddress}`}
             className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.primaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
-            
-            <span className="ml-2">Add Liquidity</span>
+            <span>Add Liquidity</span>
           </Link>
           <Link
             to="/tokens"
             className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.secondaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
-            
-            <span className="ml-2">View My Tokens</span>
+            <span>View My Tokens</span>
           </Link>
         </div>
 

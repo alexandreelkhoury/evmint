@@ -22,7 +22,7 @@ const cardVariants = {
     opacity: 1, 
     y: 0, 
     scale: 1,
-    transition: { duration: 0.5, ease: "easeOut" }
+    transition: { duration: 0.25, ease: "easeOut" }
   },
   hover: { 
     y: -8, 
@@ -283,7 +283,7 @@ export default function GuidesPage() {
         className="bg-gray-900 py-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.25 }}
       >
       {/* SEO Header */}
       <div className="px-4">
@@ -312,7 +312,7 @@ export default function GuidesPage() {
                 key={guide.id}
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.25, delay: Math.min(index * 0.04, 0.2) }}
               >
                 <Link to={guide.path} className="cursor-pointer">
                   <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-cyan-500/20 rounded-xl p-6 hover:border-cyan-500/40 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:transform hover:scale-105 group h-full">
@@ -338,7 +338,7 @@ export default function GuidesPage() {
                     </p>
 
                     {/* Meta Info */}
-                    <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center justify-between text-sm text-gray-400">
                       <span className="flex items-center">
                         <ClockIcon className="h-4 w-4 mr-1" />
                         {guide.time}
@@ -359,7 +359,7 @@ export default function GuidesPage() {
           className="mt-16 text-center"
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
         >
           <div className="bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-cyan-500/20 rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-white mb-4">Ready to Create Your Token?</h2>

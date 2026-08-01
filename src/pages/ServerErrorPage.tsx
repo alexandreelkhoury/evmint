@@ -26,22 +26,22 @@ export default function ServerErrorPage() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="bg-gray-900 text-white flex items-center justify-center p-4">
+      <div className="bg-gray-900 text-white flex items-center justify-center p-4 min-h-[70vh]">
         <div className="max-w-2xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.25 }}
             className="text-center"
           >
             {/* Animated 500 */}
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.25, delay: 0.1 }}
               className="mb-8"
             >
-              <h1 className="text-9xl font-bold bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
+              <h1 className="text-6xl sm:text-9xl font-bold bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
                 500
               </h1>
             </motion.div>
@@ -50,7 +50,7 @@ export default function ServerErrorPage() {
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.25, delay: 0.15 }}
               className="flex justify-center mb-6"
             >
               <div className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center">
@@ -74,7 +74,7 @@ export default function ServerErrorPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.25, delay: 0.15 }}
             >
               <h2 className="text-3xl font-bold mb-4">Server Error</h2>
               <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">
@@ -87,7 +87,7 @@ export default function ServerErrorPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.25, delay: 0.2 }}
               className="mb-12"
             >
               <motion.div
@@ -113,7 +113,7 @@ export default function ServerErrorPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              transition={{ duration: 0.25, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <button
@@ -161,7 +161,7 @@ export default function ServerErrorPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.25, delay: 0.2 }}
               className="mt-12 pt-8 border-t border-gray-700"
             >
               <div className="bg-gray-800/30 backdrop-blur-lg rounded-xl border border-gray-700/50 p-6 max-w-md mx-auto">
@@ -191,7 +191,7 @@ export default function ServerErrorPage() {
                 </ul>
               </div>
 
-              <p className="text-center text-sm text-gray-500 mt-6">
+              <p className="text-center text-sm text-gray-400 mt-6">
                 Need help?{' '}
                 <a
                   href="https://evmint.io/faq"

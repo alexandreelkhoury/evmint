@@ -5,6 +5,11 @@ import { animations, colors } from '../styles/designSystem'
 interface GlassCardProps {
   children: ReactNode
   className?: string
+  /**
+   * Adds a hover scale + `cursor-pointer`. Defaults to `false`: most cards are
+   * static containers, and the pointer cursor advertised a click that never
+   * happened. Opt in only where the whole card really is a control.
+   */
   hoverable?: boolean
   delay?: number
 }
@@ -12,7 +17,7 @@ interface GlassCardProps {
 export function GlassCard({
   children,
   className = '',
-  hoverable = true,
+  hoverable = false,
   delay = 0
 }: GlassCardProps) {
   const hoverProps = hoverable ? animations.hoverScale : {}

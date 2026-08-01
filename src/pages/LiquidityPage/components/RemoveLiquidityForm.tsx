@@ -37,6 +37,11 @@ interface RemoveLiquidityFormProps {
   onSubmit: () => void
 }
 
+// Invisible 44px-tall hit area for the compact text controls in this form. The
+// pill stays visually small while the tap target meets the mobile minimum; the
+// overflow always lands inside the surrounding padding, never on a neighbour.
+const hitArea44 = "relative after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2 after:content-['']"
+
 const formatBalance = (balance: string, decimals: number, symbol: string): string => {
   try {
     const balanceFormatted = formatUnits(BigInt(balance), decimals)
@@ -89,7 +94,7 @@ export default function RemoveLiquidityForm({
         <h2 className="text-lg font-display font-bold text-white">
           Withdraw Liquidity
         </h2>
-        <p className="text-[13px] text-gray-500 mt-0.5">
+        <p className="text-[13px] text-gray-400 mt-0.5">
           Remove your liquidity from Uniswap V2 pools
         </p>
       </div>
@@ -113,7 +118,7 @@ export default function RemoveLiquidityForm({
           {lpTokenBalance && selectedLpToken && (
             <button
               onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors duration-150 cursor-pointer"
+              className={`text-xs text-gray-400 hover:text-gray-200 transition-colors duration-150 cursor-pointer ${hitArea44}`}
               aria-label={`Use max ${selectedLpToken.symbol} balance`}
             >
               Balance: <span className="text-gray-300 tabular-nums">{formatBalance(lpTokenBalance.value.toString(), lpTokenBalance.decimals, selectedLpToken.symbol)}</span>
@@ -130,14 +135,14 @@ export default function RemoveLiquidityForm({
               placeholder="0.0"
               value={lpTokenAmount}
               onChange={(e) => onLpTokenAmountChange(e.target.value)}
-              className="flex-1 min-w-0 text-[28px] font-semibold bg-transparent border-none outline-none text-white placeholder-gray-700 focus:outline-none focus:ring-0"
+              className="flex-1 min-w-0 text-[28px] font-semibold bg-transparent border-none outline-none text-white placeholder-gray-500 focus:outline-none focus:ring-0"
               style={{ boxShadow: 'none' }}
             />
 
             <button
               onClick={onLpTokenClick}
               aria-label="Select LP token"
-              className={`flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full transition-colors duration-150 cursor-pointer flex-shrink-0 ${
+              className={`flex items-center gap-2 pl-2 pr-3 py-1.5 min-h-[44px] rounded-full transition-colors duration-150 cursor-pointer flex-shrink-0 ${
                 selectedLpToken
                   ? 'bg-white/[0.06] hover:bg-white/[0.1]'
                   : 'bg-red-500/15 hover:bg-red-500/25 text-red-300'
@@ -160,7 +165,7 @@ export default function RemoveLiquidityForm({
                   <span className="text-sm font-medium">Select LP token</span>
                 </>
               )}
-              <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -174,7 +179,7 @@ export default function RemoveLiquidityForm({
                   key={pct}
                   onClick={() => onSetPercentageAmount(selectedLpToken, pct, onLpTokenAmountChange, true)}
                   aria-label={`Set ${pct} percent of LP token balance`}
-                  className="px-2 py-0.5 text-xs text-gray-600 hover:text-gray-300 hover:bg-white/[0.04] rounded transition-colors duration-150 cursor-pointer"
+                  className={`px-2 py-1.5 min-w-[44px] text-xs text-gray-400 hover:text-gray-200 hover:bg-white/[0.04] rounded transition-colors duration-150 cursor-pointer ${hitArea44}`}
                 >
                   {pct}%
                 </button>
@@ -182,7 +187,7 @@ export default function RemoveLiquidityForm({
               <button
                 onClick={() => onSetPercentageAmount(selectedLpToken, 100, onLpTokenAmountChange, true)}
                 aria-label="Set maximum LP token balance"
-                className="px-2 py-0.5 text-xs font-semibold text-red-400/80 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors duration-150 cursor-pointer"
+                className={`px-2 py-1.5 min-w-[44px] text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors duration-150 cursor-pointer ${hitArea44}`}
               >
                 MAX
               </button>
@@ -227,7 +232,7 @@ export default function RemoveLiquidityForm({
             whileTap={isConnected && !isSwitchingChain ? { scale: 0.99 } : undefined}
             className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
               !isConnected || isSwitchingChain
-                ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+                ? 'bg-white/[0.04] text-gray-500 cursor-not-allowed'
                 : 'bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-600/20 hover:shadow-orange-500/30 active:bg-orange-700 cursor-pointer'
             }`}
           >
@@ -250,7 +255,7 @@ export default function RemoveLiquidityForm({
             whileTap={isFormValid && !isRemovingLiquidity && isV2Available ? { scale: 0.99 } : undefined}
             className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
               !isFormValid || isRemovingLiquidity || !isV2Available
-                ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+                ? 'bg-white/[0.04] text-gray-500 cursor-not-allowed'
                 : 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20 hover:shadow-red-500/30 active:bg-red-700'
             }`}
           >

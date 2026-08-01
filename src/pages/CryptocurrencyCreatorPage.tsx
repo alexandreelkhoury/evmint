@@ -45,7 +45,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.25, delay: 0.035 }}
             className="mb-8"
           >
             <div className="inline-block px-6 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full mb-6">
@@ -56,7 +56,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.052 }}
             className={`${typography.pageTitle} mb-6`}
           >
             Create Your Own Cryptocurrency
@@ -69,7 +69,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ duration: 0.25, delay: 0.07 }}
             className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
           >
             Launch your own cryptocurrency on 15+ EVM blockchains in just 5 seconds. Perfect for DeFi projects, gaming tokens, utility coins, and more. Built with OpenZeppelin security standards.
@@ -79,7 +79,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ duration: 0.25, delay: 0.087 }}
             className="mb-16"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_cryptocurrency', 'hero_section')}>
@@ -99,7 +99,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ duration: 0.25, delay: 0.104 }}
             className="grid md:grid-cols-2 gap-6 mb-12"
           >
             <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-cyan-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
@@ -147,7 +147,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+            transition={{ duration: 0.25, delay: 0.122 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -206,7 +206,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+            transition={{ duration: 0.25, delay: 0.139 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -296,7 +296,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ duration: 0.25, delay: 0.157 }}
             className="p-6 bg-cyan-500/10 border border-cyan-500/20 rounded-xl mb-12"
           >
             <p className="text-cyan-200">
@@ -309,7 +309,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.95 }}
+            transition={{ duration: 0.25, delay: 0.165 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6">
@@ -335,7 +335,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ duration: 0.25, delay: 0.174 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -365,7 +365,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.05 }}
+            transition={{ duration: 0.25, delay: 0.183 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -421,7 +421,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1 }}
+            transition={{ duration: 0.25, delay: 0.191 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -480,7 +480,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.15 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
             className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
           >
             <h2 className="text-3xl font-bold text-white mb-6 text-center">
@@ -514,7 +514,7 @@ export default function CryptocurrencyCreatorPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ duration: 0.25, delay: 0.174 }}
             className="text-center"
           >
             <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_cryptocurrency', 'bottom_section')}>

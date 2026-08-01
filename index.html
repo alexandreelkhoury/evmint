@@ -9,9 +9,26 @@
     <title>EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly</title>
     <meta name="title" content="EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly" />
 
-    <!-- Google Fonts for Typography System -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <meta name="description" content="Create ERC20 tokens on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding, ultra-low fees, instant deployment. Start your crypto project today with EVMint!" />
+
+    <!-- Google Fonts — ONE render-blocking request, preconnects first.
+         Order matters: the preconnects must be parsed before the stylesheet
+         href so the TLS handshakes to googleapis/gstatic overlap the request
+         instead of following it. Do not move the stylesheet above them.
+         Families and weights are exactly what src/ renders:
+           Exo 2          body / font-sans      400 500 600 700
+           Orbitron       h1-h6 / font-display  400 500 600 700 900
+           Source Serif 4 long-form prose       400 700
+         (Exo 2 300 and Orbitron 800 dropped — zero font-light/font-extrabold
+          in src/. See report for the JetBrains Mono + DM Sans removal.)
+         display=swap keeps text visible during font load. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;900&family=Source+Serif+4:wght@400;700&display=swap"
+    />
+
     <meta name="keywords" content="evmint, multi-chain token launcher, erc20 token generator, create cryptocurrency, evm blockchain, no code crypto, token launcher, defi token maker, ethereum token, base token, arbitrum, polygon, multi-chain deployment, cheap token deployment" />
     <meta name="author" content="EVMint" />
     <meta name="robots" content="index, follow" />
@@ -43,8 +60,6 @@
     <meta name="msapplication-TileColor" content="#0052FF" />
     
     <!-- Performance Optimizations -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="//base.org" />
     <link rel="dns-prefetch" href="//basescan.org" />
     <link rel="dns-prefetch" href="//uniswap.org" />

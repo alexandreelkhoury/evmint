@@ -15,9 +15,9 @@ export default function FeeDisclosure({ feeAmount, nativeTokenName }: FeeDisclos
         <p className="text-sm text-gray-300">
           <span className="font-medium">Token Creation Fee:</span>{' '}
           <span className="text-blue-400 font-semibold tabular-nums">{feeAmount} {nativeTokenName}</span>
-          <span className="text-gray-500"> + gas fees</span>
+          <span className="text-gray-400"> + gas fees</span>
         </p>
-        <p className="text-xs text-gray-600 mt-0.5">Covers platform maintenance and development</p>
+        <p className="text-xs text-gray-400 mt-0.5">Covers platform maintenance and development</p>
       </div>
     </div>
   )

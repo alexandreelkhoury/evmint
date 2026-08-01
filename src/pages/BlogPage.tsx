@@ -61,10 +61,9 @@ export default function BlogPage() {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
-      {/* Background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      {/* Static background */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(ellipse_at_center,_rgba(168,85,247,0.05)_0%,_transparent_60%)]" />
       </div>
 
       <SEO
@@ -80,7 +79,7 @@ export default function BlogPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.25 }}
           className="text-center mb-16 pt-8"
         >
           <h1 className={`${typography.pageTitle} mb-6`}>
@@ -115,7 +114,7 @@ export default function BlogPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.25, delay: 0.15 }}
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
           {categories.map((category) => (
@@ -138,7 +137,7 @@ export default function BlogPage() {
           <motion.section
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.15 }}
             className="mb-16"
           >
             <h2 className="text-2xl font-bold text-white mb-6">Featured Articles</h2>
@@ -154,7 +153,7 @@ export default function BlogPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
         >
           <h2 className="text-2xl font-bold text-white mb-6">
             {searchTerm ? `Search Results (${filteredPosts.length})` : 'All Articles'}
@@ -189,7 +188,7 @@ export default function BlogPage() {
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
           className={`${colors.glassCard} rounded-2xl p-8 mt-16 text-center`}
         >
           <NewsletterForm />
@@ -204,7 +203,7 @@ function FeaturedBlogCard({ post, index }: { post: BlogPost; index: number }) {
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 * index }}
+      transition={{ duration: 0.25, delay: Math.min(0.05 * index, 0.2) }}
       whileHover={{ y: -5 }}
       className="group relative"
     >
@@ -239,7 +238,7 @@ function FeaturedBlogCard({ post, index }: { post: BlogPost; index: number }) {
                 </div>
                 <span className="text-gray-400">{post.author.name}</span>
               </div>
-              <span className="text-gray-500 font-mono">{post.readTime} min</span>
+              <span className="text-gray-400 font-mono">{post.readTime} min</span>
             </div>
           </div>
         </div>
@@ -253,7 +252,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.05 * index }}
+      transition={{ duration: 0.25, delay: Math.min(0.05 * index, 0.2) }}
       whileHover={{ y: -5 }}
       className="group"
     >
@@ -263,7 +262,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
             <span className="px-3 py-1 bg-purple-500/20 rounded-full text-xs font-medium text-purple-400">
               {post.category}
             </span>
-            <span className="text-gray-500 text-xs font-mono">{post.readTime} min read</span>
+            <span className="text-gray-400 text-xs font-mono">{post.readTime} min read</span>
           </div>
 
           <h3 className="text-lg font-bold text-white mb-3 group-hover:text-purple-400 transition-colors line-clamp-2">
@@ -274,14 +273,14 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
 
           <div className="flex flex-wrap gap-2 mb-4">
             {post.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="px-2 py-1 bg-white/5 rounded text-xs text-gray-500">
+              <span key={tag} className="px-2 py-1 bg-white/5 rounded text-xs text-gray-400">
                 {tag}
               </span>
             ))}
           </div>
 
           <div className="flex items-center justify-between text-sm pt-4 border-t border-white/10">
-            <span className="text-gray-500">{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            <span className="text-gray-400">{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             <span className="text-purple-400 font-medium group-hover:translate-x-1 transition-transform flex items-center gap-1">
               Read more
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

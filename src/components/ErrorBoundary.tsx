@@ -72,7 +72,10 @@ class ErrorBoundary extends Component<Props, State> {
 
       // Default error UI
       return (
-        <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
+        <div
+          className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4"
+          role="alert"
+        >
           <div className="max-w-2xl w-full">
             {/* Error Card */}
             <div className="bg-gray-800/50 backdrop-blur-lg rounded-2xl border border-red-500/30 p-8 shadow-2xl">
@@ -84,6 +87,7 @@ class ErrorBoundary extends Component<Props, State> {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -96,9 +100,9 @@ class ErrorBoundary extends Component<Props, State> {
               </div>
 
               {/* Error Title */}
-              <h1 className="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+              <h2 className="text-3xl font-bold text-center mb-4 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
                 Oops! Something went wrong
-              </h1>
+              </h2>
 
               {/* Error Message */}
               <p className="text-gray-400 text-center mb-6">
@@ -115,8 +119,8 @@ class ErrorBoundary extends Component<Props, State> {
                     {this.state.error.toString()}
                   </p>
                   {this.state.errorInfo && (
-                    <details className="text-xs text-gray-500">
-                      <summary className="cursor-pointer hover:text-gray-400">
+                    <details className="text-xs text-gray-400">
+                      <summary className="cursor-pointer hover:text-white">
                         Component Stack
                       </summary>
                       <pre className="mt-2 overflow-x-auto whitespace-pre-wrap">
@@ -144,7 +148,7 @@ class ErrorBoundary extends Component<Props, State> {
               </div>
 
               {/* Support Link */}
-              <p className="text-center text-sm text-gray-500 mt-6">
+              <p className="text-center text-sm text-gray-400 mt-6">
                 If this problem persists,{' '}
                 <a
                   href="https://evmint.io/faq"

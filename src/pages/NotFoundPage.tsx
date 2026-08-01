@@ -22,22 +22,22 @@ export default function NotFoundPage() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="bg-gray-900 text-white flex items-center justify-center p-4">
+      <div className="bg-gray-900 text-white flex items-center justify-center p-4 min-h-[70vh]">
         <div className="max-w-2xl w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.25 }}
             className="text-center"
           >
             {/* Animated 404 */}
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              transition={{ duration: 0.25, delay: 0.1 }}
               className="mb-8"
             >
-              <h1 className="text-9xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h1 className="text-6xl sm:text-9xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                 404
               </h1>
             </motion.div>
@@ -46,7 +46,7 @@ export default function NotFoundPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.25, delay: 0.15 }}
             >
               <h2 className="text-3xl font-bold mb-4">Page Not Found</h2>
               <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">
@@ -59,7 +59,7 @@ export default function NotFoundPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.25, delay: 0.2 }}
               className="flex justify-center gap-4 mb-12"
             >
               {[0, 1, 2].map((i) => (
@@ -107,7 +107,7 @@ export default function NotFoundPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              transition={{ duration: 0.25, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <Link
@@ -155,10 +155,10 @@ export default function NotFoundPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.25, delay: 0.2 }}
               className="mt-12 pt-8 border-t border-gray-700"
             >
-              <p className="text-gray-500 text-sm mb-4">Popular Pages:</p>
+              <p className="text-gray-400 text-sm mb-4">Popular Pages:</p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
                   to="/create"

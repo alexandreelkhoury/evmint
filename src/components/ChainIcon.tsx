@@ -29,6 +29,10 @@ interface ChainIconProps {
  * 1. Try @web3icons/react component (bundled, reliable) ⭐ PRIMARY
  * 2. Fall back to CDN URLs (for chains not in library)
  * 3. Show gradient circle (ultimate fallback)
+ *
+ * Accessibility: this is a purely decorative chain mark and is hidden from
+ * assistive tech in every branch. Callers must supply the chain name as
+ * adjacent text, an aria-label on the control, or an sr-only span.
  */
 export default function ChainIcon({ chainId, className = '', size = 40 }: ChainIconProps) {
   const [imageError, setImageError] = useState(false)
@@ -192,7 +196,7 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
   // Primary: Try to use @web3icons/react component (bundled, no CDN dependency!)
   if (IconComponent) {
     return (
-      <div className={className} style={{ width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className={className} aria-hidden="true" style={{ width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <IconComponent
           width={size}
           height={size}
@@ -223,7 +227,8 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
       return (
         <img
           src={currentUrl}
-          alt={`${cdnName} icon`}
+          alt=""
+          aria-hidden="true"
           className={`rounded-full object-cover shadow-md ${className}`}
           style={{ width: size, height: size }}
           onError={handleImageError}
@@ -236,6 +241,7 @@ export default function ChainIcon({ chainId, className = '', size = 40 }: ChainI
   return (
     <div
       className={`rounded-full bg-gradient-to-br from-blue-600 via-purple-600 to-blue-600 flex items-center justify-center shadow-lg ${className}`}
+      aria-hidden="true"
       style={{ width: size, height: size }}
     >
       <span className="text-white font-bold" style={{ fontSize: size * 0.4 }}>

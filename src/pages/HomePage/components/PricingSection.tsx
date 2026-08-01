@@ -2,30 +2,26 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { typography } from '../../../styles/designSystem'
 import ChainIcon from '../../../components/ChainIcon'
+import { MAINNET_CHAINS, CHAIN_FEES } from '../../../config/chains'
 
 /**
  * PricingSection - Simple, unified pricing
  * One price across all chains (~$80 equivalent in native token)
+ *
+ * The per-network fee grid is derived from CHAIN_FEES in src/config/chains.ts —
+ * the same source the deployment flow charges from — so it cannot drift.
  */
-export default function PricingSection() {
-  const networks = [
-    { name: 'Ethereum', chainId: 1, fee: '0.02 ETH' },
-    { name: 'Base', chainId: 8453, fee: '0.02 ETH' },
-    { name: 'Arbitrum', chainId: 42161, fee: '0.02 ETH' },
-    { name: 'Optimism', chainId: 10, fee: '0.02 ETH' },
-    { name: 'Robinhood Chain', chainId: 4663, fee: '0.02 ETH' },
-    { name: 'MegaETH', chainId: 4326, fee: '0.02 ETH' },
-    { name: 'World Chain', chainId: 480, fee: '0.02 ETH' },
-    { name: 'Blast', chainId: 81457, fee: '0.02 ETH' },
-    { name: 'BSC', chainId: 56, fee: '0.075 BNB' },
-    { name: 'Polygon', chainId: 137, fee: '400 POL' },
-    { name: 'Avalanche', chainId: 43114, fee: '4 AVAX' },
-    { name: 'Monad', chainId: 143, fee: '0.1 MON' },
-    { name: 'Fantom', chainId: 250, fee: '500 FTM' },
-    { name: 'Gnosis', chainId: 100, fee: '80 xDAI' },
-    { name: 'Moonbeam', chainId: 1284, fee: '450 GLMR' },
-  ]
 
+// Derived once at module scope: name, icon and fee for every supported mainnet.
+const NETWORK_FEES = MAINNET_CHAINS
+  .filter(chain => CHAIN_FEES[chain.id] !== undefined)
+  .map(chain => ({
+    name: chain.name,
+    chainId: chain.id,
+    fee: `${CHAIN_FEES[chain.id]} ${chain.nativeCurrency.symbol}`,
+  }))
+
+export default function PricingSection() {
   const features = [
     'ERC-20 token deployed to any chain',
     'Auto-verified on block explorer',
@@ -36,12 +32,12 @@ export default function PricingSection() {
   ]
 
   return (
-    <section className="py-20 relative overflow-hidden" aria-labelledby="pricing-heading">
-      {/* Atmospheric background */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-green-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
+    <section className="py-20 relative" aria-labelledby="pricing-heading">
+      {/* Static depth — same restrained radial treatment as the hero */}
+      <div
+        className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.05)_0%,_transparent_65%)]"
+        aria-hidden="true"
+      />
 
       <div className="relative z-10 max-w-5xl mx-auto px-4">
         {/* Section Header */}
@@ -49,7 +45,7 @@ export default function PricingSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.25 }}
           className="text-center mb-16"
         >
           {/* Trust Badge */}
@@ -57,6 +53,7 @@ export default function PricingSection() {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.25 }}
             className="inline-block mb-6"
           >
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold">
@@ -66,7 +63,7 @@ export default function PricingSection() {
 
           <h2 id="pricing-heading" className={`${typography.sectionTitle} text-4xl sm:text-5xl mb-6`}>
             One Simple{' '}
-            <span className={typography.gradientText}>
+            <span className="text-white">
               Price
             </span>
           </h2>
@@ -96,20 +93,15 @@ export default function PricingSection() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.25 }}
           className="group relative mb-12"
         >
-          {/* Glow */}
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 via-blue-500/10 to-blue-600/5 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-[background-color,color,border-color,box-shadow,opacity] duration-300"></div>
-
-          <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/10 group-hover:border-blue-500/30 rounded-2xl shadow-2xl transition-[background-color,color,border-color,box-shadow,opacity] duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-blue-500/[0.02] to-transparent rounded-2xl opacity-50"></div>
-
+          <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/10 group-hover:border-blue-500/30 rounded-2xl shadow-2xl transition-[border-color] duration-300">
             <div className="relative p-8 md:p-10">
               {/* Price Display */}
               <div className="text-center mb-10">
                 <div className="flex items-baseline justify-center gap-3 mb-3">
-                  <span className={`text-6xl md:text-7xl font-black ${typography.gradientText}`}>
+                  <span className="text-6xl md:text-7xl font-black text-white">
                     ~$80
                   </span>
                   <span className="text-xl text-gray-400 font-medium">per token</span>
@@ -127,7 +119,7 @@ export default function PricingSection() {
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
+                    transition={{ duration: 0.25, delay: i * 0.03 }}
                     className="flex items-start gap-3"
                   >
                     <svg className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -144,9 +136,9 @@ export default function PricingSection() {
                   Fee by Network
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-                  {networks.map((network) => (
+                  {NETWORK_FEES.map((network) => (
                     <div
-                      key={network.name}
+                      key={network.chainId}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm"
                     >
                       <ChainIcon chainId={network.chainId} size={20} />
@@ -167,10 +159,10 @@ export default function PricingSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.4, duration: 0.6 }}
+          transition={{ delay: 0.1, duration: 0.25 }}
           className="text-center space-y-6"
         >
-          <div className="inline-flex items-start gap-3 px-6 py-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20 border border-blue-500/20 rounded-xl backdrop-blur-sm">
+          <div className="inline-flex items-start gap-3 px-6 py-4 bg-blue-500/[0.06] border border-blue-500/20 rounded-xl">
             <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
             </svg>
@@ -187,7 +179,7 @@ export default function PricingSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.6, duration: 0.6 }}
+          transition={{ delay: 0.15, duration: 0.25 }}
           className="text-center mt-12"
         >
           <motion.div

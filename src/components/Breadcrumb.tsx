@@ -50,7 +50,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
               <li key={index} className="flex items-center gap-2">
                 {index > 0 && (
                   <svg
-                    className="w-4 h-4 text-gray-500"
+                    className="w-4 h-4 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -75,7 +75,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
                 ) : (
                   <Link
                     to={item.href || '/'}
-                    className="text-gray-500 hover:text-white transition-colors flex items-center gap-1"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center gap-1"
                   >
                     {index === 0 && (
                       <svg
@@ -83,6 +83,7 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           strokeLinecap="round"
