@@ -16,7 +16,6 @@ import { animations, typography, colors, layout } from '../styles/designSystem'
 import { getChainById } from '../config/chains'
 import ChainIcon from '../components/ChainIcon'
 import StandardPageHeader from '../components/StandardPageHeader'
-import NetworkSelectorModal from '../components/NetworkSelectorModal'
 
 interface TokenCardProps {
   tokenData: {
@@ -210,7 +209,6 @@ export default function TokensPage() {
   const { ready, authenticated, user } = usePrivy()
   const chainId = useChainId()
   const { userTokens, allUserTokens, refetchUserTokens, updateCachedBalance, isCorrectChain, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
-  const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
   const [chainFilter, setChainFilter] = useState<number | 'all'>('all')
 
   // Get unique chains from user's tokens
@@ -255,14 +253,13 @@ export default function TokensPage() {
             badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
             titleGradient="Your Tokens"
             titleWhite="Dashboard"
-            subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
+            subtitle="Monitor and manage your tokens across multiple blockchains"
             stats={[
               { value: '...', label: 'Loading', color: 'purple' },
               { value: '...', label: 'Loading', color: 'blue' },
               { value: '...', label: 'Loading', color: 'cyan' }
             ]}
             chainId={chainId}
-            onNetworkClick={() => setIsNetworkModalOpen(true)}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -300,14 +297,13 @@ export default function TokensPage() {
             badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
             titleGradient="Your Tokens"
             titleWhite="Dashboard"
-            subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
+            subtitle="Monitor and manage your tokens across multiple blockchains"
             stats={[
               { value: '0', label: 'Tokens', color: 'purple' },
               { value: 'Connect', label: 'Wallet', color: 'blue' },
               { value: 'Get Started', label: 'Now', color: 'cyan' }
             ]}
             chainId={chainId}
-            onNetworkClick={() => setIsNetworkModalOpen(true)}
           />
 
           {/* Connect Wallet Section */}
@@ -385,21 +381,12 @@ export default function TokensPage() {
           badgeColors="from-purple-500/10 to-blue-500/10 border-purple-500/20"
           titleGradient="Your Tokens"
           titleWhite="Dashboard"
-          subtitle="Monitor and manage your ERC20 tokens across multiple EVM blockchains"
+          subtitle="Monitor and manage your tokens across multiple blockchains"
           stats={[
             { value: allUserTokens.length, label: allUserTokens.length === 1 ? 'Token' : 'Tokens', color: 'purple' },
             { value: userChains.length, label: userChains.length === 1 ? 'Chain' : 'Chains', color: 'blue' },
             { value: 'Live', label: 'Portfolio', color: 'cyan' }
           ]}
-          chainId={chainId}
-          onNetworkClick={() => setIsNetworkModalOpen(true)}
-          warningContent={!isCorrectChain ? (
-            <div className="bg-orange-900/20 rounded-lg border border-orange-500/20 p-4">
-              <p className="text-sm text-orange-200 text-center">
-                Switch to a supported network for live balance updates. Your tokens are still visible below.
-              </p>
-            </div>
-          ) : undefined}
         />
 
       {isInitialLoading ? (
@@ -537,11 +524,6 @@ export default function TokensPage() {
       )}
       </div>
 
-      {/* Network Selector Modal */}
-      <NetworkSelectorModal
-        isOpen={isNetworkModalOpen}
-        onClose={() => setIsNetworkModalOpen(false)}
-      />
     </div>
   )
 }
