@@ -293,7 +293,7 @@ export default function FAQPage() {
                             className="overflow-hidden"
                           >
                             <div className="px-6 lg:px-8 pb-6 lg:pb-8">
-                              <div className="border-t border-gradient-to-r from-white/20 to-white/5 pt-6">
+                              <div className="border-t border-white/10 pt-6">
                                 <motion.p 
                                   initial={{ opacity: 0, y: 10 }}
                                   animate={{ opacity: 1, y: 0 }}

@@ -25,8 +25,10 @@ const PrivyProviderLazy = lazy(() =>
 )
 
 // Routes that require Web3 to be loaded immediately
-// Note: '/' uses exact match; others use prefix match
-const WEB3_EXACT_ROUTES = ['/']
+// Exact matches are listed separately from prefix matches.
+// The homepage is deliberately NOT here — it has no Web3 UI beyond the header
+// wallet button, which triggers the load on click via triggerWeb3Load().
+const WEB3_EXACT_ROUTES: string[] = []
 const WEB3_PREFIX_ROUTES = ['/create', '/tokens', '/liquidity', '/token/']
 
 interface LazyWeb3ProviderProps {

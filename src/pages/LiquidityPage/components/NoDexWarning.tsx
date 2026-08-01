@@ -1,11 +1,43 @@
 import { motion } from 'framer-motion'
+import { useChainId } from 'wagmi'
+import { getChainName, V2_LIQUIDITY_CHAINS } from '../../../config/chains'
 
 interface NoDexWarningProps {
   isV2Available: boolean
 }
 
+// Availability is sourced from `features.hasV2Liquidity` in src/config/chains.ts
+// (via V2_LIQUIDITY_CHAINS). Fourteen mainnets qualify, which is too many to
+// read in one sentence, so we suggest the most widely used ones — a chain that
+// loses V2 support drops out of this list automatically.
+const SUGGESTED_CHAIN_IDS = [
+  1,     // Ethereum
+  8453,  // Base
+  42161, // Arbitrum
+  10,    // Optimism
+  137,   // Polygon
+  56     // BSC
+]
+
+function getSuggestedChainsSentence(): string {
+  const names = SUGGESTED_CHAIN_IDS
+    .map(id => V2_LIQUIDITY_CHAINS.find(chain => chain.id === id))
+    .filter((chain): chain is NonNullable<typeof chain> => Boolean(chain))
+    .map(chain => chain.name)
+
+  if (names.length === 0) return ''
+  if (names.length === 1) return names[0]
+
+  return `${names.slice(0, -1).join(', ')}, or ${names[names.length - 1]}`
+}
+
 export default function NoDexWarning({ isV2Available }: NoDexWarningProps) {
+  const chainId = useChainId()
+
   if (isV2Available) return null
+
+  const chainName = getChainName(chainId)
+  const suggestedChains = getSuggestedChainsSentence()
 
   return (
     <motion.div
@@ -22,7 +54,8 @@ export default function NoDexWarning({ isV2Available }: NoDexWarningProps) {
           <div>
             <div className="text-yellow-300 font-semibold">Network Notice</div>
             <div className="text-yellow-200 text-sm">
-              Uniswap V2 liquidity features require a supported mainnet. Please switch to a compatible network to continue.
+              Liquidity pools aren't available on {chainName}.
+              {suggestedChains && ` Switch to ${suggestedChains}.`}
             </div>
           </div>
         </div>

@@ -1,18 +1,19 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
-import { logEvent } from '../utils/analytics'
+import { trackPageView, trackError } from '../utils/analytics'
+import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { Helmet } from 'react-helmet-async'
 
 export default function NotFoundPage() {
+  const analytics = useFirebaseAnalytics()
+
   useEffect(() => {
-    logEvent('page_view', { page_name: '404' })
-    logEvent('error_occurred', {
-      type: '404',
-      message: 'Page not found',
-      location: window.location.pathname
+    trackPageView(analytics, '404')
+    trackError(analytics, 'Page not found', '404_page', {
+      error_type: '404'
     })
-  }, [])
+  }, [analytics])
 
   return (
     <>

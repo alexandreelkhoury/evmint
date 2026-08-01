@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "prerender": "node scripts/prerender.js",
     "build:prerender": "vite build && node scripts/prerender.js",
     "preview": "vite preview",
     "firebase:emulators": "firebase emulators:start",
-    "firebase:build": "npm run build && firebase deploy --only hosting",
+    "firebase:build": "npm run build:prerender && firebase deploy --only hosting",
     "firebase:deploy": "firebase deploy",
     "firebase:functions": "firebase deploy --only functions",
     "firebase:rules": "firebase deploy --only firestore:rules,storage"

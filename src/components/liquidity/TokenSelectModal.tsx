@@ -12,6 +12,7 @@ interface Token {
   decimals: number
   balance?: string
   logoUri?: string
+  isLP?: boolean
 }
 
 interface TokenSelectModalProps {
@@ -102,9 +103,16 @@ export default function TokenSelectModal({
 
   if (!isOpen) return null
 
+  // Identify LP/pair tokens by identity, not by symbol text: a symbol containing
+  // "LP" is no evidence at all (ALPHA, HELP, FLIP, CLIP...). The known pair
+  // contracts are the ones recorded in userLPTokens; anything else is shown.
+  const lpTokenAddresses = new Set(userLPTokens.map(token => token.address.toLowerCase()))
+  const isLpToken = (token: Token) =>
+    token.isLP === true || lpTokenAddresses.has(token.address.toLowerCase())
+
   const filteredTokens = tokens
     .filter(token => {
-      if (mode === 'add' && token.symbol.includes('LP')) return false
+      if (mode === 'add' && isLpToken(token)) return false
       if (!searchQuery) return true
       const q = searchQuery.toLowerCase()
       return token.symbol.toLowerCase().includes(q) || token.name.toLowerCase().includes(q)

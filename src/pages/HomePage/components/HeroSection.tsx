@@ -224,7 +224,7 @@ export default function HeroSection() {
       <HeroBackground />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full px-6 sm:px-8 lg:px-12 py-12">
-        <div className="grid lg:grid-cols-[1.1fr,1fr] gap-12 lg:gap-8 items-center">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-8 items-center">
           {/* ── Left: Copy ── */}
           <div>
             <motion.div

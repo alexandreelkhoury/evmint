@@ -1,16 +1,16 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { usePrivy } from '@privy-io/react-auth'
-import { useAccount, useBalance, useChainId } from 'wagmi'
+import { useAccount, useBalance, useChainId, useSwitchChain } from 'wagmi'
 import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
 import { trackPageView, trackLiquidityError } from '../../../utils/analytics'
 import { useTokenSelection } from '../../../hooks/useTokenSelection'
-import { useUniswapV2Liquidity } from '../../../hooks/useUniswapV2Liquidity'
+import { useUniswapV2Liquidity } from '../../../features/liquidity'
 import { useGlobalToasts } from '../../../App'
 import { formatUnits } from 'viem'
 import { validateAndFormatAddress } from '../../../utils/validation'
 import { loggers } from '../../../utils/logger'
-import { getChainById } from '../../../config/chains'
+import { getChainById, getChainName } from '../../../config/chains'
 
 interface Token {
   address: string
@@ -118,38 +118,88 @@ export function useLiquidityPageLogic() {
     userCreatedTokens,
     userLPTokens,
     customTokens,
+    userTokensLoaded,
     addCustomToken,
     isLoadingCustomToken,
     loadUserLPTokens
   } = useTokenSelection()
 
-  // Pre-fill token from URL param (?token=0x...)
+  // Pre-fill token from URL params (?token=0x...&chain=8453)
   const [searchParams] = useSearchParams()
   const prefillTokenAddress = searchParams.get('token')
-  const prefillAppliedRef = useRef(false)
+  const prefillChainParam = searchParams.get('chain')
+  const prefillChainId = prefillChainParam && /^\d+$/.test(prefillChainParam)
+    ? Number(prefillChainParam)
+    : null
+  const prefillChainName = prefillChainId ? getChainName(prefillChainId) : ''
+
+  // The deep link names a chain we are not connected to — the address will never
+  // resolve here, so prompt for a switch instead of failing silently
+  const needsChainSwitch = !!prefillTokenAddress && prefillChainId !== null && prefillChainId !== currentChainId
+
+  const { switchChain, isPending: isSwitchingChain } = useSwitchChain()
+  const [prefillError, setPrefillError] = useState<string | null>(null)
+  // Holds the `${chainId}:${address}` we have already resolved — or terminally
+  // failed to resolve. Never set on a "lists aren't ready yet" miss.
+  const prefillAttemptRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (!prefillTokenAddress || prefillAppliedRef.current) return
+    if (!prefillTokenAddress) return
+    // Token lists have not loaded yet — a miss right now means nothing
+    if (!userTokensLoaded) return
+    // Wrong network: wait for the user to switch before trying to resolve
+    if (needsChainSwitch) return
 
-    // Find in user created tokens or available tokens
+    const attemptKey = `${currentChainId}:${prefillTokenAddress.toLowerCase()}`
+    if (prefillAttemptRef.current === attemptKey) return
+    prefillAttemptRef.current = attemptKey
+
     const allTokens = [...userCreatedTokens, ...availableTokens, ...customTokens]
     const found = allTokens.find(t => t.address.toLowerCase() === prefillTokenAddress.toLowerCase())
 
     if (found) {
       setTokenA(found)
-      prefillAppliedRef.current = true
-    } else if (userCreatedTokens.length > 0 || availableTokens.length > 0) {
-      // Tokens loaded but not found — try adding as custom token
-      addCustomToken(prefillTokenAddress).then(() => {
-        const allUpdated = [...userCreatedTokens, ...availableTokens, ...customTokens]
-        const foundAfterAdd = allUpdated.find(t => t.address.toLowerCase() === prefillTokenAddress.toLowerCase())
-        if (foundAfterAdd) setTokenA(foundAfterAdd)
-      }).catch(() => {
-        // Silently fail — user can select manually
-      })
-      prefillAppliedRef.current = true
+      setPrefillError(null)
+      return
     }
-  }, [prefillTokenAddress, userCreatedTokens, availableTokens, customTokens, addCustomToken])
+
+    // Not in any list — resolve it on chain and use the token we get back
+    // directly (re-scanning the arrays here would only see a stale closure)
+    addCustomToken(prefillTokenAddress)
+      .then(token => {
+        setTokenA(token)
+        setPrefillError(null)
+      })
+      .catch(error => {
+        loggers.liquidity.error('Failed to prefill token from URL:', error)
+
+        const shortAddress = `${prefillTokenAddress.slice(0, 6)}…${prefillTokenAddress.slice(-4)}`
+        setPrefillError(
+          `We couldn't load ${shortAddress} on ${getChainName(currentChainId)}. Check the address, switch network, or pick a token manually.`
+        )
+
+        trackLiquidityError(analytics, error, {
+          operationType: 'prefill_token_from_url',
+          tokenAddress: prefillTokenAddress,
+          network: currentChainId?.toString() || 'unknown'
+        })
+      })
+  }, [prefillTokenAddress, needsChainSwitch, currentChainId, userTokensLoaded, userCreatedTokens, availableTokens, customTokens, addCustomToken, analytics])
+
+  const switchToPrefillChain = useCallback(() => {
+    if (!prefillChainId) return
+
+    switchChain({ chainId: prefillChainId }, {
+      onError: (error: any) => {
+        loggers.liquidity.error('Failed to switch network for prefill:', error)
+        addToast({
+          title: 'Network Switch Failed',
+          message: error?.message || `Could not switch to ${prefillChainName}. Please switch in your wallet.`,
+          type: 'error'
+        })
+      }
+    })
+  }, [prefillChainId, prefillChainName, switchChain, addToast])
 
   // Local state for token input handling in modals
   const [tokenAddressInput, setTokenAddressInput] = useState('')
@@ -509,6 +559,13 @@ export function useLiquidityPageLogic() {
     customTokens,
     isLoadingCustomToken,
 
+    // Deep-link prefill (?token=...&chain=...)
+    prefillChainId,
+    prefillChainName,
+    needsChainSwitch,
+    isSwitchingChain,
+    prefillError,
+
     // Liquidity hook data
     isAddingLiquidity,
     isRemovingLiquidity,
@@ -535,6 +592,7 @@ export function useLiquidityPageLogic() {
     setShowProgressModal,
     setTokenAddressInput,
     setPercentageAmount,
+    switchToPrefillChain,
     handleAddTokenFromAddress,
     handleAddLiquidity,
     handleRemoveLiquidity,

@@ -1,21 +1,25 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { useChainId } from 'wagmi'
+import { useChainId, useReadContract } from 'wagmi'
 import { useTokenPool } from '../../hooks/useTokenPool'
 import { useRecentTrades } from '../../hooks/useRecentTrades'
-import { getGeckoNetworkId } from '../../services/geckoTerminal'
-import { getChainById, getChainName } from '../../config/chains'
+import { formatUsd, getGeckoNetworkId } from '../../services/geckoTerminal'
+import { getChainById, getChainName, getDexContracts, getTokenUrl, getWethAddress } from '../../config/chains'
+import { FACTORY_ABI } from '../../features/liquidity/constants'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
 import { trackPageView } from '../../utils/analytics'
 import { colors } from '../../styles/designSystem'
 import Breadcrumb from '../../components/Breadcrumb'
 import SEO from '../../components/SEO'
-import TokenHeader from './components/TokenHeader'
+import TokenHeader, { formatTokenPrice } from './components/TokenHeader'
 import ChartEmbed from './components/ChartEmbed'
 import SwapPanel from './components/SwapPanel'
 import PoolStats from './components/PoolStats'
 import ActivityTable from './components/ActivityTable'
+
+const SITE_URL = 'https://evmint.io'
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 // Chain ID can be passed as ?chain= query param, defaults to wallet chain
 const CHAIN_ID_MAP: Record<string, number> = {
@@ -65,6 +69,14 @@ export default function TokenDetailPage() {
   const networkId = getGeckoNetworkId(chainId)
   const chainName = getChainName(chainId)
 
+  // The same contract address exists on many chains, so every URL this page
+  // emits — canonical, share link, internal links — has to carry the chain.
+  // Address is lower-cased so casing variants collapse to one canonical URL.
+  const canonicalPath = `/token/${(tokenAddress || '').toLowerCase()}?chain=${chainId}`
+  const shareUrl = `${SITE_URL}${canonicalPath}`
+  const addLiquidityHref = `/liquidity?token=${tokenAddress}&chain=${chainId}`
+  const explorerHref = tokenAddress ? getTokenUrl(chainId, tokenAddress) : null
+
   // Data hooks
   const {
     pool,
@@ -85,6 +97,40 @@ export default function TokenDetailPage() {
     loading: tradesLoading,
     error: tradesError,
   } = useRecentTrades(pool?.attributes.address, chainId)
+
+  // GeckoTerminal returning nothing is ambiguous: either no pool has ever been
+  // created, or one exists and the indexer hasn't caught up. Ask the chain's V2
+  // factory directly so we can tell the creator which of the two they're in.
+  const dexContracts = getDexContracts(chainId)
+  const factoryAddress = (dexContracts?.uniswapV2Factory
+    || dexContracts?.pancakeswapFactory
+    || dexContracts?.sushiswapFactory
+    || dexContracts?.quickswapFactory
+    || dexContracts?.traderJoeFactory
+    || dexContracts?.spookyswapFactory) as `0x${string}` | undefined
+  const wethAddress = getWethAddress(chainId)
+  const canProbePair = Boolean(
+    tokenAddress && factoryAddress && wethAddress && wethAddress !== ZERO_ADDRESS
+  )
+
+  const {
+    data: pairAddress,
+    isLoading: pairProbeLoading,
+    isError: pairProbeFailed,
+  } = useReadContract({
+    address: factoryAddress,
+    abi: FACTORY_ABI,
+    functionName: 'getPair',
+    args: tokenAddress && wethAddress
+      ? [tokenAddress as `0x${string}`, wethAddress as `0x${string}`]
+      : undefined,
+    chainId,
+    query: { enabled: canProbePair && notIndexed && !poolLoading },
+  })
+
+  // Only trust a definitive answer. An RPC failure must not be read as "no pool".
+  const pairProbeConclusive = canProbePair && !pairProbeLoading && !pairProbeFailed
+  const onChainPairExists = Boolean(pairAddress && pairAddress !== ZERO_ADDRESS)
 
   // Analytics
   useEffect(() => {
@@ -137,38 +183,104 @@ export default function TokenDetailPage() {
     )
   }
 
-  // Not indexed state
+  // No tradable pool yet — the state every freshly launched token sits in.
+  // We diagnose it against the chain rather than telling the creator to "retry".
   if (notIndexed && !poolLoading) {
+    const probing = canProbePair && pairProbeLoading
+    const nativeSymbol = getChainById(chainId)?.nativeCurrency.symbol || 'the native token'
+
+    let heading: string
+    let body: string
+    if (probing) {
+      heading = 'Checking for a pool…'
+      body = `Looking for a ${nativeSymbol} pair for this token on ${chainName}.`
+    } else if (!pairProbeConclusive) {
+      // No factory to query on this chain, or the RPC call failed — cover both
+      // causes honestly rather than asserting something we can't verify.
+      heading = 'Nothing to trade yet'
+      body = `We can't find a market for this token on ${chainName}. Either liquidity hasn't been added yet, or the pool is too new for GeckoTerminal to have indexed it.`
+    } else if (onChainPairExists) {
+      heading = 'Pool found — waiting on market data'
+      body = `A ${nativeSymbol} pool exists on-chain, but GeckoTerminal hasn't indexed it yet. The chart and trade feed appear shortly after the first swap.`
+    } else {
+      heading = 'No pool yet'
+      body = 'Your token exists on-chain, but nobody can trade it until you add liquidity.'
+    }
+
+    const poolConfirmed = pairProbeConclusive && onChainPairExists
+    const showAddLiquidity = !probing && !poolConfirmed
+
     return (
       <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
         <BackgroundBlobs />
         <SEO
-          title={`Token ${tokenAddress?.slice(0, 8)}... | EVMint`}
-          description="View live token data, chart, and trade activity."
-          canonical={`/token/${tokenAddress}`}
+          title={`Token ${tokenAddress?.slice(0, 8)}… on ${chainName} | EVMint`}
+          description={
+            poolConfirmed
+              ? `This token has a live pool on ${chainName}. Market data is still being indexed — check back shortly for its chart and trade activity.`
+              : `This token is deployed on ${chainName} but has no tradable pool yet. Add liquidity to open trading, then track its live chart and activity here.`
+          }
+          canonical={canonicalPath}
         />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <Breadcrumb items={[
             { label: 'Home', href: '/' },
             { label: 'Tokens', href: '/tokens' },
-            { label: tokenAddress?.slice(0, 10) + '...' || 'Token' },
+            { label: tokenAddress ? `${tokenAddress.slice(0, 10)}…` : 'Token' },
           ]} />
           <div className="text-center py-20">
             <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <svg className="w-10 h-10 text-blue-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
+              {probing ? (
+                <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-400 rounded-full animate-spin" />
+              ) : (
+                <svg className="w-10 h-10 text-blue-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+              )}
             </div>
-            <h1 className="text-2xl font-display font-bold text-white mb-2">Token Not Yet Indexed</h1>
-            <p className="text-gray-400 font-sans max-w-md mx-auto mb-6">
-              This token hasn't been indexed on GeckoTerminal yet. Activity will appear after the first trade is detected.
-            </p>
-            <button
-              onClick={retry}
-              className={`px-6 py-3 ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
-            >
-              Retry
-            </button>
+            <h1 className="text-2xl font-display font-bold text-white mb-2">{heading}</h1>
+            <p className="text-gray-400 font-sans max-w-md mx-auto mb-6">{body}</p>
+
+            {!probing && (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto">
+                {showAddLiquidity && (
+                  <Link
+                    to={addLiquidityHref}
+                    className={`px-6 py-3 text-center ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
+                  >
+                    Add liquidity
+                  </Link>
+                )}
+                {poolConfirmed && (
+                  <button
+                    onClick={retry}
+                    className={`px-6 py-3 ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
+                  >
+                    Retry
+                  </button>
+                )}
+                {explorerHref && (
+                  <a
+                    href={explorerHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`px-6 py-3 text-center font-semibold ${colors.secondaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
+                  >
+                    View on explorer
+                  </a>
+                )}
+              </div>
+            )}
+
+            {/* Genuine "already added liquidity, indexer is behind" escape hatch */}
+            {!probing && !poolConfirmed && (
+              <button
+                onClick={retry}
+                className="mt-5 text-sm text-gray-400 hover:text-white underline underline-offset-4 transition-colors duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 rounded"
+              >
+                Already added liquidity? Check again
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -229,30 +341,28 @@ export default function TokenDetailPage() {
             </div>
           </div>
 
-          {/* Chart + Sidebar skeleton */}
-          <div className="flex flex-col lg:flex-row gap-5 mb-5">
-            <div className="flex-1 min-w-0">
+          {/* Chart + Sidebar skeleton — mirrors the loaded grid ordering */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 mb-5">
+            <div className={`order-1 min-w-0 lg:col-start-2 lg:row-start-1 ${colors.glassCard} p-5`}>
+              <div className="flex gap-2 mb-4">
+                <div className="flex-1 h-10 bg-white/10 rounded-xl animate-pulse" />
+                <div className="flex-1 h-10 bg-white/5 rounded-xl animate-pulse" />
+              </div>
+              <div className="h-10 bg-white/5 rounded-xl animate-pulse mb-3" />
+              <div className="h-10 bg-white/5 rounded-xl animate-pulse mb-4" />
+              <div className="h-10 bg-white/10 rounded-xl animate-pulse" />
+            </div>
+            <div className="order-2 min-w-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
               <div className="w-full aspect-[16/9] min-h-[400px] rounded-2xl bg-white/5 border border-white/10 animate-pulse" />
             </div>
-            <div className="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-5">
-              <div className={colors.glassCard + ' p-5'}>
-                <div className="flex gap-2 mb-4">
-                  <div className="flex-1 h-10 bg-white/10 rounded-xl animate-pulse" />
-                  <div className="flex-1 h-10 bg-white/5 rounded-xl animate-pulse" />
-                </div>
-                <div className="h-10 bg-white/5 rounded-xl animate-pulse mb-3" />
-                <div className="h-10 bg-white/5 rounded-xl animate-pulse mb-4" />
-                <div className="h-10 bg-white/10 rounded-xl animate-pulse" />
-              </div>
-              <div className={colors.glassCard + ' p-5'}>
-                <div className="space-y-3">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="flex justify-between">
-                      <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
-                      <div className="h-4 w-16 bg-white/10 rounded animate-pulse" />
-                    </div>
-                  ))}
-                </div>
+            <div className={`order-3 min-w-0 lg:col-start-2 lg:row-start-2 ${colors.glassCard} p-5`}>
+              <div className="space-y-3">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="flex justify-between">
+                    <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
+                    <div className="h-4 w-16 bg-white/10 rounded animate-pulse" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -279,14 +389,31 @@ export default function TokenDetailPage() {
     )
   }
 
+  // Meta copy — every price-dependent fragment degrades to nothing when the
+  // market data isn't there, so an unfurl never shows "$NaN" or a fake zero.
+  const priceNum = priceUsd ? parseFloat(priceUsd) : null
+  const priceLabel = priceNum !== null && isFinite(priceNum) && priceNum > 0
+    ? formatTokenPrice(priceNum)
+    : null
+  const liquidityLabel = pool?.attributes.reserve_in_usd
+    ? formatUsd(pool.attributes.reserve_in_usd)
+    : null
+
+  const seoTitle = priceLabel
+    ? `$${tokenSymbol} ${priceLabel} — Live Chart & Trades on ${chainName} | EVMint`
+    : `$${tokenSymbol} — Live Chart & Trades on ${chainName} | EVMint`
+  const seoDescription = priceLabel
+    ? `$${tokenSymbol} is trading at ${priceLabel} on ${chainName}${liquidityLabel ? ` with ${liquidityLabel} liquidity` : ''}. Live chart, real-time buys and sells, pool stats, and a one-click swap.`
+    : `Live chart, real-time buys and sells, pool stats, and a one-click swap for $${tokenSymbol} on ${chainName}.`
+
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <BackgroundBlobs />
 
       <SEO
-        title={`${tokenSymbol} ${priceUsd ? `$${parseFloat(priceUsd).toFixed(4)}` : ''} | EVMint`}
-        description={`View ${tokenSymbol} live chart, trade activity, and pool stats on ${chainName}.`}
-        canonical={`/token/${tokenAddress}`}
+        title={seoTitle}
+        description={seoDescription}
+        canonical={canonicalPath}
       />
 
       {/* Issue #10: Use stagger container for orchestrated entrance */}
@@ -313,17 +440,19 @@ export default function TokenDetailPage() {
           pool={pool}
           isTokenBase={isTokenBase}
           chainId={chainId}
+          shareUrl={shareUrl}
         />
 
-        {/* Main grid: Chart + Sidebar */}
-        <div className="flex flex-col lg:flex-row gap-5 mb-5">
-          {/* Chart */}
-          <div className="flex-1 min-w-0">
-            <ChartEmbed embedUrl={chartEmbedUrl} loading={false} />
-          </div>
-
-          {/* Sidebar */}
-          <div className="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-5">
+        {/*
+          Main grid: Chart + Sidebar.
+          Below lg this is a single column ordered swap → chart → stats, so the
+          buy widget is the first thing a phone visitor sees. At lg the chart
+          takes column one and the sidebar stacks down column two. Pure CSS
+          ordering — the markup is never duplicated.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-5 mb-5">
+          {/* Swap panel — first on mobile, top of the sidebar column at lg */}
+          <div className="order-1 min-w-0 lg:col-start-2 lg:row-start-1">
             <SwapPanel
               tokenAddress={tokenAddress || ''}
               tokenSymbol={tokenSymbol}
@@ -331,6 +460,15 @@ export default function TokenDetailPage() {
               priceUsd={priceUsd}
               nativeTokenPriceUsd={nativeTokenPriceUsd}
             />
+          </div>
+
+          {/* Chart */}
+          <div className="order-2 min-w-0 lg:col-start-1 lg:row-start-1 lg:row-span-2">
+            <ChartEmbed embedUrl={chartEmbedUrl} loading={false} />
+          </div>
+
+          {/* Pool stats */}
+          <div className="order-3 min-w-0 lg:col-start-2 lg:row-start-2">
             <PoolStats
               pool={pool}
               tokenInfo={tokenInfo}

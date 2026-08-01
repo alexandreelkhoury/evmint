@@ -6,7 +6,7 @@ import { useSwitchChain, useChainId } from 'wagmi'
 import { ALL_CHAINS, MAINNET_CHAINS, TESTNET_CHAINS, type ChainConfig } from '../config/chains'
 import ChainIcon from './ChainIcon'
 import { useFirebaseAnalytics } from './FirebaseProvider'
-import { logEvent } from '../utils/analytics'
+import { trackNetworkSwitch } from '../utils/analytics'
 import { useScrollLock } from '../hooks/useScrollLock'
 
 interface NetworkSelectorModalProps {
@@ -94,10 +94,8 @@ export default function NetworkSelectorModal({ isOpen, onClose }: NetworkSelecto
     try {
       setSwitchingTo(chain.id)
       const currentChain = ALL_CHAINS.find(c => c.id === currentChainId)
-      logEvent(analytics!, 'chain_switched', {
-        from_chain: currentChain?.name || 'Unknown',
+      trackNetworkSwitch(analytics, currentChain?.name || 'Unknown', chain.name, {
         from_chain_id: currentChainId,
-        to_chain: chain.name,
         to_chain_id: chain.id,
         method: 'network_selector_modal',
       })

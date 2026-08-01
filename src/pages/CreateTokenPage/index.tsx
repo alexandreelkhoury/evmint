@@ -32,6 +32,8 @@ export default function CreateTokenPage() {
     error,
     isCorrectChain,
     isVerifying,
+    verificationStatus,
+    retryVerification,
     feeAmount,
     chainId,
     chainName,
@@ -228,7 +230,7 @@ export default function CreateTokenPage() {
           stats={[
             { value: '15+ Chains', label: 'Supported', color: 'blue' },
             { value: 'Instant', label: 'Deployment', color: 'purple' },
-            { value: `$${feeAmount}`, label: 'Fee', color: 'cyan' }
+            { value: `${feeAmount} ${nativeTokenName}`, label: 'Fee', color: 'cyan' }
           ]}
           chainId={chainId}
           onNetworkClick={() => setIsNetworkModalOpen(true)}
@@ -287,6 +289,9 @@ export default function CreateTokenPage() {
                     tokenName={formData.name}
                     tokenSymbol={formData.symbol}
                     totalSupply={formData.totalSupply}
+                    chainId={chainId}
+                    verificationStatus={verificationStatus}
+                    onRetryVerification={retryVerification}
                   />
                 )}
 

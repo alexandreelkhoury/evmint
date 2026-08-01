@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
 import { colors } from '../../styles/designSystem'
 import { useScrollLock } from '../../hooks/useScrollLock'
 import { useModalA11y } from '../../hooks/useModalA11y'
-import { getChainName } from '../../config/chains'
+import { getChainById, getChainName } from '../../config/chains'
+import { loggers } from '../../utils/logger'
 
 interface Token {
   address: string
@@ -30,7 +32,98 @@ interface TransactionProgressModalProps {
   resetLoadingStates: () => void
 }
 
-export default function TransactionProgressModal({ 
+interface ErrorCopy {
+  title: string
+  body: string
+  reference?: string
+}
+
+/**
+ * Short, stable code derived from the raw error text. It is shown to the user
+ * and logged alongside the full message so a reported code can be matched back
+ * to the console output without exposing developer strings in the UI.
+ */
+function getErrorReference(message: string): string {
+  let hash = 5381
+  for (let i = 0; i < message.length; i++) {
+    hash = ((hash * 33) ^ message.charCodeAt(i)) >>> 0
+  }
+  return hash.toString(36).toUpperCase().padStart(6, '0').slice(0, 6)
+}
+
+/**
+ * Translate the developer-facing errors thrown by the liquidity hooks into copy
+ * a user can act on. Anything unrecognised falls back to a generic message plus
+ * a reference code — never the raw message, which is multi-line and wei-denominated.
+ */
+function describeTransactionError(error: Error, nativeSymbol: string): ErrorCopy {
+  const rawMessage = error.message || ''
+  const shortMessage = (error as { shortMessage?: string }).shortMessage || ''
+  const message = `${rawMessage} ${shortMessage}`.toLowerCase()
+  const code = (error as { code?: number | string }).code
+    ?? (error as { cause?: { code?: number | string } }).cause?.code
+
+  // Wallet rejection
+  if (
+    code === 4001 ||
+    code === 'ACTION_REJECTED' ||
+    code === 'TRANSACTION_REJECTED' ||
+    message.includes('user rejected') ||
+    message.includes('user denied') ||
+    message.includes('user cancelled') ||
+    message.includes('cancelled by user') ||
+    message.includes('rejected the request')
+  ) {
+    return {
+      title: 'Transaction cancelled',
+      body: "No funds were moved. You can try again whenever you're ready."
+    }
+  }
+
+  // Approval / allowance problems (checked before the balance cases: the
+  // allowance errors also contain the word "insufficient")
+  if (
+    message.includes('allowance') ||
+    message.includes('not approved') ||
+    message.includes('approval')
+  ) {
+    return {
+      title: 'Approval incomplete',
+      body: "Approval didn't go through. Your wallet may have replaced or dropped the approval transaction — try again, and confirm both prompts."
+    }
+  }
+
+  // Not enough native currency for the value plus gas
+  if (
+    message.includes('insufficient funds') ||
+    message.includes('exceeds the balance of the account')
+  ) {
+    return {
+      title: 'Transaction failed',
+      body: `Not enough ${nativeSymbol} to cover this transaction.`
+    }
+  }
+
+  // Not enough of the ERC20 being deposited
+  if (
+    message.includes('have enough tokens') ||
+    message.includes('insufficient token balance') ||
+    message.includes('transfer amount exceeds balance')
+  ) {
+    return {
+      title: 'Transaction failed',
+      body: "You don't have enough of this token for the amount you entered."
+    }
+  }
+
+  return {
+    title: 'Transaction failed',
+    body: 'Something went wrong with this transaction.',
+    reference: getErrorReference(rawMessage)
+  }
+}
+
+export default function TransactionProgressModal({
   isOpen, 
   onClose, 
   currentStep, 
@@ -48,7 +141,22 @@ export default function TransactionProgressModal({
   useScrollLock(isOpen)
   const modalRef = useModalA11y(isOpen, onClose)
 
+  // Keep the full developer message in the console — the UI only ever shows
+  // the translated copy below.
+  useEffect(() => {
+    if (!error) return
+    loggers.liquidity.error('Liquidity transaction failed', {
+      reference: getErrorReference(error.message || ''),
+      message: error.message,
+      chainId,
+      error
+    })
+  }, [error, chainId])
+
   if (!isOpen) return null
+
+  const nativeSymbol = (chainId ? getChainById(chainId)?.nativeCurrency?.symbol : undefined) || 'ETH'
+  const errorCopy = error ? describeTransactionError(error, nativeSymbol) : null
 
   const getStepStatus = (step: 'approve' | 'add') => {
     if (error) return 'error'
@@ -96,7 +204,7 @@ export default function TransactionProgressModal({
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className={`relative ${colors.glassCard} rounded-2xl p-8 w-full max-w-lg`}
       >
-        {error ? (
+        {errorCopy ? (
           // Error State
           <div className="text-center">
             <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
@@ -104,10 +212,15 @@ export default function TransactionProgressModal({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-4">Transaction Failed</h2>
-            <p className="text-red-300 mb-6 text-sm leading-relaxed">
-              {error.message || 'An unexpected error occurred'}
+            <h2 className="text-2xl font-bold text-white mb-4">{errorCopy.title}</h2>
+            <p className={`text-red-300 ${errorCopy.reference ? 'mb-2' : 'mb-6'} text-sm leading-relaxed`}>
+              {errorCopy.body}
             </p>
+            {errorCopy.reference && (
+              <p className="text-gray-500 mb-6 text-xs">
+                Reference: <span className="font-mono text-gray-400">{errorCopy.reference}</span>
+              </p>
+            )}
             <motion.button
               onClick={onClose}
               whileHover={{ scale: 1.02 }}

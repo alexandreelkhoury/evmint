@@ -48,6 +48,12 @@ export default function LiquidityPage() {
     customTokens,
     isLoadingCustomToken,
 
+    // Deep-link prefill
+    prefillChainName,
+    needsChainSwitch,
+    isSwitchingChain,
+    prefillError,
+
     // Liquidity hook data
     isAddingLiquidity,
     isRemovingLiquidity,
@@ -73,6 +79,7 @@ export default function LiquidityPage() {
     setShowProgressModal,
     setTokenAddressInput,
     setPercentageAmount,
+    switchToPrefillChain,
     handleAddTokenFromAddress,
     handleAddLiquidity,
     handleRemoveLiquidity,
@@ -159,6 +166,43 @@ export default function LiquidityPage() {
               </button>
             </div>
           </motion.div>
+
+          {/* Deep link points at another chain — prompt, never switch silently */}
+          {needsChainSwitch && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl"
+            >
+              <p className="flex-1 text-sm text-blue-100">
+                This token is on {prefillChainName} — switch network to add liquidity.
+              </p>
+              <button
+                onClick={switchToPrefillChain}
+                disabled={!authenticated || isSwitchingChain}
+                className="shrink-0 inline-flex items-center justify-center px-4 min-h-[40px] bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors duration-200 cursor-pointer"
+              >
+                {!authenticated
+                  ? 'Connect wallet to switch'
+                  : isSwitchingChain
+                    ? 'Switching…'
+                    : `Switch to ${prefillChainName}`}
+              </button>
+            </motion.div>
+          )}
+
+          {/* Deep-linked token could not be resolved on the active chain */}
+          {!needsChainSwitch && prefillError && !tokenA && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-sm text-amber-100"
+            >
+              {prefillError}
+            </motion.div>
+          )}
 
           {/* Form Components */}
           {liquidityMode === 'add' ? (

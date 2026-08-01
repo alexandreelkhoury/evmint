@@ -5,15 +5,15 @@ import { isChainSupported, baseConfig, getDeploymentFee } from '../config/chains
 import { MY_ERC20_ABI, MY_ERC20_BYTECODE, FEE_RECIPIENT } from '../contracts/MyERC20Artifacts'
 import {
   verifyContractWithEtherscan,
+  pollVerificationStatus,
   encodeConstructorArguments,
   type VerificationResult
 } from '../features/verification'
 import {
   validateTokenData,
-  sanitizeString,
   type TokenValidationResult
 } from '../utils/validation'
-import { TIMEOUTS, FEES } from '../config/constants'
+import { TIMEOUTS } from '../config/constants'
 import { loggers } from '../utils/logger'
 
 // Use the validated token data type from validation system
@@ -49,6 +49,14 @@ export function useOpenZeppelinTokenDeployment() {
   const [verificationStatus, setVerificationStatus] = useState<'pending' | 'success' | 'failed' | null>(null)
   const [verificationMethod, setVerificationMethod] = useState<'etherscan' | null>(null)
   const hasInitiallyLoaded = useRef(false)
+  // Cancels in-flight verification polling (unmount, or a newer verification run)
+  const verificationAbortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    return () => {
+      verificationAbortRef.current?.abort()
+    }
+  }, [])
 
   // Deploy OpenZeppelin-based contract - THIS TRIGGERS REAL METAMASK POPUP! 🎯
   const { 
@@ -252,21 +260,30 @@ export function useOpenZeppelinTokenDeployment() {
     }
 
     const tokenData = pendingTokenDataRef.current
-    
+
+    // Supersede any verification run that is still polling
+    verificationAbortRef.current?.abort()
+    const abortController = new AbortController()
+    verificationAbortRef.current = abortController
+    const { signal } = abortController
+
     try {
       setIsVerifying(true)
       setVerificationStatus('pending')
-      
+      setVerificationMethod(null)
+
       loggers.contract.info('Starting contract verification for:', contractAddress)
 
       // Wait for the contract to be available on the network (blockchain propagation)
       loggers.contract.info('Waiting for contract to propagate on blockchain...')
       await new Promise(resolve => setTimeout(resolve, TIMEOUTS.POLLING_INTERVAL))
-      
+      if (signal.aborted) return
+
       // Verify the contract exists by checking bytecode
       if (publicClient) {
         try {
           const bytecode = await publicClient.getBytecode({ address: contractAddress as `0x${string}` })
+          if (signal.aborted) return
           if (!bytecode || bytecode === '0x') {
             loggers.contract.error('No contract found at address:', contractAddress)
             setVerificationStatus('failed')
@@ -274,6 +291,7 @@ export function useOpenZeppelinTokenDeployment() {
           }
           loggers.contract.success('Contract bytecode confirmed at:', contractAddress)
         } catch (error) {
+          if (signal.aborted) return
           loggers.contract.error('Error checking contract bytecode:', error)
           setVerificationStatus('failed')
           return
@@ -291,26 +309,65 @@ export function useOpenZeppelinTokenDeployment() {
         BigInt(tokenData.totalSupply),
         tokenData.decimals,
         feeInWei,
-        chainId
+        chainId,
+        signal
       )
+      if (signal.aborted) return
 
-      if (verificationResult.success && verificationResult.isVerified) {
-        loggers.contract.success('Contract verification submitted successfully!')
+      // The explorer already had this source code — nothing to wait for
+      if (verificationResult.isVerified) {
+        loggers.contract.success('Contract source code already verified on explorer')
+        setVerificationStatus('success')
+        setVerificationMethod('etherscan')
+        return
+      }
+
+      if (!verificationResult.success || !verificationResult.guid) {
+        loggers.contract.warn('Contract verification submission rejected')
+        loggers.contract.info('Verification result:', verificationResult.message)
+        setVerificationStatus('failed')
+        return
+      }
+
+      // Submission was only ACCEPTED — poll until the explorer actually finishes
+      // the job. Until then the UI must keep saying "pending", never "verified".
+      loggers.contract.info('Verification queued, polling explorer for result...', verificationResult.guid)
+
+      const statusResult = await pollVerificationStatus(verificationResult.guid, chainId, {
+        signal,
+        onPoll: result => loggers.contract.debug('Verification status:', result.status, result.message)
+      })
+      if (signal.aborted) return
+
+      if (statusResult.status === 'success') {
+        loggers.contract.success('Contract verification confirmed by explorer!')
         setVerificationStatus('success')
         setVerificationMethod('etherscan')
       } else {
-        loggers.contract.warn('Contract verification failed')
-        loggers.contract.info('Verification result:', verificationResult.message)
+        loggers.contract.warn('Contract verification not confirmed:', statusResult.message)
         setVerificationStatus('failed')
       }
 
     } catch (error) {
+      if (signal.aborted) return
       loggers.contract.error('Error during contract verification:', error)
       setVerificationStatus('failed')
     } finally {
-      setIsVerifying(false)
+      if (!signal.aborted) {
+        setIsVerifying(false)
+      }
+      if (verificationAbortRef.current === abortController) {
+        verificationAbortRef.current = null
+      }
     }
   }, [chainId])
+
+  // Lets the UI re-attempt verification after a failure/timeout
+  const retryVerification = useCallback(() => {
+    if (createdTokenAddress) {
+      verifyDeployedContract(createdTokenAddress)
+    }
+  }, [createdTokenAddress, verifyDeployedContract])
 
   // Handle successful deployment
   useEffect(() => {
@@ -399,13 +456,31 @@ export function useOpenZeppelinTokenDeployment() {
       throw new Error('Please connect your wallet first')
     }
 
-    // Temporarily bypass validation to debug stack underflow issue
-    loggers.contract.debug('Using direct token data without validation...')
-    const sanitizedTokenData = tokenData
-    loggers.contract.debug('Token data (no validation):', sanitizedTokenData)
+    // Validate + normalise before anything touches the wallet. The schema is
+    // .strict(), so pass exactly the four contract constructor fields — a caller
+    // handing us an object with extra keys must not be rejected for that reason.
+    const validation = validateTokenData({
+      name: tokenData.name,
+      symbol: tokenData.symbol,
+      totalSupply: tokenData.totalSupply,
+      decimals: tokenData.decimals
+    })
 
-    // Skip security analysis for now
-    const securityAnalysis = { riskLevel: 'low' as const, warnings: [] }
+    if (!validation.success) {
+      const message = validation.errors.map(err => err.message).join('. ')
+      const validationError = new Error(message || 'Invalid token parameters')
+      loggers.contract.warn('Token validation failed:', validation.errors)
+      setError(validationError)
+      throw validationError
+    }
+
+    // Schema output is already trimmed (name/supply) and upper-cased (symbol)
+    const sanitizedTokenData = validation.data
+    loggers.contract.debug('Validated token data:', sanitizedTokenData)
+
+    // No security analyser exists in this codebase — this is a placeholder, not a
+    // real risk assessment. Do not present it to users as one.
+    const securityAnalysis = { riskLevel: 'not-analyzed' as const, warnings: [] }
 
     // Check if on a supported chain
     if (!isChainSupported(chainId)) {
@@ -420,7 +495,12 @@ export function useOpenZeppelinTokenDeployment() {
 
     setError(null)
     setCreatedTokenAddress(null)
+    // Stop any verification poll from the previous deployment writing a stale status
+    verificationAbortRef.current?.abort()
+    verificationAbortRef.current = null
     setVerificationStatus(null)
+    setVerificationMethod(null)
+    setIsVerifying(false)
 
     // Store sanitized token data for later verification
     pendingTokenDataRef.current = sanitizedTokenData
@@ -514,6 +594,7 @@ export function useOpenZeppelinTokenDeployment() {
     isVerifying,
     verificationStatus,
     verificationMethod,
+    retryVerification,
     feeAmount: getDeploymentFee(chainId),
     feeRecipient: FEE_RECIPIENT,
   }

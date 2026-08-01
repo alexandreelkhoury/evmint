@@ -155,9 +155,12 @@ const isAnalyticsReady = (analytics: Analytics | null): boolean => {
 };
 
 // Page tracking
+// Sends GA4's standard page_location / page_path alongside the legacy page_name
 export const trackPageView = (analytics: Analytics | null, pageName: string) => {
   trackEvent(analytics, 'page_view', {
-    page_name: pageName
+    page_name: pageName,
+    page_location: typeof window !== 'undefined' ? window.location.href : undefined,
+    page_path: typeof window !== 'undefined' ? window.location.pathname : undefined
   })
 }
 
@@ -226,10 +229,16 @@ export const trackWalletDisconnect = (analytics: Analytics | null) => {
   trackEvent(analytics, 'wallet_disconnected', {})
 }
 
-export const trackNetworkSwitch = (analytics: Analytics | null, fromNetwork: string, toNetwork: string) => {
+export const trackNetworkSwitch = (
+  analytics: Analytics | null,
+  fromNetwork: string,
+  toNetwork: string,
+  additionalParams: Record<string, any> = {}
+) => {
   trackEvent(analytics, 'network_switched', {
     from_network: fromNetwork,
-    to_network: toNetwork
+    to_network: toNetwork,
+    ...additionalParams
   })
 }
 

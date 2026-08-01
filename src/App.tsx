@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { lazy, Suspense, createContext, useContext, useEffect } from 'react'
 import LazyWeb3Provider from './components/LazyWeb3Provider'
@@ -11,7 +11,6 @@ import ScrollToTop from './components/ScrollToTop'
 import { ToastContainer, useToasts } from './components/Toast'
 import NetworkManagerLazy from './components/NetworkManagerLazy'
 import LoadingSpinner from './components/LoadingSpinner'
-import { LiquidityProvider } from './contexts/LiquidityContext'
 
 // Lazy load all page components for better performance
 const HomePage = lazy(() => import('./pages/HomePage'))
@@ -66,18 +65,15 @@ function AppContent() {
           <ScrollToTop />
           <NetworkManagerLazy />
           <Header />
-          <main id="main-content" className="pt-14 sm:pt-16 pb-24 md:pb-0 flex-1">
+          <main id="main-content" className="pt-14 sm:pt-16 pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0 flex-1">
             <Suspense fallback={<LoadingSpinner message="Loading page..." />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/create" element={<CreateTokenPage />} />
                 <Route path="/tokens" element={<TokensPage />} />
-                <Route path="/liquidity" element={
-                  <LiquidityProvider>
-                    <LiquidityPage />
-                  </LiquidityProvider>
-                } />
-                <Route path="/guide" element={<GuidePage />} />
+                <Route path="/liquidity" element={<LiquidityPage />} />
+                {/* /guide has no :guideId, so GuidePage always rendered its null branch — a soft 404 */}
+                <Route path="/guide" element={<Navigate to="/guides" replace />} />
                 <Route path="/guides" element={<GuidesPage />} />
                 <Route path="/guides/:guideId" element={<GuidePage />} />
                 <Route path="/faq" element={<FAQPage />} />

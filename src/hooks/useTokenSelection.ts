@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { usePublicClient, useAccount, useChainId } from 'wagmi'
-import type { LPToken } from './useUniswapV2Liquidity'
+import type { LPToken } from '../features/liquidity'
 import { TOKEN_ADDRESSES } from '../config/constants'
 import { loggers } from '../utils/logger'
 import { getChainById } from '../config/chains'
@@ -99,13 +99,26 @@ export function useTokenSelection() {
     }
   ], [wrappedTokenAddress, nativeTokenName, nativeTokenSymbol])
 
+  // Tracks the `${address}:${chainId}` pair the token lists were last loaded for.
+  // Consumers use `userTokensLoaded` to avoid acting on lists that are still empty
+  // simply because the initial load has not run yet.
+  const [loadedTokensKey, setLoadedTokensKey] = useState<string | null>(null)
+  const tokensKey = `${userAddress?.toLowerCase() || 'anonymous'}:${chainId}`
+  const userTokensLoaded = loadedTokensKey === tokensKey
+
   // Load user's created tokens and LP tokens from localStorage
   useEffect(() => {
     if (userAddress) {
       loadUserCreatedTokens()
       loadUserLPTokens()
+    } else {
+      setUserCreatedTokens([])
+      setUserLPTokens([])
     }
-  }, [userAddress])
+    // localStorage reads above are synchronous, so the lists and this flag land
+    // in the same render — no window where the flag is true but the lists are stale
+    setLoadedTokensKey(tokensKey)
+  }, [userAddress, chainId, tokensKey])
 
   // Set ETH as default second token on mount
   useEffect(() => {
@@ -192,8 +205,9 @@ export function useTokenSelection() {
     }
   }, [userAddress, chainId])
 
-  // Add custom token by address
-  const addCustomToken = useCallback(async (tokenAddress: string): Promise<void> => {
+  // Add custom token by address — returns the token that was added so callers
+  // can use it immediately instead of re-scanning the (still stale) token lists
+  const addCustomToken = useCallback(async (tokenAddress: string): Promise<Token> => {
     if (!publicClient || !tokenAddress) {
       throw new Error('Invalid token address')
     }
@@ -238,6 +252,7 @@ export function useTokenSelection() {
 
       setCustomTokens(prev => [...prev, newToken])
       loggers.liquidity.success('Token added successfully:', newToken)
+      return newToken
     } catch (error) {
       loggers.liquidity.error('Failed to add custom token:', error)
       throw error
@@ -304,6 +319,7 @@ export function useTokenSelection() {
     customTokens,
     userCreatedTokens,
     userLPTokens,
+    userTokensLoaded,
 
     // Chain-specific token info
     nativeTokenSymbol,

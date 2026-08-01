@@ -87,9 +87,6 @@ export const CURRENT_STORAGE_VERSION = 1
 // FEE CONFIGURATION
 // ============================================================================
 export const FEES = {
-  /** Token deployment fee in ETH */
-  DEPLOYMENT_FEE: 0.02,
-
   /** Default slippage tolerance (0.5%) */
   SLIPPAGE_TOLERANCE: 0.5,
 

@@ -4,7 +4,6 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import { usePrivy } from '@privy-io/react-auth'
 import { useChainId } from 'wagmi'
-import { base } from 'viem/chains'
 import { Link } from 'react-router-dom'
 import WalletButton from '../components/WalletButton'
 import { GlassCard } from '../components/GlassCard'
@@ -206,15 +205,25 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
 
 export default function TokensPage() {
   const analytics = useFirebaseAnalytics()
-  const { ready, authenticated, user } = usePrivy()
+  const { ready, authenticated } = usePrivy()
   const chainId = useChainId()
-  const { userTokens, allUserTokens, refetchUserTokens, updateCachedBalance, isCorrectChain, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
+  const { allUserTokens, refetchUserTokens, updateCachedBalance, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
   const [chainFilter, setChainFilter] = useState<number | 'all'>('all')
 
   // Get unique chains from user's tokens
   const userChains = useMemo(() => {
     const chainIds = [...new Set(allUserTokens.map(t => t.chainId))]
     return chainIds.map(id => ({ id, config: getChainById(id) })).filter(c => c.config)
+  }, [allUserTokens])
+
+  // Most recent deployment, taken from the stored deployment records
+  const latestLaunchLabel = useMemo(() => {
+    const timestamps = allUserTokens
+      .map(t => t.createdAt)
+      .filter((ts): ts is number => typeof ts === 'number' && Number.isFinite(ts) && ts > 0)
+
+    if (timestamps.length === 0) return '--'
+    return new Date(Math.max(...timestamps)).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
   }, [allUserTokens])
 
   // Filter tokens by selected chain
@@ -385,7 +394,7 @@ export default function TokensPage() {
           stats={[
             { value: allUserTokens.length, label: allUserTokens.length === 1 ? 'Token' : 'Tokens', color: 'purple' },
             { value: userChains.length, label: userChains.length === 1 ? 'Chain' : 'Chains', color: 'blue' },
-            { value: 'Live', label: 'Portfolio', color: 'cyan' }
+            { value: latestLaunchLabel, label: 'Latest launch', color: 'cyan' }
           ]}
         />
 
@@ -427,6 +436,19 @@ export default function TokensPage() {
                 Create Your First Token
               </Link>
             </motion.div>
+          </div>
+
+          {/* This dashboard is built from records stored in this browser, so a
+              user who launched tokens elsewhere lands here too. Say so. */}
+          <div className="max-w-xl mx-auto bg-white/[0.03] border border-white/[0.08] rounded-xl px-5 py-4 text-left">
+            <p className="text-sm text-gray-400 leading-relaxed">
+              We only see tokens created in this browser. On a different device? Your tokens are
+              safe on-chain — paste the contract address into the token picker on the{' '}
+              <Link to="/liquidity" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 cursor-pointer">
+                Liquidity page
+              </Link>{' '}
+              to work with them.
+            </p>
           </div>
         </GlassCard>
       ) : (

@@ -19,7 +19,7 @@ export default function AboutPage() {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     "name": "About EVMint - Multi-Chain Token Creation Platform",
-    "description": "Learn about EVMint, the leading multi-chain token creation platform. Meet our team of blockchain experts and discover our mission.",
+    "description": "Learn about EVMint, a no-code multi-chain token creation platform. Discover our mission, how the platform works, and the networks we support.",
     "url": "https://evmint.io/about",
     "mainEntity": {
       "@type": "Organization",

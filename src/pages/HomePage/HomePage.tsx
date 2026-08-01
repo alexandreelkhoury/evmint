@@ -6,7 +6,6 @@ import { trackPageView } from '../../utils/analytics'
 import HeroSection from './components/HeroSection'
 import CTASection from './components/CTASection'
 import SocialProofSection from '../../components/SocialProofSection'
-// import TeamSection from '../../components/TeamSection'
 import ProblemSolutionSection from './components/ProblemSolutionSection'
 import HowItWorksSection from './components/HowItWorksSection'
 import PricingSection from './components/PricingSection'
@@ -20,9 +19,8 @@ import PricingSection from './components/PricingSection'
  * 3. Problem/Solution - Increase relatability & positioning (includes EVM vs alternatives comparison)
  * 4. How It Works - Visual 3-step process (reduce complexity)
  * 5. Pricing - Transparent cost breakdown (reduces friction)
- * 6. Testimonials - Real user success stories
- * 7. Team - Build credibility
- * 8. Final CTA - Last chance conversion
+ * 6. Social Proof - Build credibility
+ * 7. Final CTA - Last chance conversion
  */
 export default function HomePage() {
   const analytics = useFirebaseAnalytics()

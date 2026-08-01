@@ -1,18 +1,19 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
-import { logEvent } from '../utils/analytics'
+import { trackPageView, trackError } from '../utils/analytics'
+import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { Helmet } from 'react-helmet-async'
 
 export default function ServerErrorPage() {
+  const analytics = useFirebaseAnalytics()
+
   useEffect(() => {
-    logEvent('page_view', { page_name: '500' })
-    logEvent('error_occurred', {
-      type: '500',
-      message: 'Server error',
-      location: window.location.pathname
+    trackPageView(analytics, '500')
+    trackError(analytics, 'Server error', '500_page', {
+      error_type: '500'
     })
-  }, [])
+  }, [analytics])
 
   const handleReload = () => {
     window.location.reload()

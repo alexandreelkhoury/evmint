@@ -1,11 +1,39 @@
 import { useState } from 'react'
 import { useAccount, useReadContract, usePublicClient } from 'wagmi'
-import { parseUnits, parseEther } from 'viem'
+import { parseUnits, parseEther, formatUnits } from 'viem'
 import { ERC20_ABI, ROUTER_ABI } from '../constants'
 import { TIMEOUTS, RETRY_CONFIG } from '../../../config/constants'
 import { loggers } from '../../../utils/logger'
 import { useLiquidityContracts } from './useLiquidityContracts'
 import type { TokenProcessInfo } from '../types'
+
+/**
+ * Slippage tolerance applied to the minimum amounts sent to addLiquidityETH.
+ *
+ * Creating a pool has no slippage surface at all (there are no reserves to move),
+ * so this only bites when adding to a pool that already exists. It is surfaced to
+ * the user in AddLiquidityForm — keep the two in sync.
+ *
+ * NOTE: an equivalent constant now lives in ../constants (LIQUIDITY_SLIPPAGE_BPS);
+ * consolidating onto it is a follow-up, deliberately not done here to avoid
+ * touching that file concurrently.
+ */
+export const ADD_LIQUIDITY_SLIPPAGE_PERCENT = 5
+const SLIPPAGE_BPS = BigInt(ADD_LIQUIDITY_SLIPPAGE_PERCENT * 100)
+const BPS_DENOMINATOR = 10000n
+
+/** floor(amount * (1 - slippage)) — bigint throughout, always rounds down */
+const applySlippage = (amount: bigint): bigint =>
+  (amount * (BPS_DENOMINATOR - SLIPPAGE_BPS)) / BPS_DENOMINATOR
+
+/** Wei → a number a human can read, for error messages only */
+const toReadableAmount = (amount: bigint, decimals: number): string => {
+  const formatted = formatUnits(amount, decimals)
+  const value = parseFloat(formatted)
+  if (!Number.isFinite(value)) return formatted
+  if (value > 0 && value < 0.000001) return value.toExponential(2)
+  return value.toLocaleString(undefined, { maximumFractionDigits: 6 })
+}
 
 /**
  * Hook to handle the add liquidity flow
@@ -68,9 +96,9 @@ export function useAddLiquidity(
     const tokenAmountWei = parseUnits(tokenInfo.tokenAmount, finalDecimals)
     const ethAmountWei = parseEther(tokenInfo.ethAmount)
 
-    // Set minimum amounts to 95% of desired amounts for slippage protection
-    const amountTokenMin = (tokenAmountWei * 95n) / 100n
-    const amountETHMin = (ethAmountWei * 95n) / 100n
+    // Minimum amounts the router may settle for — see ADD_LIQUIDITY_SLIPPAGE_PERCENT
+    const amountTokenMin = applySlippage(tokenAmountWei)
+    const amountETHMin = applySlippage(ethAmountWei)
 
     // Set deadline to 20 minutes from now
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)
@@ -121,11 +149,14 @@ export function useAddLiquidity(
     })
 
     if (actualOnChainAllowance < tokenAmountWei) {
-      throw new Error(`❌ CRITICAL: On-chain allowance is insufficient!
-        Cached: ${cachedAllowance.toString()}
-        Actual: ${actualOnChainAllowance.toString()}
-        Needed: ${tokenAmountWei.toString()}
-        This will cause TransferHelper to fail.`)
+      loggers.liquidity.error('❌ On-chain allowance is insufficient — TransferHelper would fail:', {
+        token: tokenInfo.address,
+        cachedAllowance: cachedAllowance.toString(),
+        actualOnChainAllowance: actualOnChainAllowance.toString(),
+        needed: tokenAmountWei.toString()
+      })
+
+      throw new Error("Approval didn't go through. Your wallet may have replaced or dropped the approval transaction — try again, and confirm both prompts.")
     }
 
     // CRITICAL: Check your actual token balance!
@@ -152,14 +183,19 @@ export function useAddLiquidity(
       tokenBalance: actualTokenBalance.toString(),
       amountNeeded: tokenAmountWei.toString(),
       hasEnoughTokens: actualTokenBalance >= tokenAmountWei,
-      balanceInHumanForm: (Number(actualTokenBalance) / 1e18).toLocaleString()
+      balanceInHumanForm: toReadableAmount(actualTokenBalance, finalDecimals)
     })
 
     if (actualTokenBalance < tokenAmountWei) {
-      throw new Error(`❌ CRITICAL: You don't have enough tokens!
-        Your balance: ${actualTokenBalance.toString()} (${(Number(actualTokenBalance) / 1e18).toLocaleString()})
-        Trying to use: ${tokenAmountWei.toString()} (${(Number(tokenAmountWei) / 1e18).toLocaleString()})
-        This will cause TransferHelper to fail.`)
+      loggers.liquidity.error('❌ Insufficient token balance — TransferHelper would fail:', {
+        token: tokenInfo.address,
+        balance: actualTokenBalance.toString(),
+        needed: tokenAmountWei.toString(),
+        decimals: finalDecimals
+      })
+
+      const symbol = tokenToProcess?.symbol || 'tokens'
+      throw new Error(`Not enough ${symbol}. You have ${toReadableAmount(actualTokenBalance, finalDecimals)}, this needs ${toReadableAmount(tokenAmountWei, finalDecimals)}.`)
     }
 
     // CRITICAL: Test if the token can be transferred at all
@@ -191,10 +227,8 @@ export function useAddLiquidity(
         message: transferError.message
       })
 
-      throw new Error(`❌ CRITICAL: Your token contract cannot transfer tokens!
-        Error: ${transferError.reason || transferError.shortMessage}
-        This suggests there's an issue with your token contract implementation.
-        Even direct transfers are failing, so the problem is with the token itself, not Uniswap.`)
+      const symbol = tokenToProcess?.symbol || 'This token'
+      throw new Error(`${symbol} can't be transferred right now, so it can't be added to a pool. The token contract itself is rejecting transfers — check for trading limits, a paused state, or transfer fees.`)
     }
 
     // CRITICAL: Simulate the transaction first to get detailed error info
@@ -240,9 +274,8 @@ export function useAddLiquidity(
         loggers.liquidity.error('❌ SIMULATION ERROR DATA:', simulationError.data)
       }
 
-      throw new Error(`❌ Transaction simulation failed: ${simulationError.shortMessage || simulationError.message}.
-        This tells us exactly why the transaction would fail before sending it.
-        Check console for detailed error analysis.`)
+      const reason = simulationError.shortMessage || simulationError.message
+      throw new Error(`This transaction would fail, so we didn't send it — no gas was spent.${reason ? ` Reason: ${reason}` : ''}`)
     }
 
     // If simulation passes, proceed with actual transaction

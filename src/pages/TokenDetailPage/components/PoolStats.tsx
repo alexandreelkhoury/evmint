@@ -59,9 +59,13 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
     ...(marketCap ? [{ label: 'Market Cap', value: formatUsd(marketCap) }] : []),
   ]
 
-  // Social links
+  // Social links — sourced from GeckoTerminal token info, so they are frequently
+  // absent for a brand new token. Drop empty entries so we never render a blank slot.
   const socials = tokenInfo?.attributes
-  const hasSocials = socials && (socials.websites?.length || socials.twitter_handle || socials.telegram_handle || socials.discord_url)
+  const websites = socials?.websites?.filter((url) => Boolean(url && url.trim())) ?? []
+  const hasSocials = Boolean(
+    websites.length || socials?.twitter_handle || socials?.telegram_handle || socials?.discord_url
+  )
 
   return (
     <motion.div
@@ -88,12 +92,12 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
       {/* Pool info */}
       <div className="mt-4 pt-3 border-t border-white/10">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600 font-sans">Pool</span>
+          <span className="text-xs text-gray-400 font-sans">Pool</span>
           <span className="text-xs text-gray-500 font-mono">{attrs.name}</span>
         </div>
         {attrs.pool_created_at && (
           <div className="flex items-center justify-between mt-1">
-            <span className="text-xs text-gray-600 font-sans">Created</span>
+            <span className="text-xs text-gray-400 font-sans">Created</span>
             <span className="text-xs text-gray-500 font-sans">
               {new Date(attrs.pool_created_at).toLocaleDateString()}
             </span>
@@ -102,11 +106,15 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
       </div>
 
       {/* Issue #15: Social links with brand-colored SVG icons */}
-      {hasSocials && (
-        <div className="mt-4 pt-3 border-t border-white/10">
-          <h4 className="text-xs text-gray-600 font-sans mb-2">Links</h4>
+      <div className="mt-4 pt-3 border-t border-white/10">
+        <h4 className="text-xs text-gray-400 font-sans mb-2">Links</h4>
+        {!hasSocials ? (
+          <p className="text-xs text-gray-500 font-sans leading-relaxed">
+            No official links listed yet. Token socials are sourced from GeckoTerminal.
+          </p>
+        ) : (
           <div className="flex flex-wrap gap-2">
-            {socials.websites?.map((url, i) => (
+            {websites.map((url, i) => (
               <a
                 key={i}
                 href={url}
@@ -120,7 +128,7 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
                 Website
               </a>
             ))}
-            {socials.twitter_handle && (
+            {socials?.twitter_handle && (
               <a
                 href={`https://twitter.com/${socials.twitter_handle}`}
                 target="_blank"
@@ -133,7 +141,7 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
                 Twitter
               </a>
             )}
-            {socials.telegram_handle && (
+            {socials?.telegram_handle && (
               <a
                 href={`https://t.me/${socials.telegram_handle}`}
                 target="_blank"
@@ -146,7 +154,7 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
                 Telegram
               </a>
             )}
-            {socials.discord_url && (
+            {socials?.discord_url && (
               <a
                 href={socials.discord_url}
                 target="_blank"
@@ -160,8 +168,8 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
               </a>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   )
 }

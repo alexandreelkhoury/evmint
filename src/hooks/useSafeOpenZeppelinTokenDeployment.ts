@@ -26,6 +26,7 @@ export interface SafeTokenDeploymentResult {
   isVerifying: boolean
   verificationStatus: 'pending' | 'success' | 'failed' | null
   verificationMethod: 'etherscan' | null
+  retryVerification: () => void
   feeAmount: string
   feeRecipient: string
 }
@@ -56,6 +57,7 @@ export function useSafeOpenZeppelinTokenDeployment(): SafeTokenDeploymentResult 
       isVerifying: false,
       verificationStatus: null,
       verificationMethod: null,
+      retryVerification: () => {},
       feeAmount: '0.02', // Default fee display
       feeRecipient: '0x0000000000000000000000000000000000000000',
     }
@@ -87,6 +89,7 @@ export function useSafeOpenZeppelinTokenDeployment(): SafeTokenDeploymentResult 
       isVerifying: false,
       verificationStatus: null,
       verificationMethod: null,
+      retryVerification: () => {},
       feeAmount: '0.02',
       feeRecipient: '0x0000000000000000000000000000000000000000',
     }

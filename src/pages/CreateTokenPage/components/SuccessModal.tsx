@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { colors } from '../../../styles/designSystem'
+import { getAddressUrl, getChainById } from '../../../config/chains'
 
 interface SuccessModalProps {
   tokenAddress: string
@@ -9,6 +10,11 @@ interface SuccessModalProps {
   tokenName?: string
   tokenSymbol?: string
   totalSupply?: string
+  /** Live source-verification state. `null`/undefined hides the badge entirely. */
+  verificationStatus?: 'pending' | 'success' | 'failed' | null
+  /** Used to build explorer links that are correct for every supported chain */
+  chainId?: number
+  onRetryVerification?: () => void
 }
 
 export default function SuccessModal({
@@ -16,7 +22,10 @@ export default function SuccessModal({
   chainName,
   tokenName,
   tokenSymbol,
-  totalSupply
+  totalSupply,
+  verificationStatus = null,
+  chainId,
+  onRetryVerification
 }: SuccessModalProps) {
   const [copied, setCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
@@ -76,6 +85,11 @@ export default function SuccessModal({
     const domain = explorers[chainName] || 'etherscan.io'
     return `https://${domain}/address/${tokenAddress}`
   }
+
+  // Prefer the chain registry (covers every supported chain) over the name map above
+  const explorerName = (chainId !== undefined && getChainById(chainId)?.explorer.name) || 'the block explorer'
+  const addressUrl = chainId !== undefined ? getAddressUrl(chainId, tokenAddress) : getExplorerUrl()
+  const sourceCodeUrl = `${addressUrl}#code`
 
   // Get clean chain name for hashtag (remove "Sepolia", "Testnet", etc.)
   const getChainHashtag = () => {
@@ -184,6 +198,66 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
           </motion.button>
         </div>
       </div>
+
+      {/* Source verification badge.
+          Deliberately never shows a green check for a queued job — the 'success'
+          state is only reached once the explorer itself confirms the source. */}
+      {verificationStatus && (
+        <div className="mb-6">
+          {verificationStatus === 'success' && (
+            <a
+              href={sourceCodeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-xl text-sm text-green-300 hover:bg-green-500/20 transition-colors"
+            >
+              <span aria-hidden="true">✓</span>
+              <span>Source code verified on {explorerName}</span>
+              <svg className="w-4 h-4 ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          )}
+
+          {verificationStatus === 'pending' && (
+            <div
+              role="status"
+              className="flex items-center gap-3 px-4 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-sm text-yellow-200"
+            >
+              <span className="w-4 h-4 flex-shrink-0 rounded-full border-2 border-yellow-300/40 border-t-yellow-300 animate-spin" aria-hidden="true" />
+              <span>Verification in progress — usually done within 2 minutes.</span>
+            </div>
+          )}
+
+          {verificationStatus === 'failed' && (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 bg-gray-500/10 border border-gray-500/30 rounded-xl text-sm text-gray-300">
+              <span className="flex-1">
+                Not verified yet. Your token is deployed and fully functional — only the
+                published source code is missing.
+              </span>
+              <div className="flex items-center gap-2">
+                {onRetryVerification && (
+                  <button
+                    type="button"
+                    onClick={onRetryVerification}
+                    className="px-3 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-200 transition-colors"
+                  >
+                    Retry verification
+                  </button>
+                )}
+                <a
+                  href={sourceCodeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-medium border border-gray-600 hover:border-gray-500 text-gray-300 transition-colors"
+                >
+                  Verify on {explorerName}
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* VIRAL SHARING SECTION - Most Prominent */}
       <motion.div

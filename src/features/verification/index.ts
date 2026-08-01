@@ -5,7 +5,7 @@
  * on various block explorers (Etherscan, Basescan, etc.)
  */
 
-import { verifyContract, checkVerificationStatus } from './verificationApi'
+import { verifyContract } from './verificationApi'
 import { encodeConstructorArguments } from './abiEncoder'
 import { getMyERC20SourceCode } from './sourceCodeFormatter'
 import { MYERC20_COMPILER_VERSION, MYERC20_CONTRACT_NAME } from './constants'
@@ -22,7 +22,10 @@ import type { VerificationResult } from './types'
  * @param decimals - Number of decimal places
  * @param fee - Deployment fee in wei
  * @param chainId - Chain ID where the contract is deployed
- * @returns Promise with verification result
+ * @param signal - Optional abort signal to cancel the submission
+ * @returns Promise with verification result. A `success` result with a `guid` and
+ *          `isVerified: false` means the job is QUEUED — poll `pollVerificationStatus`
+ *          before reporting the contract as verified.
  */
 export async function verifyContractWithEtherscan(
   contractAddress: string,
@@ -31,7 +34,8 @@ export async function verifyContractWithEtherscan(
   initialSupply: bigint,
   decimals: number,
   fee: bigint,
-  chainId: number
+  chainId: number,
+  signal?: AbortSignal
 ): Promise<VerificationResult> {
   const sourceCode = getMyERC20SourceCode()
   const compilerVersion = MYERC20_COMPILER_VERSION
@@ -43,12 +47,13 @@ export async function verifyContractWithEtherscan(
     contractName: MYERC20_CONTRACT_NAME,
     compilerVersion,
     constructorArguments,
-    chainId
+    chainId,
+    signal
   })
 }
 
 // Re-export public APIs
-export { checkVerificationStatus } from './verificationApi'
+export { checkVerificationStatus, pollVerificationStatus } from './verificationApi'
 export { encodeConstructorArguments } from './abiEncoder'
 
 // Re-export types
@@ -56,5 +61,6 @@ export type {
   VerificationResult,
   VerificationParams,
   VerificationStatusResult,
+  VerificationPollOptions,
   MyERC20ConstructorParams
 } from './types'

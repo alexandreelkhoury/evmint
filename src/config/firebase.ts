@@ -5,6 +5,8 @@
  * The SDK (~150KB) is loaded after the app becomes interactive.
  */
 
+import { loggers } from '../utils/logger'
+
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,

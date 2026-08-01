@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { useAccount, useChainId, useSwitchChain, useBalance, useWriteContract, useReadContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount, useChainId, useSwitchChain, useBalance, useWriteContract, useReadContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
 import { parseEther, parseUnits, formatUnits, type Address } from 'viem'
 import { getChainById, getDexContracts, getWethAddress, getChainName } from '../../../config/chains'
 import { colors } from '../../../styles/designSystem'
@@ -31,6 +31,16 @@ const ROUTER_V2_ABI = [
       { name: 'deadline', type: 'uint256' },
     ],
     outputs: [],
+  },
+  {
+    name: 'getAmountsOut',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'amountIn', type: 'uint256' },
+      { name: 'path', type: 'address[]' },
+    ],
+    outputs: [{ name: 'amounts', type: 'uint256[]' }],
   },
 ] as const
 
@@ -73,11 +83,37 @@ const ERC20_ABI = [
 
 const SLIPPAGE_OPTIONS = [0.5, 1, 3] as const
 
+// Basis-point denominator: 10000 bps == 100%
+const BPS_DENOMINATOR = 10000n
+
+// WETH (and every native currency on the supported EVM chains) uses 18 decimals
+const NATIVE_DECIMALS = 18
+
 // Issue #7: Resolve native symbol from chain config, not string matching
 function getNativeSymbol(chainId: number): string {
   const chain = getChainById(chainId)
   return chain?.nativeCurrency?.symbol || 'ETH'
 }
+
+/**
+ * Apply a slippage tolerance (as a percentage, e.g. 1 => 1%) to a router quote.
+ * Returns floor(expectedOut * (10000 - slippageBps) / 10000) — bigint division
+ * always rounds down, which is the safe direction for a minimum-received value.
+ */
+function applySlippage(expectedOut: bigint, slippagePercent: number): bigint {
+  if (expectedOut <= 0n) return 0n
+  const slippageBps = BigInt(Math.round(slippagePercent * 100))
+  if (slippageBps <= 0n) return expectedOut
+  if (slippageBps >= BPS_DENOMINATOR) return 0n
+  return (expectedOut * (BPS_DENOMINATOR - slippageBps)) / BPS_DENOMINATOR
+}
+
+function formatAmount(amount: bigint, decimals: number, maximumFractionDigits: number): string {
+  return parseFloat(formatUnits(amount, decimals)).toLocaleString(undefined, { maximumFractionDigits })
+}
+
+const QUOTE_UNAVAILABLE_MESSAGE =
+  'No on-chain quote available for this pair (no pool, no liquidity, or no route). Swapping is disabled — without a quote we cannot protect you from slippage.'
 
 interface SwapPanelProps {
   tokenAddress: string
@@ -101,17 +137,25 @@ export default function SwapPanel({
   const [isBuy, setIsBuy] = useState(true)
   const [inputAmount, setInputAmount] = useState('')
   const [slippage, setSlippage] = useState<number>(1)
-  const [estimatedOutput, setEstimatedOutput] = useState<string | null>(null)
+  // Raw router quote (wei of the output token) — the source of truth for both
+  // the displayed estimate and the amountOutMin we send on-chain.
+  const [quotedAmountOut, setQuotedAmountOut] = useState<bigint | null>(null)
+  const [quoteError, setQuoteError] = useState<string | null>(null)
+  const [priceImpact, setPriceImpact] = useState<number | null>(null)
   const [quoteLoading, setQuoteLoading] = useState(false)
   const [txStatus, setTxStatus] = useState<'idle' | 'approving' | 'swapping' | 'success' | 'error'>('idle')
   const [txError, setTxError] = useState<string | null>(null)
   const successTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  // Guards against a slow in-flight quote overwriting a newer one
+  const quoteRequestIdRef = useRef(0)
 
   const isWrongChain = currentChainId !== tokenChainId
   const dex = getDexContracts(tokenChainId)
   const weth = getWethAddress(tokenChainId)
   const routerAddress = (dex?.uniswapV2Router || dex?.pancakeswapRouter || dex?.sushiswapRouter) as Address | undefined
   const nativeSymbol = getNativeSymbol(tokenChainId)
+
+  const publicClient = usePublicClient({ chainId: tokenChainId })
 
   // Native balance
   const { data: nativeBalance } = useBalance({
@@ -154,41 +198,122 @@ export default function SwapPanel({
     hash: txHash,
   })
 
-  // Issue #7: Estimate using actual native token price when available
+  // Swap path — WETH -> token on a buy, token -> WETH on a sell
+  const swapPath = useMemo<readonly Address[] | null>(() => {
+    if (!weth || !tokenAddress) return null
+    return isBuy
+      ? [weth as Address, tokenAddress as Address]
+      : [tokenAddress as Address, weth as Address]
+  }, [weth, tokenAddress, isBuy])
+
+  const outputDecimals = isBuy ? decimals : NATIVE_DECIMALS
+  const outputSymbol = isBuy ? tokenSymbol : nativeSymbol
+
+  const parseAmountIn = useCallback((value: string): bigint | null => {
+    if (!value) return null
+    try {
+      const parsed = isBuy ? parseEther(value) : parseUnits(value, decimals)
+      return parsed > 0n ? parsed : null
+    } catch {
+      return null
+    }
+  }, [isBuy, decimals])
+
+  /**
+   * Ask the router what this trade actually returns at current pool state.
+   * Throws if there is no pool / no liquidity / no route — callers must NOT
+   * swallow that into a permissive default.
+   */
+  const fetchAmountOut = useCallback(async (amountIn: bigint): Promise<bigint> => {
+    if (!publicClient || !routerAddress || !swapPath) {
+      throw new Error('No DEX router available for this chain')
+    }
+
+    const amounts = await publicClient.readContract({
+      address: routerAddress,
+      abi: ROUTER_V2_ABI,
+      functionName: 'getAmountsOut',
+      args: [amountIn, swapPath],
+    })
+
+    const amountOut = amounts[amounts.length - 1]
+    if (amountOut === undefined || amountOut <= 0n) {
+      throw new Error('Router returned a zero quote')
+    }
+    return amountOut
+  }, [publicClient, routerAddress, swapPath])
+
+  // Quote from the pool itself, so the estimate includes price impact (a USD
+  // cross-rate does not, and price impact dominates on a small new pool).
   const getQuote = useCallback(async () => {
-    if (!inputAmount || !routerAddress || !weth || parseFloat(inputAmount) <= 0) {
-      setEstimatedOutput(null)
+    const requestId = ++quoteRequestIdRef.current
+    const amountIn = parseAmountIn(inputAmount)
+
+    if (!amountIn) {
+      setQuotedAmountOut(null)
+      setQuoteError(null)
+      setPriceImpact(null)
+      setQuoteLoading(false)
       return
     }
 
     setQuoteLoading(true)
     try {
-      if (priceUsd && parseFloat(priceUsd) > 0 && nativeTokenPriceUsd && nativeTokenPriceUsd > 0) {
-        const inputValue = parseFloat(inputAmount)
-        const tokenPrice = parseFloat(priceUsd)
+      const amountOut = await fetchAmountOut(amountIn)
+      if (requestId !== quoteRequestIdRef.current) return
 
-        if (isBuy) {
-          const estimated = (inputValue * nativeTokenPriceUsd) / tokenPrice
-          setEstimatedOutput(estimated > 0 ? estimated.toFixed(2) : null)
-        } else {
-          const estimated = (inputValue * tokenPrice) / nativeTokenPriceUsd
-          setEstimatedOutput(estimated > 0 ? estimated.toFixed(6) : null)
+      setQuotedAmountOut(amountOut)
+      setQuoteError(null)
+
+      // Price impact (display only, never blocks the swap): quote a 1/1000th
+      // probe trade to approximate the marginal price, then compare it to the
+      // price this trade actually realises. The DEX fee is present in both
+      // quotes, so it cancels out and we don't need per-DEX fee constants.
+      const probeIn = amountIn / 1000n
+      if (probeIn > 0n) {
+        try {
+          const probeOut = await fetchAmountOut(probeIn)
+          if (requestId !== quoteRequestIdRef.current) return
+
+          const idealOut = (amountIn * probeOut) / probeIn
+          setPriceImpact(
+            idealOut > 0n && amountOut < idealOut
+              ? Number(((idealOut - amountOut) * BPS_DENOMINATOR) / idealOut) / 100
+              : 0
+          )
+        } catch {
+          if (requestId !== quoteRequestIdRef.current) return
+          setPriceImpact(null)
         }
       } else {
-        setEstimatedOutput(null)
+        setPriceImpact(null)
       }
     } catch {
-      setEstimatedOutput(null)
+      if (requestId !== quoteRequestIdRef.current) return
+      setQuotedAmountOut(null)
+      setPriceImpact(null)
+      setQuoteError(QUOTE_UNAVAILABLE_MESSAGE)
     } finally {
-      setQuoteLoading(false)
+      if (requestId === quoteRequestIdRef.current) setQuoteLoading(false)
     }
-  }, [inputAmount, routerAddress, weth, isBuy, priceUsd, nativeTokenPriceUsd])
+  }, [inputAmount, parseAmountIn, fetchAmountOut])
 
   // Debounce quote
   useEffect(() => {
     const timer = setTimeout(getQuote, 500)
     return () => clearTimeout(timer)
   }, [getQuote])
+
+  const minimumReceived = quotedAmountOut !== null ? applySlippage(quotedAmountOut, slippage) : null
+
+  // Approximate USD value of the quoted output, for context only
+  const estimatedUsdValue = useMemo(() => {
+    if (quotedAmountOut === null) return null
+    const outputAmount = parseFloat(formatUnits(quotedAmountOut, outputDecimals))
+    const unitPriceUsd = isBuy ? (priceUsd ? parseFloat(priceUsd) : null) : nativeTokenPriceUsd
+    if (!unitPriceUsd || !(unitPriceUsd > 0) || !(outputAmount > 0)) return null
+    return outputAmount * unitPriceUsd
+  }, [quotedAmountOut, outputDecimals, isBuy, priceUsd, nativeTokenPriceUsd])
 
   // Issue #17: Auto-clear success after 4s
   useEffect(() => {
@@ -200,22 +325,57 @@ export default function SwapPanel({
     }
   }, [txStatus])
 
+  /**
+   * Resolve amountOutMin immediately before sending the swap.
+   *
+   * If the router cannot quote the trade we THROW rather than falling back to
+   * 0n: a zero minimum lets a sandwich bot take the whole trade on a thin pool.
+   */
+  const resolveAmountOutMin = async (amountIn: bigint): Promise<bigint> => {
+    let expectedOut: bigint
+    try {
+      expectedOut = await fetchAmountOut(amountIn)
+    } catch {
+      setQuotedAmountOut(null)
+      setPriceImpact(null)
+      setQuoteError(QUOTE_UNAVAILABLE_MESSAGE)
+      throw new Error(QUOTE_UNAVAILABLE_MESSAGE)
+    }
+
+    setQuotedAmountOut(expectedOut)
+    setQuoteError(null)
+
+    const amountOutMin = applySlippage(expectedOut, slippage)
+    if (amountOutMin <= 0n) {
+      throw new Error('This trade is too small to protect — the quoted output rounds to zero at the selected slippage.')
+    }
+    return amountOutMin
+  }
+
   const handleSwap = async () => {
     if (!address || !routerAddress || !weth || !inputAmount) return
 
     setTxError(null)
+
+    const amountIn = parseAmountIn(inputAmount)
+    if (!amountIn) {
+      setTxStatus('error')
+      setTxError('Enter a valid amount')
+      return
+    }
+
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1800) // 30 min
 
     try {
       if (isBuy) {
-        setTxStatus('swapping')
-        const amountIn = parseEther(inputAmount)
+        const amountOutMin = await resolveAmountOutMin(amountIn)
 
+        setTxStatus('swapping')
         await writeContractAsync({
           address: routerAddress,
           abi: ROUTER_V2_ABI,
           functionName: 'swapExactETHForTokensSupportingFeeOnTransferTokens',
-          args: [0n, [weth as Address, tokenAddress as Address], address, deadline],
+          args: [amountOutMin, [weth as Address, tokenAddress as Address], address, deadline],
           value: amountIn,
           chainId: tokenChainId,
         })
@@ -223,8 +383,6 @@ export default function SwapPanel({
         setTxStatus('success')
         setInputAmount('')
       } else {
-        const amountIn = parseUnits(inputAmount, decimals)
-
         const currentAllowance = allowance ?? 0n
         if (currentAllowance < amountIn) {
           setTxStatus('approving')
@@ -238,12 +396,16 @@ export default function SwapPanel({
           await refetchAllowance()
         }
 
+        // Quote after the approval so the minimum reflects the pool state at
+        // the moment we actually broadcast the swap.
+        const amountOutMin = await resolveAmountOutMin(amountIn)
+
         setTxStatus('swapping')
         await writeContractAsync({
           address: routerAddress,
           abi: ROUTER_V2_ABI,
           functionName: 'swapExactTokensForETHSupportingFeeOnTransferTokens',
-          args: [amountIn, 0n, [tokenAddress as Address, weth as Address], address, deadline],
+          args: [amountIn, amountOutMin, [tokenAddress as Address, weth as Address], address, deadline],
           chainId: tokenChainId,
         })
 
@@ -252,10 +414,13 @@ export default function SwapPanel({
       }
     } catch (err: any) {
       setTxStatus('error')
-      if (err?.message?.includes('User rejected') || err?.message?.includes('user rejected')) {
+      const message: string = err?.shortMessage || err?.message || ''
+      if (message.includes('User rejected') || message.includes('user rejected')) {
         setTxError('Transaction cancelled')
+      } else if (message.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
+        setTxError('Price moved past your slippage tolerance and the swap was reverted — no funds were taken. Try again, or raise the slippage setting.')
       } else {
-        setTxError(err?.shortMessage || err?.message || 'Swap failed')
+        setTxError(message || 'Swap failed')
       }
     }
   }
@@ -280,6 +445,14 @@ export default function SwapPanel({
   // Shared focus classes for issue #2
   const focusRing = 'focus:outline-none focus:ring-2 focus:ring-blue-500/30'
 
+  const hasValidInput = !!inputAmount && parseFloat(inputAmount) > 0
+  const isBusy = txStatus === 'approving' || txStatus === 'swapping' || isTxPending
+  // A swap is only allowed once we hold a live router quote — without one we
+  // cannot compute amountOutMin, and sending 0n would remove all protection.
+  const hasQuote = quotedAmountOut !== null && !quoteError
+  const isBlocked = !hasValidInput || isWrongChain || !hasQuote
+  const canSwap = !isBlocked && !isBusy && !quoteLoading
+
   return (
     <motion.div
       initial={prefersReducedMotion ? false : { opacity: 0, x: 20 }}
@@ -292,7 +465,7 @@ export default function SwapPanel({
         <button
           role="tab"
           aria-selected={isBuy}
-          onClick={() => { setIsBuy(true); setInputAmount(''); setTxStatus('idle'); setTxError(null) }}
+          onClick={() => { setIsBuy(true); setInputAmount(''); setTxStatus('idle'); setTxError(null); setQuotedAmountOut(null); setQuoteError(null); setPriceImpact(null) }}
           className={`flex-1 py-2.5 rounded-xl font-display font-bold text-sm transition-colors duration-200 cursor-pointer ${focusRing} ${
             isBuy
               ? 'bg-green-500/20 text-green-400 border border-green-500/40'
@@ -304,7 +477,7 @@ export default function SwapPanel({
         <button
           role="tab"
           aria-selected={!isBuy}
-          onClick={() => { setIsBuy(false); setInputAmount(''); setTxStatus('idle'); setTxError(null) }}
+          onClick={() => { setIsBuy(false); setInputAmount(''); setTxStatus('idle'); setTxError(null); setQuotedAmountOut(null); setQuoteError(null); setPriceImpact(null) }}
           className={`flex-1 py-2.5 rounded-xl font-display font-bold text-sm transition-colors duration-200 cursor-pointer ${focusRing} ${
             !isBuy
               ? 'bg-red-500/20 text-red-400 border border-red-500/40'
@@ -375,15 +548,44 @@ export default function SwapPanel({
         >
           {quoteLoading ? (
             <span className="text-gray-500 animate-pulse">Estimating...</span>
-          ) : estimatedOutput ? (
+          ) : quotedAmountOut !== null ? (
             <span>
-              ~{parseFloat(estimatedOutput).toLocaleString(undefined, { maximumFractionDigits: 4 })}{' '}
-              <span className="text-sm text-gray-500">{isBuy ? tokenSymbol : nativeSymbol}</span>
+              ~{formatAmount(quotedAmountOut, outputDecimals, isBuy ? 4 : 6)}{' '}
+              <span className="text-sm text-gray-500">{outputSymbol}</span>
+              {estimatedUsdValue !== null && (
+                <span className="text-sm text-gray-500">
+                  {' '}(~${estimatedUsdValue.toLocaleString(undefined, { maximumFractionDigits: 2 })})
+                </span>
+              )}
             </span>
           ) : (
             <span className="text-gray-600">&mdash;</span>
           )}
         </div>
+
+        {/* Slippage protection details — the numbers the user is actually signing */}
+        {minimumReceived !== null && !quoteLoading && (
+          <dl className="mt-2 space-y-1 text-xs font-sans">
+            <div className="flex items-center justify-between">
+              <dt className="text-gray-500">Minimum received ({slippage}% slippage)</dt>
+              <dd className="text-gray-300 font-semibold">
+                {formatAmount(minimumReceived, outputDecimals, isBuy ? 4 : 6)} {outputSymbol}
+              </dd>
+            </div>
+            {priceImpact !== null && (
+              <div className="flex items-center justify-between">
+                <dt className="text-gray-500">Price impact</dt>
+                <dd className={priceImpact >= 5 ? 'text-red-400 font-semibold' : priceImpact >= 1 ? 'text-yellow-400 font-semibold' : 'text-gray-300 font-semibold'}>
+                  {priceImpact < 0.01 ? '<0.01' : priceImpact.toFixed(2)}%
+                </dd>
+              </div>
+            )}
+          </dl>
+        )}
+
+        {quoteError && !quoteLoading && (
+          <p className="mt-2 text-xs text-red-400 font-sans" role="alert">{quoteError}</p>
+        )}
       </div>
 
       {/* Slippage — Issue #3: label association */}
@@ -419,18 +621,11 @@ export default function SwapPanel({
       ) : (
         <button
           onClick={handleSwap}
-          disabled={
-            !inputAmount ||
-            parseFloat(inputAmount) <= 0 ||
-            isWrongChain ||
-            txStatus === 'swapping' ||
-            txStatus === 'approving' ||
-            isTxPending
-          }
+          disabled={!canSwap}
           className={`w-full py-3.5 rounded-xl font-display font-bold text-sm transition-[background-color,color,border-color,box-shadow,opacity] duration-200 cursor-pointer ${focusRing} ${
             txStatus === 'success'
               ? 'bg-green-500/20 text-green-400 border border-green-500/40'
-              : !inputAmount || parseFloat(inputAmount) <= 0 || isWrongChain
+              : isBlocked
                 ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                 : isBuy
                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white shadow-lg shadow-green-500/30'
@@ -445,7 +640,11 @@ export default function SwapPanel({
                 ? 'Swap Successful!'
                 : isWrongChain
                   ? 'Wrong Network'
-                  : `${isBuy ? 'Buy' : 'Sell'} ${tokenSymbol}`}
+                  : quoteLoading
+                    ? 'Fetching quote...'
+                    : hasValidInput && quoteError
+                      ? 'No liquidity'
+                      : `${isBuy ? 'Buy' : 'Sell'} ${tokenSymbol}`}
         </button>
       )}
 

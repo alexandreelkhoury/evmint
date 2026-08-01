@@ -19,6 +19,19 @@ interface ActivityTableProps {
   chainId: number
 }
 
+/** Fields both the table row and the mobile card render — derived once, in one place. */
+function readTrade(trade: GeckoTradeData) {
+  const isBuy = trade.attributes.kind === 'buy'
+  return {
+    isBuy,
+    usdVol: trade.attributes.volume_in_usd,
+    maker: trade.attributes.tx_from_address,
+    txHash: trade.attributes.tx_hash,
+    time: trade.attributes.block_timestamp,
+    amount: isBuy ? trade.attributes.to_token_amount : trade.attributes.from_token_amount,
+  }
+}
+
 export default function ActivityTable({
   trades,
   newTradeIds,
@@ -89,17 +102,94 @@ export default function ActivityTable({
             </svg>
           </div>
           <p className="text-sm text-gray-400 font-sans font-medium mb-1">No trades yet</p>
-          <p className="text-xs text-gray-600 font-sans">
+          <p className="text-xs text-gray-400 font-sans">
             Buys, sells, and liquidity changes will appear here.
           </p>
         </div>
       )}
 
-      {/* Table — Issue #8: scroll hint on mobile */}
+      {/* Stacked cards below sm — no horizontal scroll nested in the page scroll */}
       {trades.length > 0 && (
-        <div className="relative">
-          {/* Fade edge scroll hint for mobile */}
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900/80 to-transparent pointer-events-none z-10 sm:hidden" />
+        <ul className="sm:hidden divide-y divide-white/5">
+          <AnimatePresence initial={false}>
+            {trades.map((trade) => {
+              const { isBuy, usdVol, maker, txHash, time, amount } = readTrade(trade)
+              const isNew = newTradeIds.has(trade.id)
+
+              return (
+                <motion.li
+                  key={trade.id}
+                  initial={isNew && !prefersReducedMotion ? { opacity: 0, y: -8 } : false}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`px-5 py-3.5 ${
+                    isNew ? (isBuy ? 'bg-green-500/[0.06]' : 'bg-red-500/[0.06]') : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span
+                      className={`inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase border ${
+                        isBuy
+                          ? 'bg-green-600/20 text-green-400 border-green-600/30'
+                          : 'bg-red-600/20 text-red-400 border-red-600/30'
+                      }`}
+                    >
+                      {isBuy ? 'BUY' : 'SELL'}
+                    </span>
+                    <span className="text-base text-white font-sans font-semibold">
+                      {formatUsd(usdVol)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 mt-2">
+                    <div className="flex items-center gap-2 min-w-0 text-xs font-sans text-gray-400">
+                      <span className="truncate">{amount ? formatTokenAmount(amount) : '—'}</span>
+                      {time && (
+                        <>
+                          <span aria-hidden="true" className="text-gray-500">·</span>
+                          <span className="flex-shrink-0">{timeAgo(time)}</span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      {maker && (
+                        <a
+                          href={getAddressUrl(chainId, maker)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-gray-400 hover:text-blue-400 transition-colors duration-200 font-mono cursor-pointer focus:outline-none focus:text-blue-400"
+                        >
+                          {abbreviateAddress(maker)}
+                        </a>
+                      )}
+                      {txHash && (
+                        <a
+                          href={getTxUrl(chainId, txHash)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-400 hover:text-blue-400 transition-colors duration-200 cursor-pointer inline-flex focus:outline-none focus:text-blue-400"
+                          aria-label="View transaction on block explorer"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.li>
+              )
+            })}
+          </AnimatePresence>
+        </ul>
+      )}
+
+      {/* Table — sm and up. Issue #8: fade scroll hint kept for the narrow sm–md band */}
+      {trades.length > 0 && (
+        <div className="relative hidden sm:block">
+          {/* Fade edge scroll hint while the table can still overflow */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900/80 to-transparent pointer-events-none z-10 md:hidden" />
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[540px]">
@@ -116,15 +206,8 @@ export default function ActivityTable({
               <tbody>
                 <AnimatePresence initial={false}>
                   {trades.map((trade) => {
-                    const isBuy = trade.attributes.kind === 'buy'
+                    const { isBuy, usdVol, maker, txHash, time, amount } = readTrade(trade)
                     const isNew = newTradeIds.has(trade.id)
-                    const usdVol = trade.attributes.volume_in_usd
-                    const maker = trade.attributes.tx_from_address
-                    const txHash = trade.attributes.tx_hash
-                    const time = trade.attributes.block_timestamp
-                    const amount = isBuy
-                      ? trade.attributes.to_token_amount
-                      : trade.attributes.from_token_amount
 
                     return (
                       <motion.tr
@@ -172,7 +255,7 @@ export default function ActivityTable({
                               {abbreviateAddress(maker)}
                             </a>
                           ) : (
-                            <span className="text-sm text-gray-600">{'\u2014'}</span>
+                            <span className="text-sm text-gray-400">{'\u2014'}</span>
                           )}
                         </td>
 
@@ -196,7 +279,7 @@ export default function ActivityTable({
                               </svg>
                             </a>
                           ) : (
-                            <span className="text-gray-600">{'\u2014'}</span>
+                            <span className="text-gray-400">{'\u2014'}</span>
                           )}
                         </td>
                       </motion.tr>
@@ -211,7 +294,7 @@ export default function ActivityTable({
 
       {/* Footer */}
       {trades.length > 0 && (
-        <div className="px-5 py-2.5 text-xs text-gray-600 font-sans border-t border-white/5">
+        <div className="px-5 py-2.5 text-xs text-gray-400 font-sans border-t border-white/5">
           Showing last {trades.length} transactions
         </div>
       )}

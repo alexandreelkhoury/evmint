@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion'
+import { useAccount, useSwitchChain } from 'wagmi'
 import WalletButton from '../../../components/WalletButton'
 import { formatUnits } from 'viem'
+import { baseConfig } from '../../../config/chains'
+import { loggers } from '../../../utils/logger'
 
 interface Token {
   address: string
@@ -62,6 +65,18 @@ export default function RemoveLiquidityForm({
   onSetPercentageAmount,
   onSubmit
 }: RemoveLiquidityFormProps) {
+  const { isConnected } = useAccount()
+  const { switchChain, isPending: isSwitchingChain } = useSwitchChain()
+
+  // Base is the app's default recommended network, matching NetworkManager
+  const handleSwitchChain = () => {
+    switchChain({ chainId: baseConfig.id }, {
+      onError: (error) => {
+        loggers.network.error('Failed to switch network from withdraw form:', error)
+      }
+    })
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -205,9 +220,28 @@ export default function RemoveLiquidityForm({
             <WalletButton />
           </div>
         ) : !isV2CorrectChain ? (
-          <div className="bg-orange-500/[0.06] border border-orange-500/20 rounded-xl p-3.5 text-center">
-            <p className="text-sm text-orange-300/90">Switch to a supported mainnet to continue</p>
-          </div>
+          <motion.button
+            onClick={handleSwitchChain}
+            disabled={!isConnected || isSwitchingChain}
+            whileHover={isConnected && !isSwitchingChain ? { scale: 1.01 } : undefined}
+            whileTap={isConnected && !isSwitchingChain ? { scale: 0.99 } : undefined}
+            className={`w-full py-4 text-base font-semibold rounded-xl transition-all duration-150 ${
+              !isConnected || isSwitchingChain
+                ? 'bg-white/[0.04] text-gray-600 cursor-not-allowed'
+                : 'bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-600/20 hover:shadow-orange-500/30 active:bg-orange-700 cursor-pointer'
+            }`}
+          >
+            {!isConnected ? (
+              'Connect wallet to switch'
+            ) : isSwitchingChain ? (
+              <span className="flex items-center justify-center gap-2.5">
+                <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                Switching network...
+              </span>
+            ) : (
+              `Switch to ${baseConfig.name}`
+            )}
+          </motion.button>
         ) : (
           <motion.button
             onClick={onSubmit}

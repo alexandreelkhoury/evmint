@@ -137,6 +137,17 @@ export const LP_TOKEN_ABI = [
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getReserves",
+    "outputs": [
+      {"internalType": "uint112", "name": "_reserve0", "type": "uint112"},
+      {"internalType": "uint112", "name": "_reserve1", "type": "uint112"},
+      {"internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 ] as const
 
@@ -176,6 +187,30 @@ export const ERC20_ABI = [
     "type": "function"
   }
 ] as const
+
+// Slippage protection
+//
+// Basis-point denominator: 10000 bps == 100%.
+export const BPS_DENOMINATOR = 10000n
+
+// Slippage tolerance applied to add/remove liquidity minimum amounts.
+// 500 bps == 5%, matching the existing 95%-of-expected convention used by
+// useAddLiquidity (see useAddLiquidity.ts `(amount * 95n) / 100n`).
+export const LIQUIDITY_SLIPPAGE_BPS = 500n
+
+/**
+ * Apply the liquidity slippage tolerance to an expected output amount.
+ * Returns floor(expected * (10000 - slippageBps) / 10000).
+ *
+ * All arithmetic is bigint, so the result is always rounded DOWN — which is the
+ * safe direction for a minimum-received value.
+ */
+export function applyLiquiditySlippage(expectedAmount: bigint, slippageBps: bigint = LIQUIDITY_SLIPPAGE_BPS): bigint {
+  if (expectedAmount <= 0n) return 0n
+  if (slippageBps <= 0n) return expectedAmount
+  if (slippageBps >= BPS_DENOMINATOR) return 0n
+  return (expectedAmount * (BPS_DENOMINATOR - slippageBps)) / BPS_DENOMINATOR
+}
 
 // Storage keys
 export const LIQUIDITY_STORAGE_KEY = 'evmint_uniswapV2Pools'

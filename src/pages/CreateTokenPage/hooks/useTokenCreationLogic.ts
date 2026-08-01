@@ -27,6 +27,9 @@ export function useTokenCreationLogic() {
     isCorrectChain,
     chainId,
     isVerifying,
+    verificationStatus,
+    verificationMethod,
+    retryVerification,
     feeAmount
   } = useOpenZeppelinTokenDeployment()
 
@@ -125,6 +128,9 @@ export function useTokenCreationLogic() {
     isConnected,
     isCorrectChain,
     isVerifying,
+    verificationStatus,
+    verificationMethod,
+    retryVerification,
     feeAmount,
 
     // Chain info

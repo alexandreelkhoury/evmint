@@ -60,14 +60,13 @@ export default function PricingSection() {
             className="inline-block mb-6"
           >
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-sm font-semibold">
-              
               Transparent Pricing
             </span>
           </motion.div>
 
           <h2 id="pricing-heading" className={`${typography.sectionTitle} text-4xl sm:text-5xl mb-6`}>
             One Simple{' '}
-            <span className="bg-gradient-to-r text-white">
+            <span className={typography.gradientText}>
               Price
             </span>
           </h2>
@@ -110,7 +109,7 @@ export default function PricingSection() {
               {/* Price Display */}
               <div className="text-center mb-10">
                 <div className="flex items-baseline justify-center gap-3 mb-3">
-                  <span className="text-6xl md:text-7xl font-black bg-gradient-to-r text-white">
+                  <span className={`text-6xl md:text-7xl font-black ${typography.gradientText}`}>
                     ~$80
                   </span>
                   <span className="text-xl text-gray-400 font-medium">per token</span>
