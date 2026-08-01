@@ -123,6 +123,10 @@
         </style>
       </div>
     </div>
+    <script>
+      // Safety net: remove splash after 8s even if React fails to mount
+      setTimeout(function(){var s=document.getElementById('splash');if(s)s.remove()},8000)
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
