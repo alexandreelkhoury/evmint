@@ -26,8 +26,13 @@
     background-color: #111827;
     color: #ffffff;
     min-height: 100vh;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    overflow-y: scroll;
   }
 }
 
