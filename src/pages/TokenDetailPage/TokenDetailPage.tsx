@@ -122,8 +122,8 @@ export default function TokenDetailPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="text-center py-20">
-            <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <svg className="w-10 h-10 text-amber-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <svg className="w-10 h-10 text-blue-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
             </div>
@@ -154,8 +154,8 @@ export default function TokenDetailPage() {
             { label: tokenAddress?.slice(0, 10) + '...' || 'Token' },
           ]} />
           <div className="text-center py-20">
-            <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <svg className="w-10 h-10 text-amber-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <svg className="w-10 h-10 text-blue-400/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
             </div>
@@ -165,7 +165,7 @@ export default function TokenDetailPage() {
             </p>
             <button
               onClick={retry}
-              className={`px-6 py-3 ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50`}
+              className={`px-6 py-3 ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
             >
               Retry
             </button>
@@ -191,7 +191,7 @@ export default function TokenDetailPage() {
             <p className="text-gray-400 font-sans mb-6">{poolError}</p>
             <button
               onClick={retry}
-              className={`px-6 py-3 ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50`}
+              className={`px-6 py-3 ${colors.primaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
             >
               Retry
             </button>

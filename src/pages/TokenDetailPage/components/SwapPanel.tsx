@@ -397,7 +397,7 @@ export default function SwapPanel({
               aria-pressed={slippage === val}
               className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer ${focusRing} ${
                 slippage === val
-                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
                   : 'bg-white/5 text-gray-400 border border-transparent hover:bg-white/10'
               }`}
             >
