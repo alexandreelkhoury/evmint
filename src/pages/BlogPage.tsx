@@ -6,6 +6,9 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import { blogPosts, getFeaturedPosts, BlogPost } from '../data/blogData'
 import { colors, typography, layout } from '../styles/designSystem'
+import { initializeApp, getApps } from 'firebase/app'
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { firebaseConfig } from '../config/firebase'
 
 const categories = ['All', 'Tutorials', 'Guides', 'Strategy']
 
@@ -189,25 +192,7 @@ export default function BlogPage() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className={`${colors.glassCard} rounded-2xl p-8 mt-16 text-center`}
         >
-          <h2 className="text-2xl font-bold text-white mb-4">Stay Updated</h2>
-          <p className="text-gray-400 mb-6 max-w-xl mx-auto">
-            Get the latest guides, tutorials, and strategies delivered to your inbox.
-            No spam, just valuable content for token creators.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className={`${colors.input} flex-1 rounded-xl`}
-            />
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`px-6 py-3 ${colors.primaryButton} rounded-xl font-medium whitespace-nowrap cursor-pointer`}
-            >
-              Subscribe
-            </motion.button>
-          </div>
+          <NewsletterForm />
         </motion.section>
       </div>
     </div>
@@ -307,5 +292,66 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
         </div>
       </Link>
     </motion.article>
+  )
+}
+
+function NewsletterForm() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || !email.includes('@')) return
+
+    setStatus('loading')
+    try {
+      const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
+      const db = getFirestore(app)
+      await addDoc(collection(db, 'subscribers'), {
+        email: email.trim().toLowerCase(),
+        subscribedAt: serverTimestamp(),
+        source: 'blog'
+      })
+      setStatus('success')
+      setEmail('')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <>
+      <h2 className="text-2xl font-bold text-white mb-4">Stay Updated</h2>
+      <p className="text-gray-400 mb-6 max-w-xl mx-auto">
+        Get the latest guides, tutorials, and strategies delivered to your inbox.
+      </p>
+      {status === 'success' ? (
+        <p className="text-green-400 font-medium">You're subscribed!</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+          <input
+            id="newsletter-email"
+            type="email"
+            required
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={`${colors.input} flex-1 rounded-xl`}
+            disabled={status === 'loading'}
+          />
+          <button
+            type="submit"
+            disabled={status === 'loading'}
+            className={`px-6 py-3 ${colors.primaryButton} rounded-xl font-medium whitespace-nowrap cursor-pointer disabled:opacity-50`}
+          >
+            {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
+          </button>
+        </form>
+      )}
+      {status === 'error' && (
+        <p className="text-red-400 text-sm mt-3">Something went wrong. Try again.</p>
+      )}
+    </>
   )
 }
