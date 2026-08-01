@@ -184,6 +184,11 @@ async function prerenderRoute(browser, route) {
       () => {
         const main = document.querySelector('main#main-content')
         if (!main) return false
+        // Blog bodies load via a dynamic import one hop after the <h1>, which
+        // renders synchronously from metadata. Without this the article text
+        // is captured only by winning a race against the settle delay.
+        const article = main.querySelector('[data-post-loaded]')
+        if (article && article.getAttribute('data-post-loaded') !== 'true') return false
         if (main.querySelector('h1')) return true
         return main.innerText.trim().length > 200
       },
@@ -214,6 +219,15 @@ async function prerenderRoute(browser, route) {
       for (const s of document.querySelectorAll('script:not([src])')) {
         if (s.textContent.includes("getElementById('splash')")) s.remove()
       }
+
+      // 1b. Drop HTML comments. index.html carries a fair amount of authoring
+      //     commentary that is useful in source and pointless in the shipped
+      //     output, where it repeats on all 39 routes and is readable by
+      //     anyone opening view-source.
+      const commentWalker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_COMMENT)
+      const comments = []
+      while (commentWalker.nextNode()) comments.push(commentWalker.currentNode)
+      for (const c of comments) c.remove()
 
       // 2. De-duplicate the <head>. index.html ships a full set of generic SEO
       //    tags; helmet appends the route-specific ones *after* them. Crawlers

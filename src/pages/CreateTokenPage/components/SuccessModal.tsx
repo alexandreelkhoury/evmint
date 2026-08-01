@@ -91,6 +91,13 @@ export default function SuccessModal({
   const addressUrl = chainId !== undefined ? getAddressUrl(chainId, tokenAddress) : getExplorerUrl()
   const sourceCodeUrl = `${addressUrl}#code`
 
+  // Carry the chain through the deep link the way TokensPage/TokenDetailPage do.
+  // Without it, arriving on the liquidity page while connected to another
+  // network shows a generic "couldn't load" error instead of a switch prompt.
+  const liquidityUrl = chainId !== undefined
+    ? `/liquidity?token=${tokenAddress}&chain=${chainId}`
+    : `/liquidity?token=${tokenAddress}`
+
   // Get clean chain name for hashtag (remove "Sepolia", "Testnet", etc.)
   const getChainHashtag = () => {
     return chainName
@@ -417,7 +424,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
         {/* Main Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link
-            to={`/liquidity?token=${tokenAddress}`}
+            to={liquidityUrl}
             className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.primaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
             <span>Add Liquidity</span>

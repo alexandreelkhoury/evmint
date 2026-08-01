@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
@@ -242,13 +242,14 @@ export default function FAQPage() {
                       <motion.button
                         onClick={() => setOpenFaq(openFaq === index ? null : index)}
                         aria-expanded={isOpen}
+                        aria-controls={`faq-answer-${index}`}
                         aria-label={`${isOpen ? 'Collapse' : 'Expand'} FAQ: ${faq.question}`}
                         className="w-full text-left p-6 lg:p-8 focus:outline-none cursor-pointer"
                         whileTap={{ scale: 0.995 }}
                       >
                         <div className="flex items-start justify-between">
                           {/* Question text */}
-                          <h3 className={`
+                          <h3 id={`faq-question-${index}`} className={`
                             ${typography.cardTitleSmall} text-lg lg:text-xl pr-8 leading-relaxed transition-[background-color,color,border-color,box-shadow,opacity] duration-200
                             ${isOpen 
                               ? `text-transparent ${typography.gradientText}` 
@@ -280,54 +281,55 @@ export default function FAQPage() {
                         </div>
                       </motion.button>
                       
-                      {/* Answer section with smooth animation */}
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div 
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="overflow-hidden"
-                          >
-                            <div className="px-6 lg:px-8 pb-6 lg:pb-8">
-                              <div className="border-t border-white/10 pt-6">
-                                <motion.p 
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ duration: 0.3, delay: 0.1 }}
-                                  className={`${typography.bodyText} text-gray-300 leading-relaxed text-base lg:text-lg mb-4`}
-                                >
-                                  {faq.answer}
-                                </motion.p>
+                      {/*
+                        Answer section. Always mounted, collapsed with CSS only:
+                        Google requires FAQ answer text to be present in the HTML
+                        for FAQPage structured data to be eligible for rich
+                        results, and the previous AnimatePresence version only
+                        rendered the answer while expanded — so the prerendered
+                        page shipped 34 questions and zero answers.
+                        `invisible` (not aria-hidden) keeps the collapsed answer
+                        and its link out of the tab order and the a11y tree
+                        without hiding content that is genuinely on screen.
+                      */}
+                      <div
+                        id={`faq-answer-${index}`}
+                        role="region"
+                        aria-labelledby={`faq-question-${index}`}
+                        className={`
+                          grid transition-[grid-template-rows,opacity,visibility] duration-300 ease-in-out
+                          ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 invisible'}
+                        `}
+                      >
+                        <div className="overflow-hidden min-h-0">
+                          <div className="px-6 lg:px-8 pb-6 lg:pb-8">
+                            <div className="border-t border-white/10 pt-6">
+                              <p className={`${typography.bodyText} text-gray-300 leading-relaxed text-base lg:text-lg mb-4`}>
+                                {faq.answer}
+                              </p>
 
-                                {/* Related guide link */}
-                                {faq.relatedGuide && (
-                                  <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: 0.2 }}
-                                    className="mt-4 pt-4 border-t border-white/10"
+                              {/* Related guide link */}
+                              {faq.relatedGuide && (
+                                <div className="mt-4 pt-4 border-t border-white/10">
+                                  <Link
+                                    to={`/guides/${faq.relatedGuide}`}
+                                    tabIndex={isOpen ? undefined : -1}
+                                    className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200 cursor-pointer"
                                   >
-                                    <Link
-                                      to={`/guides/${faq.relatedGuide}`}
-                                      className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200 cursor-pointer"
-                                    >
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                      </svg>
-                                      <span className="font-medium">Learn more in our guide</span>
-                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                      </svg>
-                                    </Link>
-                                  </motion.div>
-                                )}
-                              </div>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    <span className="font-medium">Learn more in our guide</span>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </Link>
+                                </div>
+                              )}
                             </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     
                     {/* Hover glow effect */}

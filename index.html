@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary SEO Meta Tags - Revenue Optimized -->
-    <title>EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly</title>
-    <meta name="title" content="EVMint - Multi-Chain Token Launcher | Deploy on 15+ EVM Chains Instantly" />
+    <title>EVMint - Multi-Chain Token Launcher | 15+ EVM Chains</title>
+    <meta name="title" content="EVMint - Multi-Chain Token Launcher | 15+ EVM Chains" />
 
-    <meta name="description" content="Create ERC20 tokens on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding, ultra-low fees, instant deployment. Start your crypto project today with EVMint!" />
+    <meta name="description" content="Create ERC20 tokens on 15+ EVM blockchains: Ethereum, Base, Arbitrum, Polygon and more. No coding, ultra-low fees, deployed in under a minute." />
 
     <!-- Google Fonts — ONE render-blocking request, preconnects first.
          Order matters: the preconnects must be parsed before the stylesheet
@@ -79,36 +79,48 @@
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
-    <!-- Schema.org markup -->
+    <!-- Schema.org markup — site-wide root entities only.
+         This block is inherited by EVERY route (the prerenderer copies this
+         head into each page, and the SPA fallback serves it verbatim), so it
+         must contain nothing page-specific. It used to hold a generic
+         WebApplication with an $80 Offer, which (a) asserted a priced software
+         product on /privacy, /terms and /disclaimers and (b) collided with the
+         page-level WebApplication on / and the four landing pages, leaving
+         Google to pick one of two same-typed entities with different names.
+         Organization + WebSite are the correct site-wide entities: they are
+         true on every page, do not clash with any page-level type, and the
+         site previously declared no Organization anywhere. Page-specific
+         WebApplication / SoftwareApplication / Offer markup lives on the pages
+         that actually describe the product. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "EVMint",
-      "description": "Create ERC20 tokens on 15+ EVM blockchains with no coding required",
-      "url": "https://evmint.io",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "80",
-        "priceCurrency": "USD",
-        "availability": "https://schema.org/InStock",
-        "priceValidUntil": "2027-12-31",
-        "description": "~$80 equivalent per token deployment on any supported chain, paid in native token. Same price across all 15+ EVM networks."
-      },
-      "creator": {
-        "@type": "Organization",
-        "name": "EVMint",
-        "url": "https://evmint.io"
-      },
-      "featureList": [
-        "No code token creation",
-        "15+ EVM blockchain support",
-        "Multi-DEX integration",
-        "Ultra-low fees on L2 chains",
-        "Instant deployment",
-        "Multi-chain liquidity support"
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://evmint.io/#organization",
+          "name": "EVMint",
+          "url": "https://evmint.io",
+          "description": "EVMint is a no-code platform for creating and deploying ERC20 tokens on 15+ EVM blockchains.",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://evmint.io/logo.svg"
+          },
+          "foundingDate": "2024",
+          "sameAs": [
+            "https://twitter.com/evmint"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://evmint.io/#website",
+          "name": "EVMint",
+          "url": "https://evmint.io",
+          "inLanguage": "en-US",
+          "publisher": {
+            "@id": "https://evmint.io/#organization"
+          }
+        }
       ]
     }
     </script>

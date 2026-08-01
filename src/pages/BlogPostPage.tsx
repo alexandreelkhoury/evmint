@@ -9,6 +9,11 @@ import { getBlogPostMeta, getRelatedPostMetas } from '../data/blogMeta'
 import type { BlogPostMeta } from '../data/blogMeta'
 import { loadPostBody } from '../data/blogBody'
 import { colors, layout } from '../styles/designSystem'
+import { loggers } from '../utils/logger'
+
+// Sentinel for "the body chunk failed to load", distinct from null (still
+// loading) and '' (a genuinely empty post).
+const BODY_LOAD_FAILED = Symbol('body-load-failed')
 
 /**
  * Bodies already fetched in this session. loadPostBody() goes through the ES
@@ -155,6 +160,95 @@ function renderInline(text: string, keyPrefix: string, depth = 0): (string | JSX
 }
 
 // ---------------------------------------------------------------------------
+// Tables
+// ---------------------------------------------------------------------------
+
+/**
+ * The `|---|:--:|` row that promotes the line above it to a header. Its presence
+ * is what makes a run of pipe lines a table rather than prose that happens to
+ * contain a pipe, so the pattern is anchored and deliberately strict.
+ */
+const TABLE_DIVIDER = /^\|(?:\s*:?-+:?\s*\|)+$/
+
+type CellAlign = 'left' | 'center' | 'right'
+
+const alignClass: Record<CellAlign, string> = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right'
+}
+
+/** `| a | b |` -> `['a', 'b']`. The outer pipes produce empty edges; drop them. */
+function splitRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/\|$/, '')
+    .split('|')
+    .map(cell => cell.trim())
+}
+
+function readAlignment(spec: string): CellAlign {
+  const left = spec.startsWith(':')
+  const right = spec.endsWith(':')
+  if (left && right) return 'center'
+  if (right) return 'right'
+  return 'left'
+}
+
+/**
+ * Render a GFM pipe table: header row, divider, then body rows.
+ *
+ * Every cell goes through renderInline, so `**bold**`, `code` and links behave
+ * exactly as they do in a paragraph. Ragged rows are squared off against the
+ * header width rather than dropped — a missing cell renders empty, and a cell
+ * past the last header column would have no header to sit under.
+ *
+ * The scroll wrapper is what keeps a wide table off the page's own scrollbar:
+ * `min-w-*` on the <table> lets it outgrow a 360px viewport, and `overflow-x-auto`
+ * on the bounded wrapper catches the overflow instead of the document.
+ */
+function renderTable(rows: string[], key: number) {
+  const headers = splitRow(rows[0])
+  const aligns = splitRow(rows[1]).map(readAlignment)
+  const body = rows.slice(2).map(splitRow)
+
+  return (
+    <div key={key} className="mb-6 overflow-x-auto rounded-xl border border-white/10 bg-white/[0.02]">
+      <table className="w-full min-w-[480px] border-collapse text-sm">
+        <thead>
+          <tr className="border-b border-white/10 bg-white/[0.03]">
+            {headers.map((cell, i) => (
+              <th
+                key={i}
+                scope="col"
+                className={`px-4 py-3 text-xs font-medium uppercase tracking-wider text-gray-400 ${alignClass[aligns[i] ?? 'left']}`}
+              >
+                {renderInline(cell, `th-${key}-${i}`)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {body.map((row, r) => (
+            <tr key={r} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+              {headers.map((_, c) => (
+                <td
+                  key={c}
+                  className={`px-4 py-3 align-top text-gray-300 ${alignClass[aligns[c] ?? 'left']}`}
+                >
+                  {renderInline(row[c] ?? '', `td-${key}-${r}-${c}`)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Block markdown
 // ---------------------------------------------------------------------------
 
@@ -191,13 +285,15 @@ function renderContent(content: string) {
     }
   }
 
-  lines.forEach((line, index) => {
-    const trimmedLine = line.trim()
+  // Indexed rather than forEach: a table spans several lines, so the loop has
+  // to look ahead at the divider and then consume the rows it swallowed.
+  for (let index = 0; index < lines.length; index++) {
+    const trimmedLine = lines[index].trim()
 
     // Empty line
     if (!trimmedLine) {
       flushList()
-      return
+      continue
     }
 
     // Headers
@@ -206,14 +302,14 @@ function renderContent(content: string) {
       // The leading title heading is already the page <h1>. Skip it.
       if (!seenContent) {
         seenContent = true
-        return
+        continue
       }
       elements.push(
         <h2 key={index} className="text-2xl lg:text-3xl font-bold text-white mb-4 mt-8">
           {renderInline(trimmedLine.slice(2), `h-${index}`)}
         </h2>
       )
-      return
+      continue
     }
 
     seenContent = true
@@ -225,7 +321,7 @@ function renderContent(content: string) {
           {renderInline(trimmedLine.slice(3), `h-${index}`)}
         </h2>
       )
-      return
+      continue
     }
 
     if (trimmedLine.startsWith('### ')) {
@@ -235,7 +331,7 @@ function renderContent(content: string) {
           {renderInline(trimmedLine.slice(4), `h-${index}`)}
         </h3>
       )
-      return
+      continue
     }
 
     // Lists
@@ -245,7 +341,7 @@ function renderContent(content: string) {
         listType = 'ul'
       }
       currentList.push(trimmedLine.slice(2))
-      return
+      continue
     }
 
     if (/^\d+\.\s/.test(trimmedLine)) {
@@ -254,20 +350,24 @@ function renderContent(content: string) {
         listType = 'ol'
       }
       currentList.push(trimmedLine.replace(/^\d+\.\s/, ''))
-      return
+      continue
     }
 
-    // Tables (simplified - just show as text). Left unparsed on purpose: the
-    // pipe rows are pre-aligned copy and inline parsing would eat the `**` that
-    // marks their total rows without a <table> to hang the emphasis off.
-    if (trimmedLine.startsWith('|')) {
+    // Tables. A pipe line only starts one if the very next line is a divider;
+    // that check is what keeps prose containing a stray `|` out of a <table>.
+    if (trimmedLine.startsWith('|') && TABLE_DIVIDER.test((lines[index + 1] ?? '').trim())) {
       flushList()
-      elements.push(
-        <div key={index} className="font-mono text-sm text-gray-400 mb-2 overflow-x-auto">
-          {trimmedLine}
-        </div>
-      )
-      return
+
+      const tableRows = [trimmedLine, lines[index + 1].trim()]
+      let cursor = index + 2
+      while (cursor < lines.length && lines[cursor].trim().startsWith('|')) {
+        tableRows.push(lines[cursor].trim())
+        cursor++
+      }
+
+      elements.push(renderTable(tableRows, index))
+      index = cursor - 1
+      continue
     }
 
     // A line that is nothing but one bold run acts as a sub-subheading.
@@ -279,7 +379,7 @@ function renderContent(content: string) {
           {renderInline(wholeLineBold[1], `b-${index}`, 1)}
         </p>
       )
-      return
+      continue
     }
 
     // Regular paragraphs
@@ -289,7 +389,7 @@ function renderContent(content: string) {
         {renderInline(trimmedLine, `p-${index}`)}
       </p>
     )
-  })
+  }
 
   flushList()
   return elements
@@ -317,7 +417,7 @@ export default function BlogPostPage() {
   const post = slug ? getBlogPostMeta(slug) : undefined
   const relatedPosts = slug ? getRelatedPostMetas(slug, 3) : []
 
-  const [body, setBody] = useState<string | null>(() => (slug ? bodyCache.get(slug) ?? null : null))
+  const [body, setBody] = useState<string | null | typeof BODY_LOAD_FAILED>(() => (slug ? bodyCache.get(slug) ?? null : null))
 
   useEffect(() => {
     if (!slug || !post) return
@@ -334,6 +434,12 @@ export default function BlogPostPage() {
       const resolved = text ?? ''
       bodyCache.set(slug, resolved)
       if (!cancelled) setBody(resolved)
+    }).catch(error => {
+      // A rejected dynamic import (stale chunk hash after a redeploy, dropped
+      // connection) would otherwise leave the skeleton up forever. Not cached,
+      // so navigating back retries.
+      loggers.ui.error('Failed to load blog post body', { slug, error })
+      if (!cancelled) setBody(BODY_LOAD_FAILED)
     })
 
     return () => {
@@ -455,10 +561,24 @@ export default function BlogPostPage() {
           transition={{ duration: 0.25, delay: 0.15 }}
           className="max-w-4xl mx-auto mb-16"
           // Machine-readable "the body has arrived" flag for the prerender.
-          data-post-loaded={body !== null}
+          data-post-loaded={body !== null && body !== BODY_LOAD_FAILED}
         >
           <div className="prose prose-invert prose-lg max-w-none">
-            {body === null ? <ArticleSkeleton /> : renderContent(body)}
+            {body === null ? (
+              <ArticleSkeleton />
+            ) : body === BODY_LOAD_FAILED ? (
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center">
+                <p className="text-gray-300">This article didn't finish loading.</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-3 min-h-[44px] px-4 rounded-lg bg-blue-500/10 border border-blue-500/30 text-blue-300 hover:bg-blue-500/20 transition-colors focus-visible:ring-2 focus-visible:ring-blue-400"
+                >
+                  Reload the page
+                </button>
+              </div>
+            ) : (
+              renderContent(body)
+            )}
           </div>
         </motion.article>
 

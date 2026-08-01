@@ -24,6 +24,7 @@ interface Token {
 interface ValidationErrors {
   amountA?: string
   amountB?: string
+  tokenB?: string
   lpTokenAddress?: string
   lpTokenAmount?: string
 }
@@ -139,18 +140,31 @@ export function useLiquidityPageLogic() {
 
   const { switchChain, isPending: isSwitchingChain } = useSwitchChain()
   const [prefillError, setPrefillError] = useState<string | null>(null)
-  // Holds the `${chainId}:${address}` we have already resolved — or terminally
-  // failed to resolve. Never set on a "lists aren't ready yet" miss.
+  // Bumped only by the Retry button. It is part of the attempt key, so the one
+  // thing that can re-open a settled attempt is an explicit user action.
+  const [prefillRetryNonce, setPrefillRetryNonce] = useState(0)
+  // Holds the `${nonce}:${chainId}:${address}` currently being resolved, or the
+  // one we already settled. Never set on a "lists aren't ready yet" miss.
   const prefillAttemptRef = useRef<string | null>(null)
 
   useEffect(() => {
+    const attemptKey = `${prefillRetryNonce}:${currentChainId}:${prefillTokenAddress?.toLowerCase() ?? ''}`
+
+    // Abandon the previous attempt as soon as any of its inputs change. This
+    // has to run *before* the readiness guards below: on a chain switch we
+    // often bail out at `needsChainSwitch`, and without clearing the ref first
+    // an in-flight resolve for the old chain would still see its own key and
+    // set tokenA to a token that does not exist on the chain we are now on.
+    if (prefillAttemptRef.current !== attemptKey) prefillAttemptRef.current = null
+
     if (!prefillTokenAddress) return
     // Token lists have not loaded yet — a miss right now means nothing
     if (!userTokensLoaded) return
     // Wrong network: wait for the user to switch before trying to resolve
     if (needsChainSwitch) return
 
-    const attemptKey = `${currentChainId}:${prefillTokenAddress.toLowerCase()}`
+    // Already resolved, or already failed, for exactly this key. Retrying needs
+    // a new key (a new nonce), so no amount of re-rendering can loop here.
     if (prefillAttemptRef.current === attemptKey) return
     prefillAttemptRef.current = attemptKey
 
@@ -167,15 +181,20 @@ export function useLiquidityPageLogic() {
     // directly (re-scanning the arrays here would only see a stale closure)
     addCustomToken(prefillTokenAddress)
       .then(token => {
+        // A chain switch, a new address or a retry happened while we were in
+        // flight — this result is for a target the user has already left.
+        if (prefillAttemptRef.current !== attemptKey) return
         setTokenA(token)
         setPrefillError(null)
       })
       .catch(error => {
+        if (prefillAttemptRef.current !== attemptKey) return
+
         loggers.liquidity.error('Failed to prefill token from URL:', error)
 
         const shortAddress = `${prefillTokenAddress.slice(0, 6)}…${prefillTokenAddress.slice(-4)}`
         setPrefillError(
-          `We couldn't load ${shortAddress} on ${getChainName(currentChainId)}. Check the address, switch network, or pick a token manually.`
+          `We couldn't load ${shortAddress} on ${getChainName(currentChainId)}. This is often a temporary network issue — retry, or check the address and pick a token manually.`
         )
 
         trackLiquidityError(analytics, error, {
@@ -184,7 +203,14 @@ export function useLiquidityPageLogic() {
           network: currentChainId?.toString() || 'unknown'
         })
       })
-  }, [prefillTokenAddress, needsChainSwitch, currentChainId, userTokensLoaded, userCreatedTokens, availableTokens, customTokens, addCustomToken, analytics])
+  }, [prefillTokenAddress, needsChainSwitch, currentChainId, userTokensLoaded, prefillRetryNonce, userCreatedTokens, availableTokens, customTokens, addCustomToken, analytics])
+
+  // A transient RPC failure must not kill the deep link for the rest of the
+  // mount. Nothing else writes this state, so the effect above can only re-run
+  // when the user asks it to.
+  const retryPrefill = useCallback(() => {
+    setPrefillRetryNonce(nonce => nonce + 1)
+  }, [])
 
   const switchToPrefillChain = useCallback(() => {
     if (!prefillChainId) return
@@ -274,6 +300,16 @@ export function useLiquidityPageLogic() {
       }
       if (!amountB || !isValidAmount(amountB)) {
         errors.amountB = 'Please enter a valid amount'
+      }
+      // Only native pairs are supported — we call addLiquidityETH, and
+      // handleAddLiquidity treats whichever side is not the wrapped native
+      // token as the ERC20 leg. Without this guard, selecting two ERC20s
+      // sends the second amount as native currency instead of that token.
+      const nativeLeg = wrappedTokenAddress?.toLowerCase()
+      const aIsNative = !!nativeLeg && tokenA?.address.toLowerCase() === nativeLeg
+      const bIsNative = !!nativeLeg && tokenB?.address.toLowerCase() === nativeLeg
+      if (tokenA && tokenB && !aIsNative && !bIsNative) {
+        errors.tokenB = `One side of the pair must be ${nativeTokenSymbol}. Pools here are always paired against ${nativeTokenSymbol}.`
       }
     } else {
       if (!selectedLpToken) {
@@ -565,6 +601,7 @@ export function useLiquidityPageLogic() {
     needsChainSwitch,
     isSwitchingChain,
     prefillError,
+    isRetryingPrefill: isLoadingCustomToken,
 
     // Liquidity hook data
     isAddingLiquidity,
@@ -593,6 +630,7 @@ export function useLiquidityPageLogic() {
     setTokenAddressInput,
     setPercentageAmount,
     switchToPrefillChain,
+    retryPrefill,
     handleAddTokenFromAddress,
     handleAddLiquidity,
     handleRemoveLiquidity,

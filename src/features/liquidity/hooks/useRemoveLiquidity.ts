@@ -1,9 +1,26 @@
 import { useAccount, usePublicClient } from 'wagmi'
 import { formatUnits } from 'viem'
-import { LP_TOKEN_ABI, ROUTER_ABI, LIQUIDITY_SLIPPAGE_BPS, applyLiquiditySlippage } from '../constants'
+import {
+  LP_TOKEN_ABI,
+  ROUTER_ABI,
+  LIQUIDITY_SLIPPAGE_BPS,
+  applyLiquidityMinimum,
+  UserFacingError
+} from '../constants'
 import { loggers } from '../../../utils/logger'
 import { useLiquidityContracts } from './useLiquidityContracts'
 import type { LiquidityPool } from '../types'
+
+/**
+ * The LP allowance is read roughly a second after the approve receipt lands. A
+ * load-balanced RPC can still be serving the block before the approval, in which
+ * case it reports the stale pre-approval allowance and we would abort a removal
+ * that is actually fine. Re-read a bounded number of times before giving up.
+ *
+ * Worst case added latency: 2 extra reads * 700ms = ~1.4s.
+ */
+const ALLOWANCE_RECHECK_ATTEMPTS = 3
+const ALLOWANCE_RECHECK_DELAY_MS = 700
 
 /**
  * Hook to handle the remove liquidity flow
@@ -88,12 +105,51 @@ export function useRemoveLiquidity(
     }
 
     if (lpAmount <= 0n) {
-      throw new Error('No LP tokens available to remove.')
+      throw new UserFacingError('No LP tokens available to remove.')
     }
 
-    // Check allowance against the (possibly adjusted) amount
+    // Check allowance against the (possibly adjusted) amount.
+    //
+    // A single read here fails closed on a lagging RPC: this runs ~1s after the
+    // approve receipt, and a load-balanced endpoint one block behind still
+    // returns the pre-approval allowance. Re-read a bounded number of times
+    // before treating the shortfall as real.
     if (actualAllowance !== undefined && actualAllowance < lpAmount) {
-      throw new Error(`Insufficient LP token allowance. Approved: ${formatUnits(actualAllowance, 18)}, Required: ${formatUnits(lpAmount, 18)}`)
+      let observedAllowance: bigint = actualAllowance
+
+      for (let attempt = 1; attempt < ALLOWANCE_RECHECK_ATTEMPTS && observedAllowance < lpAmount; attempt++) {
+        loggers.liquidity.warn(' LP allowance looks stale, re-reading...', {
+          attempt,
+          of: ALLOWANCE_RECHECK_ATTEMPTS - 1,
+          seen: observedAllowance.toString(),
+          required: lpAmount.toString()
+        })
+
+        await new Promise(resolve => setTimeout(resolve, ALLOWANCE_RECHECK_DELAY_MS))
+
+        try {
+          const rechecked = await publicClient?.readContract({
+            address: pairAddress,
+            abi: LP_TOKEN_ABI,
+            functionName: 'allowance',
+            args: [userAddress as `0x${string}`, contracts.router as `0x${string}`]
+          })
+
+          if (rechecked !== undefined) {
+            observedAllowance = rechecked
+          }
+        } catch (recheckError) {
+          // A failed re-read tells us nothing about the allowance — keep the
+          // last value we did get and let the loop run out.
+          loggers.liquidity.error('❌ LP allowance re-read failed:', recheckError)
+        }
+      }
+
+      if (observedAllowance < lpAmount) {
+        throw new UserFacingError(`Insufficient LP token allowance. Approved: ${formatUnits(observedAllowance, 18)}, Required: ${formatUnits(lpAmount, 18)}`)
+      }
+
+      loggers.liquidity.success(' LP allowance confirmed on re-read:', observedAllowance.toString())
     }
 
     // ------------------------------------------------------------------
@@ -109,6 +165,11 @@ export function useRemoveLiquidity(
     // by 95/10000, which capped the minimums at 95 wei — effectively zero
     // protection. Any failure below must therefore BLOCK the removal rather
     // than fall back to a permissive value.
+    //
+    // applyLiquidityMinimum clamps a non-zero expected amount up to 1 wei rather
+    // than letting it floor to zero. That only fires when expected == 1 (the
+    // dust case on a low-decimal token), and it makes the minimum 100% of the
+    // expected amount — stricter than the 5% tolerance, never weaker.
     // ------------------------------------------------------------------
     let amountTokenMin: bigint
     let amountETHMin: bigint
@@ -158,11 +219,13 @@ export function useRemoveLiquidity(
       const expectedToken = (reserveToken * lpAmount) / totalSupply
       const expectedETH = (reserveETH * lpAmount) / totalSupply
 
-      amountTokenMin = applyLiquiditySlippage(expectedToken)
-      amountETHMin = applyLiquiditySlippage(expectedETH)
+      amountTokenMin = applyLiquidityMinimum(expectedToken)
+      amountETHMin = applyLiquidityMinimum(expectedETH)
 
+      // Only reachable when a side's expected payout is genuinely zero, i.e. the
+      // burn would return nothing at all on that side. Still fails closed.
       if (amountTokenMin <= 0n || amountETHMin <= 0n) {
-        throw new Error('The LP amount is too small relative to the pool to compute a non-zero minimum output')
+        throw new Error('The LP amount is too small relative to the pool — burning it would return zero on at least one side')
       }
 
       loggers.liquidity.success(' CALCULATED MINIMUM AMOUNTS:', {
@@ -182,7 +245,7 @@ export function useRemoveLiquidity(
       })
     } catch (error) {
       loggers.liquidity.error('❌ Could not calculate minimum output amounts:', error)
-      throw new Error(`Unable to estimate minimum output (${error instanceof Error ? error.message : 'unknown error'}). Please try again — do not remove liquidity without slippage protection.`)
+      throw new UserFacingError(`Unable to estimate minimum output (${error instanceof Error ? error.message : 'unknown error'}). Please try again — do not remove liquidity without slippage protection.`)
     }
 
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200) // 20 minutes from now

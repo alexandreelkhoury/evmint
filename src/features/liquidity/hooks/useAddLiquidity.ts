@@ -1,7 +1,13 @@
 import { useState } from 'react'
 import { useAccount, useReadContract, usePublicClient } from 'wagmi'
 import { parseUnits, parseEther, formatUnits } from 'viem'
-import { ERC20_ABI, ROUTER_ABI } from '../constants'
+import {
+  ERC20_ABI,
+  ROUTER_ABI,
+  LIQUIDITY_SLIPPAGE_BPS,
+  applySlippageBps,
+  UserFacingError
+} from '../constants'
 import { TIMEOUTS, RETRY_CONFIG } from '../../../config/constants'
 import { loggers } from '../../../utils/logger'
 import { useLiquidityContracts } from './useLiquidityContracts'
@@ -12,19 +18,12 @@ import type { TokenProcessInfo } from '../types'
  *
  * Creating a pool has no slippage surface at all (there are no reserves to move),
  * so this only bites when adding to a pool that already exists. It is surfaced to
- * the user in AddLiquidityForm — keep the two in sync.
+ * the user in AddLiquidityForm, which imports it from here.
  *
- * NOTE: an equivalent constant now lives in ../constants (LIQUIDITY_SLIPPAGE_BPS);
- * consolidating onto it is a follow-up, deliberately not done here to avoid
- * touching that file concurrently.
+ * Re-exported from ../constants so the figure displayed and the figure enforced
+ * are literally the same value and cannot drift.
  */
-export const ADD_LIQUIDITY_SLIPPAGE_PERCENT = 5
-const SLIPPAGE_BPS = BigInt(ADD_LIQUIDITY_SLIPPAGE_PERCENT * 100)
-const BPS_DENOMINATOR = 10000n
-
-/** floor(amount * (1 - slippage)) — bigint throughout, always rounds down */
-const applySlippage = (amount: bigint): bigint =>
-  (amount * (BPS_DENOMINATOR - SLIPPAGE_BPS)) / BPS_DENOMINATOR
+export { LIQUIDITY_SLIPPAGE_PERCENT as ADD_LIQUIDITY_SLIPPAGE_PERCENT } from '../constants'
 
 /** Wei → a number a human can read, for error messages only */
 const toReadableAmount = (amount: bigint, decimals: number): string => {
@@ -96,9 +95,10 @@ export function useAddLiquidity(
     const tokenAmountWei = parseUnits(tokenInfo.tokenAmount, finalDecimals)
     const ethAmountWei = parseEther(tokenInfo.ethAmount)
 
-    // Minimum amounts the router may settle for — see ADD_LIQUIDITY_SLIPPAGE_PERCENT
-    const amountTokenMin = applySlippage(tokenAmountWei)
-    const amountETHMin = applySlippage(ethAmountWei)
+    // Minimum amounts the router may settle for — see LIQUIDITY_SLIPPAGE_BPS.
+    // floor(amount * 9500 / 10000), bit-identical to the previous local helper.
+    const amountTokenMin = applySlippageBps(tokenAmountWei, LIQUIDITY_SLIPPAGE_BPS)
+    const amountETHMin = applySlippageBps(ethAmountWei, LIQUIDITY_SLIPPAGE_BPS)
 
     // Set deadline to 20 minutes from now
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)
@@ -125,7 +125,7 @@ export function useAddLiquidity(
       }) as bigint
     } catch (error) {
       loggers.liquidity.error('❌ Failed to read on-chain allowance:', error)
-      throw new Error('Failed to verify token allowance. Please try again.')
+      throw new UserFacingError('Failed to verify token allowance. Please try again.')
     }
 
     const cachedAllowance = (allowance as bigint) || 0n
@@ -156,7 +156,10 @@ export function useAddLiquidity(
         needed: tokenAmountWei.toString()
       })
 
-      throw new Error("Approval didn't go through. Your wallet may have replaced or dropped the approval transaction — try again, and confirm both prompts.")
+      throw new UserFacingError(
+        "Approval didn't go through. Your wallet may have replaced or dropped the approval transaction — try again, and confirm both prompts.",
+        'Approval incomplete'
+      )
     }
 
     // CRITICAL: Check your actual token balance!
@@ -176,7 +179,7 @@ export function useAddLiquidity(
       }) as bigint
     } catch (error) {
       loggers.liquidity.error('❌ Failed to read token balance:', error)
-      throw new Error('Failed to verify token balance. Please try again.')
+      throw new UserFacingError('Failed to verify token balance. Please try again.')
     }
 
     loggers.liquidity.debug(' TOKEN BALANCE CHECK:', {
@@ -195,7 +198,7 @@ export function useAddLiquidity(
       })
 
       const symbol = tokenToProcess?.symbol || 'tokens'
-      throw new Error(`Not enough ${symbol}. You have ${toReadableAmount(actualTokenBalance, finalDecimals)}, this needs ${toReadableAmount(tokenAmountWei, finalDecimals)}.`)
+      throw new UserFacingError(`Not enough ${symbol}. You have ${toReadableAmount(actualTokenBalance, finalDecimals)}, this needs ${toReadableAmount(tokenAmountWei, finalDecimals)}.`)
     }
 
     // CRITICAL: Test if the token can be transferred at all
@@ -228,7 +231,7 @@ export function useAddLiquidity(
       })
 
       const symbol = tokenToProcess?.symbol || 'This token'
-      throw new Error(`${symbol} can't be transferred right now, so it can't be added to a pool. The token contract itself is rejecting transfers — check for trading limits, a paused state, or transfer fees.`)
+      throw new UserFacingError(`${symbol} can't be transferred right now, so it can't be added to a pool. The token contract itself is rejecting transfers — check for trading limits, a paused state, or transfer fees.`)
     }
 
     // CRITICAL: Simulate the transaction first to get detailed error info
@@ -275,7 +278,7 @@ export function useAddLiquidity(
       }
 
       const reason = simulationError.shortMessage || simulationError.message
-      throw new Error(`This transaction would fail, so we didn't send it — no gas was spent.${reason ? ` Reason: ${reason}` : ''}`)
+      throw new UserFacingError(`This transaction would fail, so we didn't send it — no gas was spent.${reason ? ` Reason: ${reason}` : ''}`)
     }
 
     // If simulation passes, proceed with actual transaction

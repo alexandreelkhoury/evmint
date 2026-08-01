@@ -73,8 +73,7 @@ export default function HomePage() {
       "name": "EVMint",
       "url": "https://evmint.io",
       "sameAs": [
-        "https://twitter.com/evmint",
-        "https://github.com/evmint"
+        "https://twitter.com/evmint"
       ]
     },
     "offers": {
@@ -112,8 +111,8 @@ export default function HomePage() {
     <div className="bg-gray-900 relative">
 
       <SEO
-        title="EVMint - Multi-Chain Token Creator | Deploy ERC20 Tokens on 15+ EVM Chains"
-        description="Create and deploy ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC & 10+ more EVM chains. No coding required, ~$80 flat fee, 60-second deployment. Auto-verified on block explorers. Add liquidity via Uniswap."
+        title="EVMint - Multi-Chain Token Creator | ERC20 on 15+ EVM Chains"
+        description="Deploy ERC20 tokens on Ethereum, Base, Arbitrum, Polygon, BSC and 10+ more EVM chains. No coding, ~$80 flat fee, auto-verified in 60 seconds."
         keywords="multi-chain token creator, evm token launcher, meme coin creator, erc20 token generator, create cryptocurrency, ethereum token, base token, arbitrum token, polygon token, bsc token, no code crypto, multi-chain deployment, defi token maker, layer 2 tokens, cross-chain token creator"
         canonical="/"
         structuredData={homePageStructuredData}

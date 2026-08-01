@@ -210,8 +210,8 @@ export default function CreateTokenPage() {
       </div>
 
       <SEO
-        title="Create Token on Any EVM Chain - Multi-Chain ERC20 Deployment | Ultra-Low Fees"
-        description="Launch your ERC20 token on 15+ EVM blockchains instantly! Ethereum, Base, Arbitrum, Polygon & more. No coding needed. Ultra-low gas fees on L2, auto-verify on block explorers, multi-DEX liquidity support. Start your token today!"
+        title="Create an ERC20 Token on Any EVM Chain | No-Code Launcher"
+        description="Launch an ERC20 token on 15+ EVM chains: Ethereum, Base, Arbitrum, Polygon and more. No coding, ultra-low L2 gas fees, auto-verified on block explorers."
         keywords="create token, erc20 token creator, multi-chain token, meme coin creator, no code token maker, ethereum token, base token, arbitrum token, polygon token, cheap crypto deployment, uniswap token launch, layer 2 tokens, defi token generator, cryptocurrency creator, multi-chain launcher"
         canonical="/create"
         structuredData={createTokenStructuredData}

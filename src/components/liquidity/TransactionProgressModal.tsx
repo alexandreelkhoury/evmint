@@ -5,6 +5,7 @@ import { colors } from '../../styles/designSystem'
 import { useScrollLock } from '../../hooks/useScrollLock'
 import { useModalA11y } from '../../hooks/useModalA11y'
 import { getChainById, getChainName } from '../../config/chains'
+import { getTransactionErrorCopy, rawErrorMessage } from '../../features/liquidity/constants'
 import { loggers } from '../../utils/logger'
 
 interface Token {
@@ -52,74 +53,23 @@ function getErrorReference(message: string): string {
 }
 
 /**
- * Translate the developer-facing errors thrown by the liquidity hooks into copy
- * a user can act on. Anything unrecognised falls back to a generic message plus
- * a reference code — never the raw message, which is multi-line and wei-denominated.
+ * Render-time copy for an error.
+ *
+ * The classification and the copy table both live in features/liquidity/constants
+ * and are shared with the hooks and SwapPanel — this component must NOT re-derive
+ * them. It previously re-classified the string the hook had already translated,
+ * which is why one wallet rejection could read two different ways.
+ *
+ * The reference code stays here: it is a presentation affordance, shown only when
+ * we have nothing specific to say, and paired with the full message in the log.
  */
 function describeTransactionError(error: Error, nativeSymbol: string): ErrorCopy {
-  const rawMessage = error.message || ''
-  const shortMessage = (error as { shortMessage?: string }).shortMessage || ''
-  const message = `${rawMessage} ${shortMessage}`.toLowerCase()
-  const code = (error as { code?: number | string }).code
-    ?? (error as { cause?: { code?: number | string } }).cause?.code
-
-  // Wallet rejection
-  if (
-    code === 4001 ||
-    code === 'ACTION_REJECTED' ||
-    code === 'TRANSACTION_REJECTED' ||
-    message.includes('user rejected') ||
-    message.includes('user denied') ||
-    message.includes('user cancelled') ||
-    message.includes('cancelled by user') ||
-    message.includes('rejected the request')
-  ) {
-    return {
-      title: 'Transaction cancelled',
-      body: "No funds were moved. You can try again whenever you're ready."
-    }
-  }
-
-  // Approval / allowance problems (checked before the balance cases: the
-  // allowance errors also contain the word "insufficient")
-  if (
-    message.includes('allowance') ||
-    message.includes('not approved') ||
-    message.includes('approval')
-  ) {
-    return {
-      title: 'Approval incomplete',
-      body: "Approval didn't go through. Your wallet may have replaced or dropped the approval transaction — try again, and confirm both prompts."
-    }
-  }
-
-  // Not enough native currency for the value plus gas
-  if (
-    message.includes('insufficient funds') ||
-    message.includes('exceeds the balance of the account')
-  ) {
-    return {
-      title: 'Transaction failed',
-      body: `Not enough ${nativeSymbol} to cover this transaction.`
-    }
-  }
-
-  // Not enough of the ERC20 being deposited
-  if (
-    message.includes('have enough tokens') ||
-    message.includes('insufficient token balance') ||
-    message.includes('transfer amount exceeds balance')
-  ) {
-    return {
-      title: 'Transaction failed',
-      body: "You don't have enough of this token for the amount you entered."
-    }
-  }
+  const { type, title, body } = getTransactionErrorCopy(error, nativeSymbol)
 
   return {
-    title: 'Transaction failed',
-    body: 'Something went wrong with this transaction.',
-    reference: getErrorReference(rawMessage)
+    title,
+    body,
+    reference: type === 'UNKNOWN' ? getErrorReference(rawErrorMessage(error)) : undefined
   }
 }
 
@@ -145,9 +95,11 @@ export default function TransactionProgressModal({
   // the translated copy below.
   useEffect(() => {
     if (!error) return
+    const raw = rawErrorMessage(error)
     loggers.liquidity.error('Liquidity transaction failed', {
-      reference: getErrorReference(error.message || ''),
-      message: error.message,
+      reference: getErrorReference(raw),
+      type: getTransactionErrorCopy(error).type,
+      message: raw,
       chainId,
       error
     })

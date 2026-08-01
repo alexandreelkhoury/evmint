@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import SEO from '../components/SEO'
-import { guidesById, guideSequence, countGuideWords, buildGuideHowTo } from '../data/guidesData'
+import { guidesById, guideSequence, buildGuideHowTo } from '../data/guidesData'
 import {
   CheckCircleIcon,
   ClockIcon,
@@ -44,9 +44,11 @@ export default function GuidePage() {
   }, [analytics, guide])
 
   // Structured data for the guide: HowTo (shared with the guides index),
-  // breadcrumbs and an Article record. No dates are emitted — we do not track
-  // per-guide publication/modification dates, and inventing them is worse than
-  // omitting them. wordCount is measured from the prose actually rendered.
+  // breadcrumbs and an Article record.
+  //
+  // Only values we can actually stand behind are emitted. No dates — we do not
+  // track per-guide publication/modification dates, and inventing them is worse
+  // than omitting them. No wordCount either; see the note in ../data/guidesData.
   const guideStructuredData: object[] | undefined = guide ? [
     buildGuideHowTo(guide),
     {
@@ -97,8 +99,7 @@ export default function GuidePage() {
         "@type": "WebPage",
         "@id": `https://evmint.io/guides/${guide.id}`
       },
-      "articleSection": "Cryptocurrency Guides",
-      "wordCount": countGuideWords(guide)
+      "articleSection": "Cryptocurrency Guides"
     }
   ] : undefined
 

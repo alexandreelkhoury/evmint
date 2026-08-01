@@ -34,7 +34,6 @@ export default function LiquidityPage() {
     showTokenModalB,
     showLpTokenModal,
     showProgressModal,
-    tokenAddressInput,
 
     // Balances
     balanceA,
@@ -53,6 +52,7 @@ export default function LiquidityPage() {
     needsChainSwitch,
     isSwitchingChain,
     prefillError,
+    isRetryingPrefill,
 
     // Liquidity hook data
     isAddingLiquidity,
@@ -80,6 +80,7 @@ export default function LiquidityPage() {
     setTokenAddressInput,
     setPercentageAmount,
     switchToPrefillChain,
+    retryPrefill,
     handleAddTokenFromAddress,
     handleAddLiquidity,
     handleRemoveLiquidity,
@@ -196,9 +197,16 @@ export default function LiquidityPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-sm text-amber-100"
+              className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl"
             >
-              {prefillError}
+              <p className="flex-1 text-sm text-amber-100">{prefillError}</p>
+              <button
+                onClick={retryPrefill}
+                disabled={isRetryingPrefill}
+                className="shrink-0 inline-flex items-center justify-center px-4 min-h-[40px] bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 disabled:opacity-50 disabled:cursor-not-allowed text-amber-100 text-sm font-semibold rounded-xl transition-colors duration-200 cursor-pointer"
+              >
+                {isRetryingPrefill ? 'Retrying…' : 'Retry'}
+              </button>
             </motion.div>
           )}
 
@@ -320,7 +328,6 @@ export default function LiquidityPage() {
               setShowTokenModalA(false)
             }}
             showTokenInput={true}
-            tokenAddressInput={tokenAddressInput}
             onTokenAddressInputChange={setTokenAddressInput}
             onAddTokenFromAddress={handleAddTokenFromAddress}
             isLoadingToken={isLoadingCustomToken}
@@ -341,7 +348,6 @@ export default function LiquidityPage() {
               setShowTokenModalB(false)
             }}
             showTokenInput={true}
-            tokenAddressInput={tokenAddressInput}
             onTokenAddressInputChange={setTokenAddressInput}
             onAddTokenFromAddress={handleAddTokenFromAddress}
             isLoadingToken={isLoadingCustomToken}
@@ -362,7 +368,6 @@ export default function LiquidityPage() {
               setShowLpTokenModal(false)
             }}
             showTokenInput={true}
-            tokenAddressInput={tokenAddressInput}
             onTokenAddressInputChange={setTokenAddressInput}
             onAddTokenFromAddress={handleAddTokenFromAddress}
             isLoadingToken={isLoadingCustomToken}

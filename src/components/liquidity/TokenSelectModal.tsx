@@ -23,7 +23,6 @@ interface TokenSelectModalProps {
   selectedToken?: Token
   title: string
   showTokenInput?: boolean
-  tokenAddressInput: string
   onTokenAddressInputChange: (value: string) => void
   onAddTokenFromAddress: () => void
   isLoadingToken: boolean
@@ -88,7 +87,6 @@ export default function TokenSelectModal({
   selectedToken,
   title,
   showTokenInput = false,
-  tokenAddressInput,
   onTokenAddressInputChange,
   onAddTokenFromAddress,
   isLoadingToken,
@@ -108,19 +106,34 @@ export default function TokenSelectModal({
   const isLpToken = (token: Token) =>
     token.isLP === true || lpTokenAddresses.has(token.address.toLowerCase())
 
-  const filteredTokens = tokens
-    .filter(token => {
-      if (mode === 'add' && isLpToken(token)) return false
-      if (!searchQuery) return true
-      const q = searchQuery.toLowerCase()
-      return token.symbol.toLowerCase().includes(q) || token.name.toLowerCase().includes(q)
-    })
+  // One field does both jobs: type a name/symbol to filter, or paste an address
+  // to import. Two separate inputs asked the user to know, before typing, which
+  // kind of thing they had.
+  const trimmedQuery = searchQuery.trim()
+  const queryIsAddress = /^0x[a-fA-F0-9]{40}$/.test(trimmedQuery)
 
-  const filteredLPTokens = userLPTokens.filter(token => {
-    if (!searchQuery) return true
-    const q = searchQuery.toLowerCase()
-    return token.symbol.toLowerCase().includes(q) || token.name.toLowerCase().includes(q)
+  const matches = (token: Token) => {
+    if (!trimmedQuery) return true
+    const q = trimmedQuery.toLowerCase()
+    return (
+      token.symbol.toLowerCase().includes(q) ||
+      token.name.toLowerCase().includes(q) ||
+      token.address.toLowerCase().includes(q)
+    )
+  }
+
+  const filteredTokens = tokens.filter(token => {
+    if (mode === 'add' && isLpToken(token)) return false
+    return matches(token)
   })
+
+  const filteredLPTokens = userLPTokens.filter(matches)
+
+  // Offer the import row only for an address we don't already have listed.
+  const alreadyListed = [...tokens, ...userLPTokens].some(
+    t => t.address.toLowerCase() === trimmedQuery.toLowerCase()
+  )
+  const canImport = showTokenInput && queryIsAddress && !alreadyListed
 
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={title || 'Select Token'} ref={modalRef}>
@@ -149,9 +162,15 @@ export default function TokenSelectModal({
         <div className="px-5 pt-3 pb-2">
           <input
             type="text"
-            placeholder="Search by name or symbol"
+            placeholder={showTokenInput ? 'Search name or paste an address' : 'Search by name or symbol'}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value
+              setSearchQuery(value)
+              // Keep the parent's address state in step so the import button
+              // and its loading/error handling keep working unchanged.
+              if (showTokenInput) onTokenAddressInputChange(value.trim())
+            }}
             className="w-full px-3.5 py-3 min-h-[44px] bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/10 transition-all duration-150"
             autoFocus
           />
@@ -197,47 +216,49 @@ export default function TokenSelectModal({
                 />
               ))}
             </div>
-          ) : filteredLPTokens.length === 0 ? (
+          ) : filteredLPTokens.length === 0 && !canImport ? (
             <div className="px-3 py-8 text-center">
               <p className="text-sm text-gray-400">
-                {searchQuery ? 'No tokens match your search' : 'No tokens available'}
+                {!trimmedQuery
+                  ? 'No tokens available'
+                  : showTokenInput
+                    ? 'No matches. Paste a full contract address to import a token.'
+                    : 'No tokens match your search'}
               </p>
             </div>
           ) : null}
+
+          {/* Import-by-address: appears once the query is a full address we
+              don't already list, so pasting one has an obvious next step. */}
+          {canImport && (
+            <div className="mx-1 my-2 p-3 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+              <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">
+                Not in your list
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="flex-1 min-w-0 truncate font-mono text-xs text-gray-300">
+                  {trimmedQuery}
+                </span>
+                <button
+                  onClick={onAddTokenFromAddress}
+                  disabled={isLoadingToken}
+                  className={`px-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-150 flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                    isLoadingToken
+                      ? 'bg-white/[0.04] text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
+                  }`}
+                >
+                  {isLoadingToken ? (
+                    <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin block" />
+                  ) : (
+                    'Import'
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Custom address input */}
-        {showTokenInput && (
-          <div className="px-5 py-3 border-t border-white/[0.06]">
-            <div className="flex gap-2">
-              <label htmlFor="token-address-input" className="sr-only">Token address</label>
-              <input
-                id="token-address-input"
-                type="text"
-                placeholder="Paste token address (0x...)"
-                value={tokenAddressInput}
-                onChange={(e) => onTokenAddressInputChange(e.target.value)}
-                className="flex-1 min-w-0 px-3.5 py-3 min-h-[44px] bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/10 transition-all duration-150"
-              />
-              <button
-                onClick={onAddTokenFromAddress}
-                disabled={isLoadingToken || !tokenAddressInput}
-                aria-label="Add token from address"
-                className={`px-4 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-150 flex-shrink-0 ${
-                  isLoadingToken || !tokenAddressInput
-                    ? 'bg-white/[0.04] text-gray-500 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
-                }`}
-              >
-                {isLoadingToken ? (
-                  <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin block" />
-                ) : (
-                  'Add'
-                )}
-              </button>
-            </div>
-          </div>
-        )}
       </motion.div>
     </div>
   )

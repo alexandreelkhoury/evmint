@@ -42,8 +42,12 @@ export interface Guide {
   totalTime: string
   /** Human-readable cost shown in the UI (omitted when there is no fixed cost) */
   cost?: string
-  /** Only set when the cost is an actual monetary amount schema.org can express */
-  estimatedCost?: { currency: string; value: string }
+  /**
+   * Only set when the cost is an actual monetary amount schema.org can express.
+   * A range needs minValue/maxValue — MonetaryAmount.value is a Number, so a
+   * string like '75-100' is not valid there.
+   */
+  estimatedCost?: { currency: string; minValue: number; maxValue: number }
   keywords: string
   icon: HeroIcon
   tools: string[]
@@ -72,7 +76,7 @@ export const guides: Guide[] = [
     time: '5 minutes',
     totalTime: 'PT5M',
     cost: '$75-100 + gas',
-    estimatedCost: { currency: 'USD', value: '75-100' },
+    estimatedCost: { currency: 'USD', minValue: 75, maxValue: 100 },
     keywords: 'create erc20 token, ERC20 token, no code token creation, evm',
     icon: SparklesIcon,
     tools: [
@@ -346,31 +350,21 @@ export const getGuidePath = (guide: Guide) => `/guides/${guide.id}`
 const detailText = (detail: string | GuideStepLink) =>
   typeof detail === 'string' ? detail : detail.text
 
-const countWords = (text: string) => text.trim().split(/\s+/).filter(Boolean).length
-
-/**
- * Word count of the prose the guide page actually renders — title, intro,
- * every step (heading, summary, action items, pro tip) plus the optional
- * warning and pool-type blocks. Measured, never estimated.
+/*
+ * No countGuideWords() any more, and the Article schema no longer carries
+ * wordCount.
+ *
+ * There is no honest number to put there. A guide is not a prose article: the
+ * page interleaves its content with UI chrome — a breadcrumb, the "Step-by-Step
+ * Guide" heading, per-step "Action items:"/"Pro Tip" labels, the CTA block and
+ * the "Back to All Guides" button. Counting only the guide's own copy
+ * undercounts what a scraper reads off the page; counting the whole rendered
+ * region means claiming navigation buttons are article words, and that count
+ * would silently drift every time someone edits a button label.
+ *
+ * wordCount is optional and no major consumer uses it, so the property is
+ * dropped rather than shipped wrong in one direction or the other.
  */
-export const countGuideWords = (guide: Guide) => {
-  const blocks: string[] = [guide.title, guide.description]
-
-  for (const step of guide.steps) {
-    blocks.push(step.title, step.description, step.tip)
-    for (const detail of step.details) blocks.push(detailText(detail))
-  }
-
-  for (const warning of guide.warnings ?? []) {
-    blocks.push(warning.title, warning.description)
-  }
-
-  for (const pool of guide.poolTypes ?? []) {
-    blocks.push(pool.title, pool.description, pool.bestFor, ...pool.pros, ...pool.cons)
-  }
-
-  return blocks.reduce((total, block) => total + countWords(block), 0)
-}
 
 /** schema.org HowTo for a guide, shared by the guide page and the guides index */
 export const buildGuideHowTo = (guide: Guide) => ({
@@ -384,7 +378,8 @@ export const buildGuideHowTo = (guide: Guide) => ({
     "estimatedCost": {
       "@type": "MonetaryAmount",
       "currency": guide.estimatedCost.currency,
-      "value": guide.estimatedCost.value
+      "minValue": guide.estimatedCost.minValue,
+      "maxValue": guide.estimatedCost.maxValue
     }
   } : {}),
   ...(guide.tools.length ? {

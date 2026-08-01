@@ -41,6 +41,16 @@ function canonicalPathFrom(pathname: string, search: string): string {
   return query ? `${path}?${query}` : path
 }
 
+/**
+ * og:type for a route that does not declare one. Blog posts are articles;
+ * everything else — including the /blog index itself — is a website. Derived
+ * from the path rather than required as a prop so the twenty post pages get
+ * the right type without every other consumer having to opt in.
+ */
+function defaultOgTypeFor(pathname: string): string {
+  return /^\/blog\/[^/]+/.test(pathname) ? 'article' : 'website'
+}
+
 interface SEOProps {
   title?: string
   description?: string
@@ -49,16 +59,27 @@ interface SEOProps {
   ogImage?: string
   noIndex?: boolean
   structuredData?: object | object[]
+  /** Overrides the path-derived og:type ('website' | 'article' | ...). */
+  ogType?: string
+  /**
+   * article:tag values. Only emitted when the resolved og:type is 'article' —
+   * article:* properties are meaningless on a non-article and used to ship on
+   * all 39 routes, /privacy and /terms included. Defaults to the page's own
+   * keywords so a post is tagged with its real topics, not site boilerplate.
+   */
+  articleTags?: string[]
 }
 
 export default function SEO({
-  title = "EVMint - Multi-Chain EVM Token Launcher | Deploy on 15+ Chains",
-  description = "Create ERC20 tokens on 15+ EVM blockchains instantly! No coding required. Deploy on Ethereum, Base, Arbitrum, Polygon, BSC & more. Ultra-low fees. Auto-verify. Start your crypto project today! ",
+  title = "EVMint - Multi-Chain EVM Token Launcher | 15+ Chains",
+  description = "Create ERC20 tokens on 15+ EVM blockchains. No coding, ~$80 flat fee, auto-verified in 60 seconds on Ethereum, Base, Arbitrum, Polygon, BSC & more.",
   keywords = "evmint, evm token creator, multi-chain token launcher, erc20 token generator, create cryptocurrency, meme coin creator, no code crypto, defi token maker, ethereum token, base token, arbitrum token, polygon token, bsc token, multi-chain deployment, cheap token deployment",
   canonical,
   ogImage = "/og-image.png",
   noIndex = false,
-  structuredData
+  structuredData,
+  ogType,
+  articleTags
 }: SEOProps) {
   const siteUrl = "https://evmint.io"
 
@@ -69,6 +90,12 @@ export default function SEO({
   // http://localhost:4173, so the origin must always be the hardcoded one.
   const { pathname, search } = useLocation()
   const fullCanonical = `${siteUrl}${canonical ?? canonicalPathFrom(pathname, search)}`
+
+  const resolvedOgType = ogType ?? defaultOgTypeFor(pathname)
+  const isArticle = resolvedOgType === 'article'
+  const tags = isArticle
+    ? (articleTags ?? keywords.split(',').map(tag => tag.trim()).filter(Boolean).slice(0, 5))
+    : []
 
   return (
     <Helmet>
@@ -101,7 +128,7 @@ export default function SEO({
       <link rel="dns-prefetch" href="//uniswap.org" />
 
       {/* Open Graph / Facebook */}
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={resolvedOgType} />
       <meta property="og:url" content={fullCanonical} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
@@ -122,14 +149,13 @@ export default function SEO({
       <meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
       <meta name="twitter:image:alt" content="EVMint - Multi-chain EVM token launcher" />
       
-      {/* Additional Social Meta */}
-      <meta property="article:publisher" content="https://twitter.com/evmint" />
-      <meta property="article:author" content="EVMint Team" />
-      <meta property="article:section" content="Cryptocurrency" />
-      <meta property="article:tag" content="EVM Blockchains" />
-      <meta property="article:tag" content="ERC20 Tokens" />
-      <meta property="article:tag" content="DeFi" />
-      <meta property="article:tag" content="Token Creator" />
+      {/* Article metadata — only valid, and only emitted, on og:type=article */}
+      {isArticle && <meta property="article:publisher" content="https://twitter.com/evmint" />}
+      {isArticle && <meta property="article:author" content="EVMint Team" />}
+      {isArticle && <meta property="article:section" content="Cryptocurrency" />}
+      {tags.map(tag => (
+        <meta key={tag} property="article:tag" content={tag} />
+      ))}
 
       {/* Structured Data - supports single object or array of objects */}
       {structuredData && (

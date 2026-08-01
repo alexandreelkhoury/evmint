@@ -28,8 +28,7 @@ export default function AboutPage() {
       "url": "https://evmint.io",
       "foundingDate": "2024",
       "sameAs": [
-        "https://twitter.com/evmint",
-        "https://github.com/evmint"
+        "https://twitter.com/evmint"
       ]
     }
   }
@@ -42,8 +41,8 @@ export default function AboutPage() {
       </div>
 
       <SEO
-        title="About EVMint - Our Mission & Story | Multi-Chain Token Platform"
-        description="EVMint is a no-code multi-chain token launcher. Deploy ERC-20 tokens on 15+ EVM blockchains in under 60 seconds. Built with OpenZeppelin contracts, auto-verified on block explorers."
+        title="About EVMint | Multi-Chain Token Creation Platform"
+        description="EVMint is a no-code multi-chain token launcher: deploy ERC-20 tokens on 15+ EVM blockchains in under 60 seconds, built on OpenZeppelin contracts."
         keywords="about evmint, blockchain company, token creation platform, erc20 platform, crypto startup"
         canonical="/about"
         structuredData={aboutStructuredData}

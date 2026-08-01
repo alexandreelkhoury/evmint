@@ -5,7 +5,7 @@ import { baseSepolia } from 'viem/chains'
 import { getChainById } from '../../../config/chains'
 import { TIMEOUTS, RETRY_CONFIG } from '../../../config/constants'
 import { loggers } from '../../../utils/logger'
-import { LIQUIDITY_STORAGE_KEY, FACTORY_ABI } from '../constants'
+import { LIQUIDITY_STORAGE_KEY, FACTORY_ABI, classifyTransactionError } from '../constants'
 import { useLiquidityContracts } from './useLiquidityContracts'
 import { useLPTokenStorage } from './useLPTokenStorage'
 import { usePoolQuery } from './usePoolQuery'
@@ -62,12 +62,11 @@ export function useUniswapV2Liquidity() {
           cause: (error as any)?.cause
         })
 
-        const errorType = getErrorType(error)
-        const errorMessage = getErrorMessage(error, errorType)
-
-        // Don't show error for user rejections - they're intentional
-        if (errorType !== 'USER_REJECTED') {
-          setError(new Error(errorMessage))
+        // Store the RAW error. Classification happens exactly once, at the point
+        // of render (see getTransactionErrorCopy) — translating here as well is
+        // what made the same rejection read differently in different layers.
+        if (classifyTransactionError(error) !== 'USER_REJECTED') {
+          setError(error)
         }
 
         // Reset states on error
@@ -193,102 +192,18 @@ export function useUniswapV2Liquidity() {
   }, [poolToRemove, lpAllowance, userAddress, chainId])
 
   // ================================
-  // ERROR HANDLING UTILITIES
+  // ERROR HANDLING
   // ================================
-
-  // IMPROVED: Error detection utilities with better categorization
-  const getErrorType = (error: any): 'USER_REJECTED' | 'NETWORK_ERROR' | 'CONTRACT_ERROR' | 'GAS_ERROR' | 'ALLOWANCE_ERROR' | 'UNKNOWN' => {
-    if (!error) return 'UNKNOWN'
-
-    // Check error code first (most reliable)
-    const errorCode = error.code || (error.cause?.code)
-
-    // User rejection codes
-    if (errorCode === 4001 || errorCode === 'ACTION_REJECTED' || errorCode === 'TRANSACTION_REJECTED') {
-      return 'USER_REJECTED'
-    }
-
-    // Check for specific error patterns in message
-    const message = error.message?.toLowerCase() || ''
-    const shortMessage = (error.shortMessage || '').toLowerCase()
-    const combinedMessage = `${message} ${shortMessage}`
-
-    // User rejection patterns
-    if (combinedMessage.includes('user rejected') ||
-        combinedMessage.includes('user denied') ||
-        combinedMessage.includes('cancelled by user') ||
-        combinedMessage.includes('transaction was rejected') ||
-        combinedMessage.includes('user cancelled')) {
-      return 'USER_REJECTED'
-    }
-
-    // Network/connection errors
-    if (combinedMessage.includes('network') ||
-        combinedMessage.includes('timeout') ||
-        combinedMessage.includes('connection') ||
-        combinedMessage.includes('fetch') ||
-        combinedMessage.includes('rpc')) {
-      return 'NETWORK_ERROR'
-    }
-
-    // Gas related errors
-    if (combinedMessage.includes('gas') ||
-        combinedMessage.includes('out of gas') ||
-        combinedMessage.includes('gas estimate') ||
-        combinedMessage.includes('gas limit')) {
-      return 'GAS_ERROR'
-    }
-
-    // Allowance/approval errors
-    if (combinedMessage.includes('allowance') ||
-        combinedMessage.includes('insufficient allowance') ||
-        combinedMessage.includes('erc20: transfer amount exceeds allowance')) {
-      return 'ALLOWANCE_ERROR'
-    }
-
-    // Contract execution errors
-    if (combinedMessage.includes('revert') ||
-        combinedMessage.includes('execution reverted') ||
-        combinedMessage.includes('insufficient') ||
-        combinedMessage.includes('slippage') ||
-        combinedMessage.includes('deadline') ||
-        combinedMessage.includes('liquidity')) {
-      return 'CONTRACT_ERROR'
-    }
-
-    return 'UNKNOWN'
-  }
-
-  const getErrorMessage = (error: any, errorType: string): string => {
-    switch (errorType) {
-      case 'USER_REJECTED':
-        return 'Transaction cancelled by user'
-      case 'NETWORK_ERROR':
-        return 'Network error occurred. Please check your connection and try again.'
-      case 'GAS_ERROR':
-        return 'Gas estimation failed. The transaction may require more gas than expected or the contract interaction may fail.'
-      case 'ALLOWANCE_ERROR':
-        return 'Token allowance insufficient. Please try approving the token again.'
-      case 'CONTRACT_ERROR':
-        const message = error.message || error.shortMessage || ''
-        if (message.includes('slippage')) {
-          return 'Transaction failed due to slippage. Try adjusting the slippage tolerance.'
-        } else if (message.includes('deadline')) {
-          return 'Transaction deadline exceeded. Please try again.'
-        } else if (message.includes('insufficient')) {
-          return 'Insufficient token balance or liquidity for this transaction.'
-        } else {
-          return 'Smart contract interaction failed. Please check your transaction parameters and try again.'
-        }
-      default:
-        return error.message || error.shortMessage || 'An unexpected error occurred'
-    }
-  }
+  //
+  // Classification and copy both live in ../constants
+  // (classifyTransactionError / getTransactionErrorCopy). This hook only needs
+  // the category for control flow; it stores the raw error so the rendering
+  // layer classifies it exactly once.
 
   // Handle confirmation errors only (write errors handled by wagmi mutation callback)
   useEffect(() => {
     if (confirmError) {
-      const errorType = getErrorType(confirmError)
+      const errorType = classifyTransactionError(confirmError)
 
       loggers.liquidity.error('🚨 Transaction Confirmation Error:', {
         error: confirmError.message,
@@ -299,7 +214,7 @@ export function useUniswapV2Liquidity() {
         timestamp: new Date().toISOString()
       })
 
-      setError(new Error(getErrorMessage(confirmError, errorType)))
+      setError(confirmError)
       setCurrentStep(null)
       setTokenToProcess(null)
       setPoolToRemove(null)

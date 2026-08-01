@@ -3,6 +3,13 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useAccount, useChainId, useSwitchChain, useBalance, useWriteContract, useReadContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
 import { parseEther, parseUnits, formatUnits, type Address } from 'viem'
 import { getChainById, getDexContracts, getWethAddress, getChainName } from '../../../config/chains'
+import {
+  BPS_DENOMINATOR,
+  applySlippagePercent,
+  getTransactionErrorCopy,
+  rawErrorMessage,
+  UserFacingError
+} from '../../../features/liquidity/constants'
 import { colors } from '../../../styles/designSystem'
 
 // Minimal ABIs for swap operations
@@ -81,10 +88,10 @@ const ERC20_ABI = [
   },
 ] as const
 
+// Swap slippage is user-selectable, unlike the fixed tolerance used for
+// liquidity. applySlippagePercent takes the rate as a parameter for exactly
+// this reason — it is the same helper both surfaces use.
 const SLIPPAGE_OPTIONS = [0.5, 1, 3] as const
-
-// Basis-point denominator: 10000 bps == 100%
-const BPS_DENOMINATOR = 10000n
 
 // WETH (and every native currency on the supported EVM chains) uses 18 decimals
 const NATIVE_DECIMALS = 18
@@ -93,19 +100,6 @@ const NATIVE_DECIMALS = 18
 function getNativeSymbol(chainId: number): string {
   const chain = getChainById(chainId)
   return chain?.nativeCurrency?.symbol || 'ETH'
-}
-
-/**
- * Apply a slippage tolerance (as a percentage, e.g. 1 => 1%) to a router quote.
- * Returns floor(expectedOut * (10000 - slippageBps) / 10000) — bigint division
- * always rounds down, which is the safe direction for a minimum-received value.
- */
-function applySlippage(expectedOut: bigint, slippagePercent: number): bigint {
-  if (expectedOut <= 0n) return 0n
-  const slippageBps = BigInt(Math.round(slippagePercent * 100))
-  if (slippageBps <= 0n) return expectedOut
-  if (slippageBps >= BPS_DENOMINATOR) return 0n
-  return (expectedOut * (BPS_DENOMINATOR - slippageBps)) / BPS_DENOMINATOR
 }
 
 function formatAmount(amount: bigint, decimals: number, maximumFractionDigits: number): string {
@@ -309,7 +303,7 @@ export default function SwapPanel({
     return () => clearTimeout(timer)
   }, [getQuote])
 
-  const minimumReceived = quotedAmountOut !== null ? applySlippage(quotedAmountOut, slippage) : null
+  const minimumReceived = quotedAmountOut !== null ? applySlippagePercent(quotedAmountOut, slippage) : null
 
   // Approximate USD value of the quoted output, for context only
   const estimatedUsdValue = useMemo(() => {
@@ -344,15 +338,15 @@ export default function SwapPanel({
       setQuotedAmountOut(null)
       setPriceImpact(null)
       setQuoteError(QUOTE_UNAVAILABLE_MESSAGE)
-      throw new Error(QUOTE_UNAVAILABLE_MESSAGE)
+      throw new UserFacingError(QUOTE_UNAVAILABLE_MESSAGE)
     }
 
     setQuotedAmountOut(expectedOut)
     setQuoteError(null)
 
-    const amountOutMin = applySlippage(expectedOut, slippage)
+    const amountOutMin = applySlippagePercent(expectedOut, slippage)
     if (amountOutMin <= 0n) {
-      throw new Error('This trade is too small to protect — the quoted output rounds to zero at the selected slippage.')
+      throw new UserFacingError('This trade is too small to protect — the quoted output rounds to zero at the selected slippage.')
     }
     return amountOutMin
   }
@@ -417,16 +411,19 @@ export default function SwapPanel({
         setTxStatus('success')
         setInputAmount('')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setTxStatus('error')
-      const message: string = err?.shortMessage || err?.message || ''
-      if (message.includes('User rejected') || message.includes('user rejected')) {
-        setTxError('Transaction cancelled')
-      } else if (message.includes('INSUFFICIENT_OUTPUT_AMOUNT')) {
-        setTxError('Price moved past your slippage tolerance and the swap was reverted — no funds were taken. Try again, or raise the slippage setting.')
-      } else {
-        setTxError(message || 'Swap failed')
-      }
+
+      // Same classifier and copy table the liquidity modal uses. Errors we threw
+      // ourselves (UserFacingError) already carry final copy and are passed
+      // through untouched.
+      const { type, body } = getTransactionErrorCopy(err, nativeSymbol)
+
+      // This panel has no reference-code affordance, so an unrecognised error
+      // still shows its own short message rather than a dead end (unchanged
+      // from before: shortMessage preferred, then message, then a fallback).
+      const shortMessage = (err as { shortMessage?: string } | null)?.shortMessage
+      setTxError(type === 'UNKNOWN' ? (shortMessage || rawErrorMessage(err) || 'Swap failed') : body)
     }
   }
 
