@@ -58,18 +58,6 @@ export default function StandardPageHeader({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
     >
-      {/* Badge */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${badgeColors} mb-8`}
-      >
-        <span className="text-sm font-medium text-blue-400">
-          {badgeIcon} {badgeText}
-        </span>
-      </motion.div>
-
       {/* Title */}
       <motion.h1
         className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight"
