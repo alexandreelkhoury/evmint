@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SEO from '../components/SEO'
-import TeamSection from '../components/TeamSection'
+// TeamSection removed — contained fabricated team members
 import SocialProofSection from '../components/SocialProofSection'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
@@ -222,7 +222,7 @@ export default function AboutPage() {
         </motion.section>
 
         {/* Team Section */}
-        <TeamSection />
+        {/* TeamSection removed — contained fabricated team members with fake credentials */}
 
         {/* Social Proof */}
         <SocialProofSection />

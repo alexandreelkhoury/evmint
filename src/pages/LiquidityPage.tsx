@@ -1,13 +1,10 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import SEO from '../components/SEO'
 import TokenSelectModal from '../components/liquidity/TokenSelectModal'
 import SuccessModal from '../components/liquidity/SuccessModal'
 import TransactionProgressModal from '../components/liquidity/TransactionProgressModal'
 import NetworkSelectorModal from '../components/NetworkSelectorModal'
-import StandardPageHeader from '../components/StandardPageHeader'
-import CTACard from '../components/CTACard'
-import { layout } from '../styles/designSystem'
 import { loggers } from '../utils/logger'
 import AddLiquidityForm from './LiquidityPage/components/AddLiquidityForm'
 import RemoveLiquidityForm from './LiquidityPage/components/RemoveLiquidityForm'
@@ -82,11 +79,12 @@ export default function LiquidityPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
-        <div className={`relative z-10 ${layout.pageContainer} pb-20`}>
-          <div className="animate-pulse space-y-8">
-            <div className="h-32 bg-white/5 rounded-2xl"></div>
-            <div className="h-96 bg-white/5 rounded-2xl"></div>
+      <div className="min-h-screen bg-gray-900">
+        <div className="mx-auto max-w-lg px-4 pt-16 pb-20">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 w-48 bg-white/5 rounded-lg"></div>
+            <div className="h-4 w-64 bg-white/5 rounded-lg"></div>
+            <div className="h-64 bg-white/5 rounded-xl mt-8"></div>
           </div>
         </div>
       </div>
@@ -94,14 +92,7 @@ export default function LiquidityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-900">
       <SEO
         title="Add Liquidity to Uniswap V2 - Earn Trading Fees on EVM Chains"
         description="Add liquidity to Uniswap V2 pools across multiple EVM blockchains and start earning trading fees. Provide liquidity for your tokens on Base, Ethereum, Arbitrum, and more."
@@ -109,159 +100,101 @@ export default function LiquidityPage() {
         canonical="/liquidity"
       />
 
-      <div className={`relative z-10 ${layout.pageContainer}`}>
-        {/* Header */}
-        <StandardPageHeader
-          badgeIcon="💧"
-          badgeText="Liquidity Provider"
-          titleGradient="Liquidity Management"
-          titleWhite="on Uniswap V2"
-          subtitle="Add liquidity to earn trading fees or withdraw your existing positions."
-          stats={[
-            { value: 'Uniswap V2', label: 'Protocol', color: 'blue' },
-            { value: 'Earn Fees', label: 'Trading', color: 'purple' },
-            { value: 'Multi-Chain', label: 'Support', color: 'cyan' }
-          ]}
-          chainId={currentChainId}
-          onNetworkClick={() => setIsNetworkModalOpen(true)}
-          warningContent={!isV2Available ? <NoDexWarning isV2Available={isV2Available} /> : undefined}
-        />
-
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto mb-24">
-          {/* Mode Selection */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="flex justify-center mb-8"
-          >
-            <div className="flex bg-white/5 rounded-2xl p-2">
-              <button
-                onClick={() => setLiquidityMode('add')}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-medium transition-[background-color,color,box-shadow] duration-200 text-sm sm:text-base cursor-pointer ${
-                  liquidityMode === 'add'
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Add Liquidity
-              </button>
-              <button
-                onClick={() => setLiquidityMode('withdraw')}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-medium transition-[background-color,color,box-shadow] duration-200 text-sm sm:text-base cursor-pointer ${
-                  liquidityMode === 'withdraw'
-                    ? 'bg-red-500 text-white shadow-lg'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                Withdraw Liquidity
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Form Components */}
-          {liquidityMode === 'add' ? (
-            <AddLiquidityForm
-              tokenA={tokenA}
-              tokenB={tokenB}
-              amountA={amountA}
-              amountB={amountB}
-              balanceA={balanceA}
-              balanceB={balanceB}
-              validationErrors={validationErrors}
-              isFormValid={isFormValid}
-              authenticated={authenticated}
-              isV2CorrectChain={isV2CorrectChain}
-              isV2Available={isV2Available}
-              isAddingLiquidity={isAddingLiquidity}
-              onAmountAChange={setAmountA}
-              onAmountBChange={setAmountB}
-              onTokenAClick={() => setShowTokenModalA(true)}
-              onTokenBClick={() => setShowTokenModalB(true)}
-              onSetPercentageAmount={setPercentageAmount}
-              onSubmit={handleAddLiquidity}
-            />
-          ) : (
-            <RemoveLiquidityForm
-              selectedLpToken={selectedLpToken}
-              lpTokenAmount={lpTokenAmount}
-              lpTokenBalance={lpTokenBalance}
-              validationErrors={validationErrors}
-              isFormValid={isFormValid}
-              authenticated={authenticated}
-              isV2CorrectChain={isV2CorrectChain}
-              isV2Available={isV2Available}
-              isRemovingLiquidity={isRemovingLiquidity}
-              onLpTokenAmountChange={setLpTokenAmount}
-              onLpTokenClick={() => setShowLpTokenModal(true)}
-              onSetPercentageAmount={setPercentageAmount}
-              onSubmit={() => handleRemoveLiquidity('withdraw')}
-            />
-          )}
+      <div className="mx-auto max-w-lg px-4 pt-10 sm:pt-16 pb-20">
+        {/* Page header */}
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-white tracking-tight">
+            Liquidity
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Manage your Uniswap V2 liquidity positions.
+          </p>
         </div>
 
-        {/* Getting Started CTA */}
-        <CTACard
-          title={
-            <>
-              Need help getting <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">started</span>?
-            </>
-          }
-          subtitle="Check out our comprehensive guides and FAQ section!"
-          buttons={[
-            {
-              text: 'Read Guides',
-              icon: (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              ),
-              href: '/guides',
-              variant: 'secondary'
-            },
-            {
-              text: 'Get Help',
-              icon: (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              ),
-              href: '/faq',
-              variant: 'primary'
-            }
-          ]}
-          trustIndicators={[
-            {
-              icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              ),
-              text: 'Instant',
-              color: 'text-blue-400'
-            },
-            {
-              icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              ),
-              text: 'Secure',
-              color: 'text-purple-400'
-            },
-            {
-              icon: (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-              ),
-              text: 'Low Fees',
-              color: 'text-green-400'
-            }
-          ]}
-          gradientColors="from-blue-600/20 via-purple-600/20 to-cyan-600/20"
-        />
+        {/* Network button */}
+        <button
+          onClick={() => setIsNetworkModalOpen(true)}
+          className="mb-5 flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-300 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors duration-150"
+        >
+          <span className="w-2 h-2 rounded-full bg-green-400"></span>
+          Network
+          <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {/* No DEX warning */}
+        {!isV2Available && <NoDexWarning isV2Available={isV2Available} />}
+
+        {/* Tab bar */}
+        <div className="flex border-b border-white/10 mb-6">
+          <button
+            onClick={() => setLiquidityMode('add')}
+            className={`px-4 py-2.5 text-sm font-medium transition-colors duration-150 relative cursor-pointer ${
+              liquidityMode === 'add'
+                ? 'text-blue-400'
+                : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            Add
+            {liquidityMode === 'add' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full" />
+            )}
+          </button>
+          <button
+            onClick={() => setLiquidityMode('withdraw')}
+            className={`px-4 py-2.5 text-sm font-medium transition-colors duration-150 relative cursor-pointer ${
+              liquidityMode === 'withdraw'
+                ? 'text-blue-400'
+                : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            Withdraw
+            {liquidityMode === 'withdraw' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 rounded-full" />
+            )}
+          </button>
+        </div>
+
+        {/* Form */}
+        {liquidityMode === 'add' ? (
+          <AddLiquidityForm
+            tokenA={tokenA}
+            tokenB={tokenB}
+            amountA={amountA}
+            amountB={amountB}
+            balanceA={balanceA}
+            balanceB={balanceB}
+            validationErrors={validationErrors}
+            isFormValid={isFormValid}
+            authenticated={authenticated}
+            isV2CorrectChain={isV2CorrectChain}
+            isV2Available={isV2Available}
+            isAddingLiquidity={isAddingLiquidity}
+            onAmountAChange={setAmountA}
+            onAmountBChange={setAmountB}
+            onTokenAClick={() => setShowTokenModalA(true)}
+            onTokenBClick={() => setShowTokenModalB(true)}
+            onSetPercentageAmount={setPercentageAmount}
+            onSubmit={handleAddLiquidity}
+          />
+        ) : (
+          <RemoveLiquidityForm
+            selectedLpToken={selectedLpToken}
+            lpTokenAmount={lpTokenAmount}
+            lpTokenBalance={lpTokenBalance}
+            validationErrors={validationErrors}
+            isFormValid={isFormValid}
+            authenticated={authenticated}
+            isV2CorrectChain={isV2CorrectChain}
+            isV2Available={isV2Available}
+            isRemovingLiquidity={isRemovingLiquidity}
+            onLpTokenAmountChange={setLpTokenAmount}
+            onLpTokenClick={() => setShowLpTokenModal(true)}
+            onSetPercentageAmount={setPercentageAmount}
+            onSubmit={() => handleRemoveLiquidity('withdraw')}
+          />
+        )}
       </div>
 
       {/* Modals */}
@@ -315,7 +248,7 @@ export default function LiquidityPage() {
             isOpen={showLpTokenModal}
             onClose={() => setShowLpTokenModal(false)}
             title="Select LP Token to Withdraw"
-            tokens={[...customTokens]} // Allow custom LP token addresses
+            tokens={[...customTokens]}
             selectedToken={selectedLpToken || undefined}
             onSelectToken={(token) => {
               setSelectedLpToken(token)
@@ -372,7 +305,7 @@ export default function LiquidityPage() {
                 lpTokenAddress: lastSuccessfulPool.poolAddress
               }}
               chainId={currentChainId}
-              isWithdrawal={lastSuccessfulPool.id?.startsWith('direct-')} // Detect if it's a withdrawal
+              isWithdrawal={lastSuccessfulPool.id?.startsWith('direct-')}
             />
           </>
         )}
