@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
-import { lazy, Suspense, createContext, useContext } from 'react'
+import { lazy, Suspense, createContext, useContext, useEffect } from 'react'
 import LazyWeb3Provider from './components/LazyWeb3Provider'
 import { FirebaseProvider } from './components/FirebaseProvider'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -49,6 +49,12 @@ export const useGlobalToasts = () => {
 
 function AppContent() {
   const toastManager = useToasts()
+
+  // Remove splash screen once React has rendered
+  useEffect(() => {
+    const splash = document.getElementById('splash')
+    if (splash) splash.remove()
+  }, [])
 
   return (
     <ErrorBoundary>
