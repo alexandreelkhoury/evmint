@@ -355,7 +355,7 @@ Contract: ${pool.tokenAddress}`
             className="w-full py-3 min-h-[44px] text-base font-medium rounded-xl border border-gray-600 text-gray-300 hover:text-white hover:border-gray-500 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 flex items-center justify-center space-x-2"
           >
             <span>View Transaction</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </motion.a>
