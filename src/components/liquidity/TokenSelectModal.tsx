@@ -81,7 +81,9 @@ export default function TokenSelectModal({
               💡 <strong>Don't see your token?</strong> Paste your token address below to add it!
             </div>
             <div className="flex space-x-2">
+              <label htmlFor="token-address-input" className="sr-only">Token address</label>
               <input
+                id="token-address-input"
                 type="text"
                 placeholder="Enter token address (0x...)"
                 value={tokenAddressInput}

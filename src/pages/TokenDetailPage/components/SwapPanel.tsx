@@ -278,7 +278,7 @@ export default function SwapPanel({
   }
 
   // Shared focus classes for issue #2
-  const focusRing = 'focus:outline-none focus:ring-2 focus:ring-amber-400/50'
+  const focusRing = 'focus:outline-none focus:ring-2 focus:ring-blue-500/30'
 
   return (
     <motion.div
@@ -319,7 +319,7 @@ export default function SwapPanel({
       {isConnected && isWrongChain && (
         <button
           onClick={() => switchChain({ chainId: tokenChainId })}
-          className={`w-full mb-4 py-3 bg-amber-500/20 border border-amber-500/40 rounded-xl text-amber-400 font-semibold text-sm cursor-pointer hover:bg-amber-500/30 transition-colors duration-200 ${focusRing}`}
+          className={`w-full mb-4 py-3 bg-blue-600/20 border border-blue-500/40 rounded-xl text-blue-400 font-semibold text-sm cursor-pointer hover:bg-blue-500/30 transition-colors duration-200 ${focusRing}`}
         >
           Switch to {getChainName(tokenChainId)}
         </button>
@@ -343,14 +343,14 @@ export default function SwapPanel({
             value={inputAmount}
             onChange={(e) => setInputAmount(e.target.value)}
             placeholder="0.0"
-            className={`w-full px-4 py-3 pr-24 bg-white/5 border border-white/15 rounded-xl text-white text-lg font-sans placeholder-gray-600 transition-colors duration-200 ${focusRing} focus:border-amber-400/50`}
+            className={`w-full px-4 py-3 pr-24 bg-white/5 border border-white/15 rounded-xl text-white text-lg font-sans placeholder-gray-600 transition-colors duration-200 ${focusRing} focus:border-blue-500/50`}
             min="0"
             step="any"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
             <button
               onClick={handleMax}
-              className={`text-xs text-amber-400 hover:text-amber-300 font-semibold cursor-pointer px-1.5 py-0.5 rounded bg-amber-500/10 transition-colors duration-200 ${focusRing}`}
+              className={`text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer px-1.5 py-0.5 rounded bg-blue-500/10 transition-colors duration-200 ${focusRing}`}
               aria-label={`Set maximum ${isBuy ? nativeSymbol : tokenSymbol} balance`}
             >
               MAX

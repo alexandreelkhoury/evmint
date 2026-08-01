@@ -113,7 +113,7 @@ export default function QuickStartForm({
                     placeholder="e.g., My Awesome Token"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                     maxLength={50}
                     required
                   />
@@ -145,7 +145,7 @@ export default function QuickStartForm({
                     placeholder="e.g., MAT"
                     value={formData.symbol}
                     onChange={(e) => handleInputChange('symbol', e.target.value.toUpperCase())}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 uppercase"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 uppercase"
                     maxLength={10}
                     required
                   />
@@ -178,7 +178,7 @@ export default function QuickStartForm({
                     max={18}
                     value={formData.decimals}
                     onChange={(e) => handleInputChange('decimals', parseInt(e.target.value) || 18)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                   />
                 </div>
                 {formErrors.decimals && (
@@ -208,7 +208,7 @@ export default function QuickStartForm({
                     placeholder="e.g., 1000000"
                     value={formData.totalSupply}
                     onChange={(e) => handleInputChange('totalSupply', e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:bg-white/15 transition-[background-color,color,border-color,box-shadow,opacity] duration-200"
                     required
                   />
                 </div>

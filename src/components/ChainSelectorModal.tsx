@@ -191,12 +191,14 @@ export default function ChainSelectorModal({ isOpen, onClose }: ChainSelectorMod
 
                 {/* Search Bar */}
                 <div className="relative">
+                  <label htmlFor="chain-search" className="sr-only">Search networks</label>
                   <input
+                    id="chain-search"
                     type="text"
                     placeholder="Search networks..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 pl-11 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 pl-11 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                   />
                   <svg
                     className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
