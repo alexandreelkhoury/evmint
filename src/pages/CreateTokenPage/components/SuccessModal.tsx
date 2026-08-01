@@ -345,7 +345,7 @@ Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
         {/* Main Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Link
-            to="/liquidity"
+            to={`/liquidity?token=${tokenAddress}`}
             className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.primaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
           >
             

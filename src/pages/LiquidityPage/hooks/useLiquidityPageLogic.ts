@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { usePrivy } from '@privy-io/react-auth'
 import { useAccount, useBalance, useChainId } from 'wagmi'
 import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
@@ -121,6 +122,34 @@ export function useLiquidityPageLogic() {
     isLoadingCustomToken,
     loadUserLPTokens
   } = useTokenSelection()
+
+  // Pre-fill token from URL param (?token=0x...)
+  const [searchParams] = useSearchParams()
+  const prefillTokenAddress = searchParams.get('token')
+  const prefillAppliedRef = useRef(false)
+
+  useEffect(() => {
+    if (!prefillTokenAddress || prefillAppliedRef.current) return
+
+    // Find in user created tokens or available tokens
+    const allTokens = [...userCreatedTokens, ...availableTokens, ...customTokens]
+    const found = allTokens.find(t => t.address.toLowerCase() === prefillTokenAddress.toLowerCase())
+
+    if (found) {
+      setTokenA(found)
+      prefillAppliedRef.current = true
+    } else if (userCreatedTokens.length > 0 || availableTokens.length > 0) {
+      // Tokens loaded but not found — try adding as custom token
+      addCustomToken(prefillTokenAddress).then(() => {
+        const allUpdated = [...userCreatedTokens, ...availableTokens, ...customTokens]
+        const foundAfterAdd = allUpdated.find(t => t.address.toLowerCase() === prefillTokenAddress.toLowerCase())
+        if (foundAfterAdd) setTokenA(foundAfterAdd)
+      }).catch(() => {
+        // Silently fail — user can select manually
+      })
+      prefillAppliedRef.current = true
+    }
+  }, [prefillTokenAddress, userCreatedTokens, availableTokens, customTokens, addCustomToken])
 
   // Local state for token input handling in modals
   const [tokenAddressInput, setTokenAddressInput] = useState('')

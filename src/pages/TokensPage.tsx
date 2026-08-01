@@ -165,7 +165,7 @@ function TokenCard({ tokenData, index, chainId }: TokenCardProps) {
           Trade
         </Link>
         <Link
-          to="/liquidity"
+          to={`/liquidity?token=${tokenData.address}`}
           className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
