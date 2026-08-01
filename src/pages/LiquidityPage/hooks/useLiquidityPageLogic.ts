@@ -125,19 +125,40 @@ export function useLiquidityPageLogic() {
   // Local state for token input handling in modals
   const [tokenAddressInput, setTokenAddressInput] = useState('')
 
-  // Handle adding token from address
+  // Handle adding token from address — auto-selects if already in list
   const handleAddTokenFromAddress = useCallback(async () => {
     if (!tokenAddressInput) return
 
     try {
-      // ✅ VALIDATE ADDRESS FORMAT
       const validatedAddress = validateAndFormatAddress(tokenAddressInput)
-      loggers.liquidity.info('Adding custom token:', validatedAddress)
 
+      // Check if token already exists in any list — if so, auto-select it
+      const allTokens = [...availableTokens, ...userCreatedTokens, ...customTokens]
+      const existingToken = allTokens.find(t => t.address.toLowerCase() === validatedAddress.toLowerCase())
+
+      if (existingToken) {
+        // Auto-select the token in whichever modal is open
+        if (showTokenModalA) {
+          setTokenA(existingToken)
+          setShowTokenModalA(false)
+        } else if (showTokenModalB) {
+          setTokenB(existingToken)
+          setShowTokenModalB(false)
+        }
+        setTokenAddressInput('')
+        addToast({
+          title: 'Token Selected',
+          message: `${existingToken.symbol} was already in your list and has been selected.`,
+          type: 'info'
+        })
+        return
+      }
+
+      // Token not in list — add it
+      loggers.liquidity.info('Adding custom token:', validatedAddress)
       await addCustomToken(validatedAddress)
       setTokenAddressInput('')
 
-      // Show success toast
       addToast({
         title: 'Token Added',
         message: 'Token has been imported successfully',
@@ -146,7 +167,6 @@ export function useLiquidityPageLogic() {
     } catch (error: any) {
       loggers.liquidity.error('Failed to add token:', error)
 
-      // Show user-friendly error message
       const isValidationError = error.message.includes('Invalid Ethereum') || error.message.includes('Address is required')
 
       addToast({
@@ -163,7 +183,7 @@ export function useLiquidityPageLogic() {
         network: currentChainId?.toString() || 'unknown'
       });
     }
-  }, [tokenAddressInput, addCustomToken, addToast, analytics, currentChainId])
+  }, [tokenAddressInput, addCustomToken, addToast, analytics, currentChainId, availableTokens, userCreatedTokens, customTokens, showTokenModalA, showTokenModalB, setTokenA, setTokenB, setShowTokenModalA, setShowTokenModalB])
 
   // Validation functions
   const validateInputs = useCallback(() => {
