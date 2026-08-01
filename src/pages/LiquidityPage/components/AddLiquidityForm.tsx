@@ -210,7 +210,7 @@ export default function AddLiquidityForm({
           Add Liquidity
         </h2>
         <p className="text-[13px] text-gray-500 mt-0.5">
-          Deposit two tokens to earn trading fees
+          Make your token tradeable
         </p>
       </div>
 
