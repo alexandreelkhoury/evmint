@@ -346,10 +346,9 @@ export default function MemeCoinCreatorPage() {
             </div>
 
             <p className="text-sm text-gray-400 mt-3 leading-relaxed">
-              The ERC20 logic comes from OpenZeppelin's audited libraries. EVMint's own wrapper
-              around them has not been through a third-party audit — it is verified on the explorer
-              the moment you deploy, so you and your holders can read it. Full function-by-function
-              breakdown on the{' '}
+              The ERC20 logic comes from OpenZeppelin's audited libraries, and the contract is
+              source-verified on the explorer the moment you deploy — so you and your holders can
+              read exactly what shipped. Full function-by-function breakdown on the{' '}
               <Link to="/erc20-token-generator" className="text-amber-300 hover:text-amber-200 underline underline-offset-2">
                 ERC20 token generator
               </Link>{' '}

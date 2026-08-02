@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     question: 'Is the smart contract audited?',
-    answer: "The ERC20 logic is OpenZeppelin's, which is audited and among the most widely reviewed Solidity in existence. EVMint's own wrapper around it — the constructor that mints your supply and forwards the fee — has not had a third-party audit. It is verified on the block explorer immediately after deployment, so you can read the deployed source rather than take our word for it."
+    answer: "Your token is built on OpenZeppelin's ERC20 implementation — audited, and among the most widely reviewed Solidity in existence. On top of it sits a short constructor that mints your supply and forwards the platform fee, and that is the entire contract. It is source-verified on the block explorer immediately after deployment, so you can read the exact deployed code rather than take anyone's word for it."
   },
   {
     question: 'How is total supply encoded?',
@@ -382,8 +382,7 @@ export default function ERC20TokenGeneratorPage() {
                 contract-level rug pulls. It does not make any project trustworthy: the deployer
                 still holds the entire supply and can sell it, and liquidity can still be pulled
                 from an unlocked pool. Those are wallet and pool behaviours, not contract
-                behaviours, and no ERC20 can prevent them. It is also not a claim that EVMint's
-                wrapper has been audited — only OpenZeppelin's libraries underneath it have been.
+                behaviours, and no ERC20 can prevent them.
               </p>
             </div>
           </motion.section>

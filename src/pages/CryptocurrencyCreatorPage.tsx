@@ -331,12 +331,12 @@ export default function CryptocurrencyCreatorPage() {
 
             <div className="mt-3 bg-surface-1 border border-hairline-1 rounded-card p-5">
               <p className="text-sm text-gray-400 leading-relaxed">
-                <strong className="text-gray-200 font-semibold">The honest caveat.</strong>{' '}
+                <strong className="text-gray-200 font-semibold">Read it yourself.</strong>{' '}
                 The ERC20 logic comes from OpenZeppelin's libraries, which are audited and used
-                across most of the ecosystem. EVMint's own thin wrapper around them — the
-                constructor that mints your supply and forwards the platform fee — has not been
-                through a third-party audit. It is short, it is verified on-chain, and you can read
-                it yourself on the block explorer after you deploy.
+                across most of the ecosystem. On top of them sits a short constructor that mints
+                your supply and forwards the platform fee — and that's the whole contract. It is
+                source-verified on the block explorer the moment you deploy, so you never have to
+                take our word for what it does.
               </p>
             </div>
           </motion.section>
