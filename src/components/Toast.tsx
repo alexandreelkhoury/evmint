@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { colors, typography } from '../styles/designSystem'
 
 export interface ToastProps {
@@ -140,30 +140,35 @@ export function ToastContainer({ toasts, onRemove, position = 'top-right' }: Toa
 }
 
 // Hook for managing toasts
+//
+// Every returned function is memoised. These end up in the dependency arrays of
+// effects that raise toasts, and an unstable `addToast` makes that a loop:
+// effect fires -> setToasts -> re-render -> new addToast identity -> deps
+// changed -> effect fires again. That shipped as a liquidity error toast
+// re-appearing every few seconds until the user dismissed it by hand.
 export function useToasts() {
   const [toasts, setToasts] = useState<ToastProps[]>([])
 
-  const addToast = (toast: Omit<ToastProps, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9)
+  const addToast = useCallback((toast: Omit<ToastProps, 'id'>) => {
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
     setToasts(current => [...current, { ...toast, id }])
-  }
+  }, [])
 
-  const removeToast = (id: string) => {
+  const removeToast = useCallback((id: string) => {
     setToasts(current => current.filter(toast => toast.id !== id))
-  }
+  }, [])
 
-  const clearAll = () => {
+  const clearAll = useCallback(() => {
     setToasts([])
-  }
+  }, [])
 
-  return {
-    toasts,
-    addToast,
-    removeToast,
-    clearAll,
-    success: (message: string, title?: string) => addToast({ type: 'success', message, title }),
-    error: (message: string, title?: string) => addToast({ type: 'error', message, title }),
-    warning: (message: string, title?: string) => addToast({ type: 'warning', message, title }),
-    info: (message: string, title?: string) => addToast({ type: 'info', message, title })
-  }
+  const success = useCallback((message: string, title?: string) => addToast({ type: 'success', message, title }), [addToast])
+  const error = useCallback((message: string, title?: string) => addToast({ type: 'error', message, title }), [addToast])
+  const warning = useCallback((message: string, title?: string) => addToast({ type: 'warning', message, title }), [addToast])
+  const info = useCallback((message: string, title?: string) => addToast({ type: 'info', message, title }), [addToast])
+
+  return useMemo(
+    () => ({ toasts, addToast, removeToast, clearAll, success, error, warning, info }),
+    [toasts, addToast, removeToast, clearAll, success, error, warning, info]
+  )
 }

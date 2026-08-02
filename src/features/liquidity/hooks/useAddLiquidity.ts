@@ -4,6 +4,8 @@ import { parseUnits, parseEther, formatUnits } from 'viem'
 import {
   ERC20_ABI,
   ROUTER_ABI,
+  FACTORY_ABI,
+  LP_TOKEN_ABI,
   LIQUIDITY_SLIPPAGE_BPS,
   applySlippageBps,
   UserFacingError
@@ -95,10 +97,71 @@ export function useAddLiquidity(
     const tokenAmountWei = parseUnits(tokenInfo.tokenAmount, finalDecimals)
     const ethAmountWei = parseEther(tokenInfo.ethAmount)
 
-    // Minimum amounts the router may settle for — see LIQUIDITY_SLIPPAGE_BPS.
-    // floor(amount * 9500 / 10000), bit-identical to the previous local helper.
-    const amountTokenMin = applySlippageBps(tokenAmountWei, LIQUIDITY_SLIPPAGE_BPS)
-    const amountETHMin = applySlippageBps(ethAmountWei, LIQUIDITY_SLIPPAGE_BPS)
+    // Minimum amounts the router may settle for.
+    //
+    // For a NEW pool the router banks both desired amounts exactly, so a
+    // slippage floor under each is correct.
+    //
+    // For an EXISTING pool it does not: UniswapV2Router._addLiquidity keeps one
+    // side whole and recomputes the other from the current reserves, then
+    // requires that recomputed figure to clear the matching minimum. Deriving
+    // the minimums from what the user typed therefore reverts with
+    // INSUFFICIENT_A_AMOUNT / INSUFFICIENT_B_AMOUNT whenever their ratio
+    // differs from the pool's — which is essentially always. We mirror the
+    // router's own arithmetic here so the floors sit under the amounts it will
+    // actually settle on.
+    let amountTokenMin = applySlippageBps(tokenAmountWei, LIQUIDITY_SLIPPAGE_BPS)
+    let amountETHMin = applySlippageBps(ethAmountWei, LIQUIDITY_SLIPPAGE_BPS)
+
+    try {
+      const { factory, weth } = getContracts()
+      if (publicClient && factory && weth) {
+        const pair = await publicClient.readContract({
+          address: factory as `0x${string}`,
+          abi: FACTORY_ABI,
+          functionName: 'getPair',
+          args: [tokenInfo.address as `0x${string}`, weth as `0x${string}`]
+        }) as string
+
+        if (pair && pair !== '0x0000000000000000000000000000000000000000') {
+          const [reserves, token0] = await Promise.all([
+            publicClient.readContract({ address: pair as `0x${string}`, abi: LP_TOKEN_ABI, functionName: 'getReserves' }) as Promise<readonly [bigint, bigint, number]>,
+            publicClient.readContract({ address: pair as `0x${string}`, abi: LP_TOKEN_ABI, functionName: 'token0' }) as Promise<string>
+          ])
+
+          const tokenIsToken0 = token0.toLowerCase() === tokenInfo.address.toLowerCase()
+          const reserveToken = tokenIsToken0 ? reserves[0] : reserves[1]
+          const reserveETH = tokenIsToken0 ? reserves[1] : reserves[0]
+
+          // Only an initialised pool constrains the ratio.
+          if (reserveToken > 0n && reserveETH > 0n) {
+            // quote(): amountB = amountA * reserveB / reserveA
+            const ethOptimal = (tokenAmountWei * reserveETH) / reserveToken
+
+            if (ethOptimal <= ethAmountWei) {
+              amountTokenMin = applySlippageBps(tokenAmountWei, LIQUIDITY_SLIPPAGE_BPS)
+              amountETHMin = applySlippageBps(ethOptimal, LIQUIDITY_SLIPPAGE_BPS)
+            } else {
+              const tokenOptimal = (ethAmountWei * reserveToken) / reserveETH
+              amountTokenMin = applySlippageBps(tokenOptimal, LIQUIDITY_SLIPPAGE_BPS)
+              amountETHMin = applySlippageBps(ethAmountWei, LIQUIDITY_SLIPPAGE_BPS)
+            }
+
+            loggers.liquidity.debug('Existing pool — minimums derived from reserves', {
+              reserveToken: reserveToken.toString(),
+              reserveETH: reserveETH.toString(),
+              amountTokenMin: amountTokenMin.toString(),
+              amountETHMin: amountETHMin.toString()
+            })
+          }
+        }
+      }
+    } catch (error) {
+      // A failed read leaves the new-pool floors in place. Those are correct for
+      // a pool that does not exist and merely conservative for one that does —
+      // the transaction reverts rather than filling at a bad ratio.
+      loggers.liquidity.warn('Could not read pool reserves; using desired-amount minimums', error)
+    }
 
     // Set deadline to 20 minutes from now
     const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)

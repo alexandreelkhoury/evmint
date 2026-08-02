@@ -542,29 +542,29 @@ export function useLiquidityPageLogic() {
     }
   }, [liquidityError, showProgressModal])
 
-  // Error toast effect
+  // Error toast effect.
+  //
+  // Raise one toast per distinct error message and no more. The previous
+  // version allowed a repeat after 3 seconds, which was a workaround for
+  // `addToast` being recreated on every render — the effect re-fired forever
+  // and the same error re-appeared every few seconds until dismissed by hand.
+  // addToast is memoised now, and the guard is identity-based rather than
+  // time-based: the message has to actually change to toast again.
   useEffect(() => {
-    if (liquidityError?.message && !showProgressModal) {
-      const now = Date.now()
-      if (lastToastRef.current.errorMessage === liquidityError.message &&
-          lastToastRef.current.lastErrorTime &&
-          now - lastToastRef.current.lastErrorTime < 3000) {
-        return
-      }
-
-      lastToastRef.current.errorMessage = liquidityError.message
-      lastToastRef.current.lastErrorTime = now
-
-      addToast({
-        title: 'Liquidity Error',
-        message: liquidityError.message,
-        type: 'error'
-      })
-    }
-
-    if (!liquidityError) {
+    const message = liquidityError?.message
+    if (!message) {
       lastToastRef.current.errorMessage = undefined
+      return
     }
+    if (showProgressModal) return
+    if (lastToastRef.current.errorMessage === message) return
+
+    lastToastRef.current.errorMessage = message
+    addToast({
+      title: 'Liquidity Error',
+      message,
+      type: 'error'
+    })
   }, [liquidityError?.message, showProgressModal, addToast])
 
   return {

@@ -44,10 +44,18 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Page scrolling lives on <html>. Always reserving the scrollbar gutter
-     stops layout shift between short and tall pages. */
+  /* Page scrolling lives on <html>. The gutter is reserved so short and tall
+     pages don't shift horizontally as the scrollbar comes and goes.
+     This was `overflow-y: scroll`, which reserves the space by painting a
+     permanent scrollbar — on a page that fits the viewport (a token with no
+     chart, an error state) you got an inert grey bar that reads as a second,
+     broken scrollbar. `scrollbar-gutter: stable` reserves the same space and
+     only paints the bar when there is something to scroll. Older browsers
+     without gutter support fall back to `auto`: the bar appears only when
+     needed, at the cost of the shift this rule was avoiding. */
   html {
-    overflow-y: scroll;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
   }
 }
 
