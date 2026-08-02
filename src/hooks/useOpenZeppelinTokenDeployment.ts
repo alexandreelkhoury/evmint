@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAccount, useChainId, useSwitchChain, useDeployContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
-import { parseEther } from 'viem'
+import { parseEther, formatUnits } from 'viem'
 import { isChainSupported, baseConfig, getDeploymentFee } from '../config/chains'
 import { MY_ERC20_ABI, MY_ERC20_BYTECODE, FEE_RECIPIENT } from '../contracts/MyERC20Artifacts'
 import {
@@ -116,7 +116,11 @@ export function useOpenZeppelinTokenDeployment() {
         address: tokenAddress,
         name: name as string,
         symbol: symbol as string,
-        totalSupply: totalSupply.toString(),
+        // Store the human-readable figure, not raw base units. The other write
+        // path (addTokenToStorage) stores the value the user typed, so a raw
+        // bigint here made the same field mean two different things and the
+        // portfolio rendered a 1e27 supply as "1e+21M".
+        totalSupply: formatUnits(totalSupply as bigint, Number(decimals)),
         decimals: Number(decimals),
         creator: userAddress,
         createdAt: Date.now(),

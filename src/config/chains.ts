@@ -1372,13 +1372,14 @@ export function getAllViemChains(): Chain[] {
 export const CHAIN_FEES: Record<number, string> = {
   // ETH-based chains (ETH as gas token)
   1: '0.02',         // Ethereum Mainnet
-  8453: '0.02',      // Base Mainnet
+  // ⚠️ TEMPORARY TEST PRICING — revert to '0.02' (~$80) before launch
+  8453: '0.0000025',   // Base — ~$0.01 at ETH $4,000 (TESTING)
   42161: '0.02',     // Arbitrum One
   10: '0.02',        // Optimism
   480: '0.02',       // World Chain
   81457: '0.02',     // Blast
   4326: '0.02',      // MegaETH Mainnet
-  4663: '0.02',      // Robinhood Chain
+  4663: '0.0000025',   // Robinhood Chain — ~$0.01 at ETH $4,000 (TESTING)
 
   // BNB chain
   56: '0.075',       // BSC Mainnet
@@ -1398,8 +1399,8 @@ export const CHAIN_FEES: Record<number, string> = {
   // Moonbeam chain (GLMR)
   1284: '450',       // Moonbeam
 
-  // Monad chain (MON ≈ $0.035)
-  143: '0.1',        // Monad Mainnet (testing)
+  // Monad chain (MON ≈ $0.032 → 2500 MON ≈ $80)
+  143: '2500',       // Monad Mainnet
 
   // Testnets (much lower fees for testing)
   11155111: '0.001', // Sepolia
@@ -1443,14 +1444,15 @@ export function getDeploymentFee(chainId: number): string {
 export function getDeploymentFeeUSD(chainId: number): number {
   // Approximate USD values (update periodically)
   const usdValues: Record<number, number> = {
-    1: 80, 8453: 80, 42161: 80, 10: 80, 480: 80, 81457: 80, 4326: 80, 4663: 80,  // ETH chains
+    1: 80, 42161: 80, 10: 80, 480: 80, 81457: 80, 4326: 80,  // ETH chains
+    8453: 0.01, 4663: 0.01,               // ⚠️ TESTING — see CHAIN_FEES
     56: 82.5,                             // BSC
     137: 80,                              // Polygon
     43114: 80,                            // Avalanche
     250: 75,                              // Fantom/Sonic
     100: 80,                              // Gnosis (xDAI)
     1284: 81,                             // Moonbeam
-    143: 70,                              // Monad
+    143: 80,                              // Monad (2500 MON)
     // Testnets
     11155111: 4, 84532: 4, 421614: 4, 11155420: 4, 80002: 0.2, 1287: 1.8, 168587773: 4, 10143: 0, 6342: 4, 46630: 4,
   }

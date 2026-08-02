@@ -46,6 +46,52 @@ export const GECKO_CHART_NETWORKS: Record<number, string> = {
   480: 'world-chain',
 }
 
+/**
+ * Chain ID -> DEXScreener path slug. Separate from the GeckoTerminal maps
+ * above: DEXScreener covers chains our own token page cannot render, which is
+ * exactly why it is the fallback when getGeckoNetworkId() returns null.
+ */
+export const DEXSCREENER_SLUGS: Record<number, string> = {
+  1: 'ethereum',
+  8453: 'base',
+  42161: 'arbitrum',
+  10: 'optimism',
+  137: 'polygon',
+  56: 'bsc',
+  43114: 'avalanche',
+  250: 'fantom',
+  100: 'gnosis',
+  1284: 'moonbeam',
+  81457: 'blast',
+  480: 'worldchain',
+  143: 'monad',
+  4663: 'robinhoodchain',
+}
+
+/**
+ * Where to send someone who wants to trade or chart a token.
+ *
+ *   internal -> our own /token page (chart + trades + swap)
+ *   external -> DEXScreener, for chains GeckoTerminal does not index
+ *   null     -> we have nowhere credible to send them; hide the affordance
+ *
+ * Callers must handle the null case rather than falling back to a default
+ * chain: a link to the wrong network is worse than no link.
+ */
+export function getTokenMarketLink(
+  chainId: number,
+  tokenAddress: string
+): { href: string; external: boolean } | null {
+  if (getGeckoNetworkId(chainId)) {
+    return { href: `/token/${tokenAddress.toLowerCase()}?chain=${chainId}`, external: false }
+  }
+  const slug = DEXSCREENER_SLUGS[chainId]
+  if (slug) {
+    return { href: `https://dexscreener.com/${slug}/${tokenAddress}`, external: true }
+  }
+  return null
+}
+
 export function getGeckoNetworkId(chainId: number): string | null {
   return GECKO_NETWORKS[chainId] ?? null
 }

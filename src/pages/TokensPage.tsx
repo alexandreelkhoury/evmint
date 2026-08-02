@@ -12,6 +12,7 @@ import SEO from '../components/SEO'
 import { CardSkeleton } from '../components/LoadingSkeleton'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenDetails } from '../hooks/useTokenDetails'
+import { getTokenMarketLink } from '../services/geckoTerminal'
 import { animations, typography, colors, layout } from '../styles/designSystem'
 import { getChainById } from '../config/chains'
 import ChainIcon from '../components/ChainIcon'
@@ -33,6 +34,13 @@ interface TokenCardProps {
   onBalanceUpdate?: (address: string, chainId: number, balance: string) => void
 }
 
+const TradeIcon = (
+  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+  </svg>
+)
+
 function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProps) {
   const walletChainId = useChainId()
   const isOnTokenChain = walletChainId === chainId
@@ -48,11 +56,17 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
   }
 
   const chainConfig = getChainById(chainId)
+  // Our own /token page only renders for chains GeckoTerminal indexes. Elsewhere
+  // it shows "Unsupported Network", so fall through to DEXScreener rather than
+  // sending someone to a wall.
+  const marketLink = getTokenMarketLink(chainId, tokenData.address)
   const truncatedAddress = `${tokenData.address.slice(0, 6)}...${tokenData.address.slice(-4)}`
   // Use live balance if available (same chain), otherwise cached, otherwise '0'
   const liveBalance = isOnTokenChain && balance ? balance : null
   const displayBalance = liveBalance ?? tokenData.cachedBalance ?? '0'
   const parsedBalance = parseFloat(displayBalance) || 0
+  // Showing a localStorage figure because we cannot read the chain from here.
+  const isStaleBalance = !isOnTokenChain && tokenData.cachedBalance !== undefined
 
   // Cache balance to localStorage when we get a live one
   useEffect(() => {
@@ -125,12 +139,23 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
       {/* Balance */}
       <div className="px-5 pt-4 pb-3">
         <div className="flex items-baseline gap-2">
-          <span className="text-xl font-semibold text-white tabular-nums leading-none">
+          <span className={`text-xl font-semibold tabular-nums leading-none ${isStaleBalance ? 'text-gray-400' : 'text-white'}`}>
             {parsedBalance > 0 ? parsedBalance.toLocaleString(undefined, { maximumFractionDigits: 4 }) : '0'}
           </span>
           <span className="text-xs text-gray-400">
             {displayTokenInfo.symbol}
           </span>
+          {/* A cached figure can be arbitrarily old and Refresh cannot update it —
+              there is no query to invalidate while the wallet is on another chain.
+              Say so rather than presenting it as current. */}
+          {isStaleBalance && (
+            <span
+              className="text-[10px] uppercase tracking-wider text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5"
+              title={`Last known balance. Switch your wallet to ${chainConfig?.name || 'this network'} to see the live figure.`}
+            >
+              Cached
+            </span>
+          )}
         </div>
         <p className="text-xs text-gray-400 mt-1.5 tabular-nums">
           Supply: {parsedSupply > 1_000_000
@@ -168,16 +193,31 @@ function TokenCard({ tokenData, index, chainId, onBalanceUpdate }: TokenCardProp
 
       {/* Action buttons */}
       <div className="px-5 pb-5 flex items-center gap-2">
-        <Link
-          to={`/token/${tokenData.address}?chain=${chainId}`}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-semibold rounded-lg transition-colors duration-150 cursor-pointer"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-          </svg>
-          Trade
-        </Link>
+        {marketLink && (
+          marketLink.external ? (
+            <a
+              href={marketLink.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Chart on DEXScreener — EVMint's own chart doesn't cover this network yet"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-semibold rounded-lg transition-[background-color,scale] duration-150 active:scale-[0.96] cursor-pointer"
+            >
+              {TradeIcon}
+              Trade
+              <svg className="w-3 h-3 opacity-70" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          ) : (
+            <Link
+              to={marketLink.href}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-semibold rounded-lg transition-[background-color,scale] duration-150 active:scale-[0.96] cursor-pointer"
+            >
+              {TradeIcon}
+              Trade
+            </Link>
+          )
+        )}
         <Link
           to={`/liquidity?token=${tokenData.address}&chain=${chainId}`}
           className="flex-1 inline-flex items-center justify-center gap-1.5 h-9 bg-white/[0.05] hover:bg-white/[0.10] text-gray-300 hover:text-white text-[13px] font-medium rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-[background-color,border-color,color] duration-150 cursor-pointer"

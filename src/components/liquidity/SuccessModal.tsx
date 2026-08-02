@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { getChainById, getExplorerUrl } from '../../config/chains'
-import { getGeckoNetworkId } from '../../services/geckoTerminal'
+import { getGeckoNetworkId, DEXSCREENER_SLUGS } from '../../services/geckoTerminal'
 import { useScrollLock } from '../../hooks/useScrollLock'
 import { useModalA11y } from '../../hooks/useModalA11y'
 import CloseButton from '../CloseButton'
@@ -21,26 +21,6 @@ interface SuccessModalProps {
   }
   chainId: number
   isWithdrawal?: boolean
-}
-
-/** DEXScreener path slug. Falls back to null so we can hide the link rather than send someone to the wrong chain. */
-function dexScreenerSlug(id: number): string | null {
-  const slugs: Record<number, string> = {
-    1: 'ethereum',
-    8453: 'base',
-    42161: 'arbitrum',
-    10: 'optimism',
-    137: 'polygon',
-    56: 'bsc',
-    43114: 'avalanche',
-    250: 'fantom',
-    100: 'gnosis',
-    1284: 'moonbeam',
-    81457: 'blast',
-    143: 'monad',
-    4663: 'robinhoodchain',
-  }
-  return slugs[id] ?? null
 }
 
 /**
@@ -111,7 +91,7 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
   const chainName = chainConfig?.name || 'this network'
   const explorerUrl = getExplorerUrl(chainId)
 
-  const slug = dexScreenerSlug(chainId)
+  const slug = DEXSCREENER_SLUGS[chainId] ?? null
   const dexscreenerUrl = slug ? `https://dexscreener.com/${slug}/${pool.tokenAddress}` : null
   const tradeUrl = slug
     ? `https://app.uniswap.org/swap?outputCurrency=${pool.tokenAddress}&chain=${slug}`
