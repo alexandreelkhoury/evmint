@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
 import { useChainConfig } from '../../../hooks/useChainConfig'
@@ -43,7 +43,8 @@ export function useTokenCreationLogic() {
     handleInputChange,
     validateForm,
     getSanitizedFormData,
-    getFieldValidation
+    getFieldValidation,
+    resetForm
   } = useTokenForm()
 
   const [showSuccess, setShowSuccess] = useState(false)
@@ -112,11 +113,20 @@ export function useTokenCreationLogic() {
     }
   }, [isSuccess, createdTokenAddress, formData, analytics, chainId])
 
+  // Clears the form and dismisses the success panel in place. The old
+  // "Create Another Token" button did a full window.location.reload(), which
+  // also re-initialises Privy.
+  const createAnother = useCallback(() => {
+    resetForm()
+    setShowSuccess(false)
+  }, [resetForm])
+
   return {
     // State
     ready,
     authenticated,
     showSuccess,
+    createAnother,
     formData,
     formErrors,
 

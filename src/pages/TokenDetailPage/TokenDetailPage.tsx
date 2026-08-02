@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useChainId, useReadContract } from 'wagmi'
 import { useTokenPool } from '../../hooks/useTokenPool'
 import { useRecentTrades } from '../../hooks/useRecentTrades'
-import { formatUsd, getGeckoNetworkId } from '../../services/geckoTerminal'
+import { formatUsd, getGeckoNetworkId, DEXSCREENER_SLUGS } from '../../services/geckoTerminal'
 import { getChainById, getChainName, getDexContracts, getTokenUrl, getWethAddress } from '../../config/chains'
 import { FACTORY_ABI } from '../../features/liquidity/constants'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
@@ -76,6 +76,12 @@ export default function TokenDetailPage() {
   const shareUrl = `${SITE_URL}${canonicalPath}`
   const addLiquidityHref = `/liquidity?token=${tokenAddress}&chain=${chainId}`
   const explorerHref = tokenAddress ? getTokenUrl(chainId, tokenAddress) : null
+  // When a pool demonstrably exists, DEXScreener is the more useful second
+  // destination than a block explorer — it often has the pair before we do.
+  const dexScreenerHref =
+    tokenAddress && DEXSCREENER_SLUGS[chainId]
+      ? `https://dexscreener.com/${DEXSCREENER_SLUGS[chainId]}/${tokenAddress}`
+      : null
 
   // Data hooks
   const {
@@ -198,10 +204,10 @@ export default function TokenDetailPage() {
       // No factory to query on this chain, or the RPC call failed — cover both
       // causes honestly rather than asserting something we can't verify.
       heading = 'Nothing to trade yet'
-      body = `We can't find a market for this token on ${chainName}. Either liquidity hasn't been added yet, or the pool is too new for GeckoTerminal to have indexed it.`
+      body = `We can't find a market for this token on ${chainName} yet. Either no liquidity has been added, or the pool is too new to show up here.`
     } else if (onChainPairExists) {
-      heading = 'Pool found — waiting on market data'
-      body = `A ${nativeSymbol} pool exists on-chain, but GeckoTerminal hasn't indexed it yet. The chart and trade feed appear shortly after the first swap.`
+      heading = 'Almost there'
+      body = `Your ${nativeSymbol} pool is live. The chart and trade history usually appear within a few minutes of the first trade.`
     } else {
       heading = 'No pool yet'
       body = 'Your token exists on-chain, but nobody can trade it until you add liquidity.'
@@ -259,16 +265,24 @@ export default function TokenDetailPage() {
                     Retry
                   </button>
                 )}
-                {explorerHref && (
-                  <a
-                    href={explorerHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`px-6 py-3 text-center font-semibold ${colors.secondaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
-                  >
-                    View on explorer
-                  </a>
-                )}
+                {(() => {
+                  // A live pool that we simply haven't picked up yet is worth
+                  // sending to DEXScreener; with no pool there is nothing to
+                  // chart anywhere, so the explorer is the honest destination.
+                  const useDexScreener = poolConfirmed && dexScreenerHref
+                  const href = useDexScreener ? dexScreenerHref : explorerHref
+                  if (!href) return null
+                  return (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`px-6 py-3 text-center font-semibold ${colors.secondaryButton} cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30`}
+                    >
+                      {useDexScreener ? 'View on DEXScreener' : 'View on explorer'}
+                    </a>
+                  )
+                })()}
               </div>
             )}
 

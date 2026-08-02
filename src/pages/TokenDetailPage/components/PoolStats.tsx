@@ -110,7 +110,7 @@ export default function PoolStats({ pool, tokenInfo, isTokenBase, loading }: Poo
         <h4 className="text-xs text-gray-400 font-sans mb-2">Links</h4>
         {!hasSocials ? (
           <p className="text-xs text-gray-400 font-sans leading-relaxed">
-            No official links listed yet. Token socials are sourced from GeckoTerminal.
+            No official links yet.
           </p>
         ) : (
           <div className="flex flex-wrap gap-2">

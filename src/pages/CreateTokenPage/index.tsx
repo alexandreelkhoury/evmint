@@ -34,6 +34,7 @@ export default function CreateTokenPage() {
     isVerifying,
     verificationStatus,
     retryVerification,
+    createAnother,
     feeAmount,
     chainId,
     chainName,
@@ -290,6 +291,7 @@ export default function CreateTokenPage() {
                     chainId={chainId}
                     verificationStatus={verificationStatus}
                     onRetryVerification={retryVerification}
+                    onCreateAnother={createAnother}
                   />
                 )}
 

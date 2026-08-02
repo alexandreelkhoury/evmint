@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { colors } from '../../../styles/designSystem'
 import { getAddressUrl, getChainById } from '../../../config/chains'
 
 interface SuccessModalProps {
@@ -10,452 +9,222 @@ interface SuccessModalProps {
   tokenName?: string
   tokenSymbol?: string
   totalSupply?: string
-  /** Live source-verification state. `null`/undefined hides the badge entirely. */
+  /** Live source-verification state. `null`/undefined hides the row entirely. */
   verificationStatus?: 'pending' | 'success' | 'failed' | null
   /** Used to build explorer links that are correct for every supported chain */
   chainId?: number
   onRetryVerification?: () => void
+  /** Clears the form in place. Without it we fall back to a full page reload. */
+  onCreateAnother?: () => void
+}
+
+/**
+ * Human-readable supply. Uses Number, not parseInt: parseInt silently truncates
+ * above 2^53 and this field routinely holds billions.
+ */
+function formatSupply(supply: string): string {
+  const n = Number(supply)
+  if (!Number.isFinite(n)) return supply
+  if (n >= 1e12) return `${(n / 1e12).toFixed(n % 1e12 === 0 ? 0 : 1)}T`
+  if (n >= 1e9) return `${(n / 1e9).toFixed(n % 1e9 === 0 ? 0 : 1)}B`
+  if (n >= 1e6) return `${(n / 1e6).toFixed(n % 1e6 === 0 ? 0 : 1)}M`
+  return n.toLocaleString('en-US')
+}
+
+/** Cross-fades rather than hard-swapping — the exit is what signals the change. */
+function CopyLabel({ copied, idle = 'Copy', done = 'Copied' }: { copied: boolean; idle?: string; done?: string }) {
+  return (
+    <span className="relative inline-flex items-center justify-end min-w-[3.5rem]">
+      <AnimatePresence initial={false} mode="wait">
+        <motion.span
+          key={copied ? 'done' : 'idle'}
+          initial={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={{ opacity: 0, scale: 0.25, filter: 'blur(4px)' }}
+          transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+          className={copied ? 'text-green-400' : 'text-gray-400'}
+        >
+          {copied ? done : idle}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  )
 }
 
 export default function SuccessModal({
   tokenAddress,
   chainName,
-  tokenName,
   tokenSymbol,
   totalSupply,
   verificationStatus = null,
   chainId,
-  onRetryVerification
+  onRetryVerification,
+  onCreateAnother
 }: SuccessModalProps) {
-  const [copied, setCopied] = useState(false)
-  const [linkCopied, setLinkCopied] = useState(false)
+  const [copied, setCopied] = useState<'address' | 'message' | null>(null)
 
-  const handleCopyAddress = async () => {
+  const copy = async (text: string, which: 'address' | 'message') => {
     try {
-      await navigator.clipboard.writeText(tokenAddress)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
+      await navigator.clipboard.writeText(text)
+      setCopied(which)
+      setTimeout(() => setCopied(null), 2000)
+    } catch {
+      /* clipboard blocked — say nothing rather than claim success */
     }
   }
 
-  // Format supply for display (e.g., 1000000 -> "1M")
-  const formatSupply = (supply: string) => {
-    const num = parseInt(supply)
-    if (isNaN(num)) return supply
+  // Built from chain config, not a hardcoded name->domain map. The old map was
+  // missing several chains and fell back to etherscan.io, so those users got a
+  // dead link — and that dead link was embedded in the prefilled tweet.
+  const explorerName = chainId ? getChainById(chainId)?.explorer?.name ?? 'the explorer' : 'the explorer'
+  const addressUrl = chainId ? getAddressUrl(chainId, tokenAddress) : null
+  const sourceCodeUrl = addressUrl ? `${addressUrl}#code` : null
+  const liquidityUrl = `/liquidity?token=${tokenAddress}${chainId ? `&chain=${chainId}` : ''}`
 
-    if (num >= 1000000000) return `${(num / 1000000000).toFixed(1)}B`
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
-    return num.toLocaleString()
-  }
+  // Factual. The platform states what was deployed; it does not write hype in
+  // the creator's voice or tell anyone to buy.
+  const shareText = [
+    `${tokenSymbol ? `$${tokenSymbol}` : 'My token'} is deployed on ${chainName}.`,
+    ``,
+    `Contract: ${tokenAddress}`,
+    ...(addressUrl ? [addressUrl] : []),
+  ].join('\n')
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`
 
-  // Get explorer URL based on chain - supports all chains including testnets
-  const getExplorerUrl = () => {
-    const explorers: Record<string, string> = {
-      // Mainnets
-      'Base': 'basescan.org',
-      'Ethereum': 'etherscan.io',
-      'Arbitrum One': 'arbiscan.io',
-      'Arbitrum': 'arbiscan.io',
-      'Optimism': 'optimistic.etherscan.io',
-      'Polygon': 'polygonscan.com',
-      'BNB Smart Chain': 'bscscan.com',
-      'BSC': 'bscscan.com',
-      'Avalanche': 'snowtrace.io',
-      'Fantom': 'ftmscan.com',
-      'Gnosis': 'gnosisscan.io',
-      'Moonbeam': 'moonscan.io',
-      'World Chain': 'worldscan.org',
-      'Blast': 'blastscan.io',
-      'Monad': 'monadscan.com',
-      // Testnets
-      'Sepolia': 'sepolia.etherscan.io',
-      'Base Sepolia': 'sepolia.basescan.org',
-      'Arbitrum Sepolia': 'sepolia.arbiscan.io',
-      'Optimism Sepolia': 'sepolia-optimism.etherscan.io',
-      'Polygon Amoy': 'amoy.polygonscan.com',
-      'BSC Testnet': 'testnet.bscscan.com',
-      'Avalanche Fuji': 'testnet.snowtrace.io',
-      'Moonbase Alpha': 'moonbase.moonscan.io',
-      'Blast Sepolia': 'sepolia.blastscan.io',
-      'Monad Testnet': 'testnet.monadscan.com',
-    }
-    const domain = explorers[chainName] || 'etherscan.io'
-    return `https://${domain}/address/${tokenAddress}`
-  }
-
-  // Prefer the chain registry (covers every supported chain) over the name map above
-  const explorerName = (chainId !== undefined && getChainById(chainId)?.explorer.name) || 'the block explorer'
-  const addressUrl = chainId !== undefined ? getAddressUrl(chainId, tokenAddress) : getExplorerUrl()
-  const sourceCodeUrl = `${addressUrl}#code`
-
-  // Carry the chain through the deep link the way TokensPage/TokenDetailPage do.
-  // Without it, arriving on the liquidity page while connected to another
-  // network shows a generic "couldn't load" error instead of a switch prompt.
-  const liquidityUrl = chainId !== undefined
-    ? `/liquidity?token=${tokenAddress}&chain=${chainId}`
-    : `/liquidity?token=${tokenAddress}`
-
-  // Get clean chain name for hashtag (remove "Sepolia", "Testnet", etc.)
-  const getChainHashtag = () => {
-    return chainName
-      .replace(/\s*(Sepolia|Testnet|Amoy|Fuji|Alpha)\s*/gi, '')
-      .replace(/\s+/g, '')
-  }
-
-  // VIRAL TWEET - Optimized for engagement and EVMint marketing
-  const displayName = tokenName || 'My Token'
-  const displaySymbol = tokenSymbol || 'TOKEN'
-  const displaySupply = totalSupply ? formatSupply(totalSupply) : '???'
-
-  const tweetText = `🚀 Just deployed $${displaySymbol} on ${chainName}!
-
-💎 ${displayName}
-📊 ${displaySupply} supply
-💧 Liquidity coming soon...
-
-Built with @EVMint_io - launch tokens on 15+ EVM chains in seconds ⚡
-
-${getExplorerUrl()}
-
-#${displaySymbol} #${getChainHashtag()} #DeFi #Web3 #Crypto`
-
-  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`
-
-  const handleCopyLink = async () => {
-    try {
-      const shareMessage = `🚀 $${displaySymbol} just launched on ${chainName}!
-
-💎 ${displayName}
-📊 ${displaySupply} supply
-💧 Liquidity coming soon...
-
-📍 Contract: ${tokenAddress}
-🔗 ${getExplorerUrl()}
-
-Deployed with EVMint.io - launch tokens on 15+ EVM chains ⚡`
-
-      await navigator.clipboard.writeText(shareMessage)
-      setLinkCopied(true)
-      setTimeout(() => setLinkCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy link:', err)
-    }
-  }
-
-  // Track share button clicks in analytics
-  const trackShare = (platform: string) => {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'share', {
-        method: platform,
-        content_type: 'token_creation',
-        item_id: tokenAddress
-      })
-    }
-  }
+  const tertiary =
+    'inline-flex items-center gap-1.5 min-h-[44px] px-3 -mx-1 rounded-lg text-[13px] text-gray-400 hover:text-white transition-[color,scale] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400'
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className={`mt-6 ${colors.successBg} rounded-2xl p-5 sm:p-8`}
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      className="mt-6 rounded-2xl bg-gray-900/80 p-5"
+      style={{
+        boxShadow:
+          '0 0 0 1px rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.35)',
+      }}
     >
-      {/* Success Header */}
-      <div className="text-center mb-6">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 22 }}
-          className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/50"
-        >
-          <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      {/* Status */}
+      <div className="flex items-center gap-2 mb-1">
+        <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-500/15 flex items-center justify-center">
+          <svg className="w-3 h-3 text-green-400" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
-        </motion.div>
-        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          Token Created Successfully!
+        </span>
+        <h3 className="text-[17px] font-semibold text-white tracking-tight text-balance">
+          {tokenSymbol ? `$${tokenSymbol} deployed` : 'Token deployed'}
         </h3>
-        <p className="text-green-200 text-base sm:text-lg">
-          Your token is now live on {chainName}
-        </p>
       </div>
+      <p className="text-[13px] text-gray-400 leading-snug">
+        Live on {chainName}
+        {totalSupply ? ` · ${formatSupply(totalSupply)} supply` : ''}. It isn&apos;t tradable until you add liquidity.
+      </p>
 
-      {/* Contract Address */}
-      <div className="bg-black/30 border border-green-500/20 rounded-xl p-4 mb-6">
-        <p className="text-xs text-gray-400 mb-2">Contract Address:</p>
-        <div className="flex items-center gap-2">
-          <p className="text-xs sm:text-sm font-mono break-all text-gray-200 flex-1">
-            {tokenAddress}
-          </p>
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleCopyAddress}
-            aria-label="Copy contract address"
-            className={`px-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${
-              copied
-                ? 'bg-green-500/20 text-green-300'
-                : 'bg-white/10 hover:bg-white/20 text-gray-300'
-            }`}
-          >
-            {copied ? '✓ Copied' : 'Copy'}
-          </motion.button>
-        </div>
-      </div>
+      {/* Contract address */}
+      <button
+        onClick={() => copy(tokenAddress, 'address')}
+        className="mt-4 w-full flex items-center gap-2 min-h-[44px] px-4 rounded-xl bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06] transition-[background-color,scale] duration-150 active:scale-[0.96] text-left focus-visible:ring-2 focus-visible:ring-blue-400"
+        aria-label="Copy contract address"
+      >
+        <span className="text-[11px] uppercase tracking-wider text-gray-400 flex-shrink-0">Contract</span>
+        <span className="flex-1 min-w-0 truncate font-mono text-[12px] text-gray-300">{tokenAddress}</span>
+        <span className="flex-shrink-0 text-[12px]">
+          <CopyLabel copied={copied === 'address'} />
+        </span>
+      </button>
 
-      {/* Source verification badge.
-          Deliberately never shows a green check for a queued job — the 'success'
-          state is only reached once the explorer itself confirms the source. */}
+      {/* Source verification. Never shows a check for a queued job — 'success'
+          is only reached once the explorer itself confirms. */}
       {verificationStatus && (
-        <div className="mb-6">
-          {verificationStatus === 'success' && (
+        <div className="mt-2">
+          {verificationStatus === 'success' && sourceCodeUrl && (
             <a
               href={sourceCodeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-3 bg-green-500/10 border border-green-500/30 rounded-xl text-sm text-green-300 hover:bg-green-500/20 transition-colors"
+              className="flex items-center gap-2 min-h-[40px] px-4 rounded-xl bg-green-500/[0.08] border border-green-500/20 text-[13px] text-green-300 hover:bg-green-500/[0.14] transition-colors"
             >
-              <span aria-hidden="true">✓</span>
-              <span>Source code verified on {explorerName}</span>
-              <svg className="w-4 h-4 ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
+              Source verified on {explorerName}
             </a>
           )}
-
           {verificationStatus === 'pending' && (
-            <div
-              role="status"
-              className="flex items-center gap-3 px-4 py-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-sm text-yellow-200"
-            >
-              <span className="w-4 h-4 flex-shrink-0 rounded-full border-2 border-yellow-300/40 border-t-yellow-300 animate-spin" aria-hidden="true" />
-              <span>Verification in progress — usually done within 2 minutes.</span>
+            <div role="status" className="flex items-center gap-2 min-h-[40px] px-4 rounded-xl bg-white/[0.03] border border-white/[0.07] text-[13px] text-gray-300">
+              <span className="w-3.5 h-3.5 flex-shrink-0 rounded-full border-2 border-gray-500/40 border-t-gray-300 animate-spin" aria-hidden="true" />
+              Verifying source — usually under two minutes
             </div>
           )}
-
           {verificationStatus === 'failed' && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 bg-gray-500/10 border border-gray-500/30 rounded-xl text-sm text-gray-300">
-              <span className="flex-1">
-                Not verified yet. Your token is deployed and fully functional — only the
-                published source code is missing.
-              </span>
-              <div className="flex items-center gap-2">
-                {onRetryVerification && (
-                  <button
-                    type="button"
-                    onClick={onRetryVerification}
-                    className="px-3 min-h-[44px] flex items-center justify-center rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-gray-200 transition-colors"
-                  >
-                    Retry verification
-                  </button>
-                )}
-                <a
-                  href={sourceCodeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 min-h-[44px] flex items-center justify-center rounded-lg text-xs font-medium border border-gray-600 hover:border-gray-500 text-gray-300 transition-colors"
+            <div className="flex items-center gap-2 min-h-[40px] px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.07] text-[13px] text-gray-400">
+              <span className="flex-1">Source not published yet. Your token itself is fine.</span>
+              {onRetryVerification && (
+                <button
+                  type="button"
+                  onClick={onRetryVerification}
+                  className="flex-shrink-0 text-gray-300 hover:text-white underline underline-offset-2 transition-colors"
                 >
-                  Verify on {explorerName}
-                </a>
-              </div>
+                  Retry
+                </button>
+              )}
             </div>
           )}
         </div>
       )}
 
-      {/* VIRAL SHARING SECTION - Most Prominent */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25, delay: 0.15 }}
-        className="mb-6 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 border-2 border-blue-500/30 rounded-2xl p-4 sm:p-6"
+      {/* One primary action, and it is the one the copy above just named. The
+          old "Next Steps" cards listed this as step 1, then padded it out with
+          two pieces of generic advice. */}
+      <Link
+        to={liquidityUrl}
+        className="mt-4 w-full flex items-center justify-center gap-2 min-h-[44px] rounded-xl bg-white text-gray-900 text-sm font-semibold hover:bg-gray-100 transition-[background-color,scale] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400"
       >
-        <div className="text-center mb-4">
-          <h4 className="text-xl font-bold text-white mb-2 text-balance">
-            Announce Your Launch!
-          </h4>
-          <p className="text-sm text-gray-300">
-            Share your token creation! (Add liquidity next to make it tradable)
-          </p>
-        </div>
+        Add liquidity
+      </Link>
 
-        {/* Share Buttons */}
-        <div className="space-y-3">
-          {/* Twitter Share - PRIMARY */}
-          <motion.a
-            href={twitterShareUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackShare('twitter')}
-            aria-label="Share token launch on Twitter"
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full flex items-center justify-center gap-3 px-6 min-h-[44px] bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold shadow-xl shadow-blue-500/40 transition-[background-color,color,border-color,box-shadow,opacity] duration-200 group"
-          >
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+      <a
+        href={twitterUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 w-full flex items-center justify-center gap-2 min-h-[44px] rounded-xl bg-white/[0.05] border border-white/[0.10] text-sm font-semibold text-gray-200 hover:bg-white/[0.09] transition-[background-color,scale] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400"
+      >
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+        Share on X
+      </a>
+
+      <div className="mt-1 flex items-center justify-between flex-wrap">
+        <button onClick={() => copy(shareText, 'message')} className={tertiary}>
+          <CopyLabel copied={copied === 'message'} idle="Copy message" done="Copied" />
+        </button>
+        {addressUrl && (
+          <a href={addressUrl} target="_blank" rel="noopener noreferrer" className={tertiary}>
+            Explorer
+            <svg className="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-            <span>Share on Twitter/X</span>
-            <motion.span
-              className="text-xs bg-white/20 px-2 py-1 rounded-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.2, delay: 0.2 }}
-            >
-              Get buyers!
-            </motion.span>
-          </motion.a>
-
-          {/* Copy Token Info - SECONDARY */}
-          <motion.button
-            type="button"
-            onClick={() => {
-              handleCopyLink()
-              trackShare('copy_link')
-            }}
-            aria-label="Copy share message for Telegram or Discord"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            className={`w-full flex items-center justify-center gap-3 px-6 min-h-[44px] rounded-xl font-semibold transition-[background-color,color,border-color,box-shadow,opacity] duration-200 ${
-              linkCopied
-                ? 'bg-green-500/20 border-2 border-green-500/50 text-green-300'
-                : 'bg-gray-800/50 border-2 border-gray-700/50 text-gray-300 hover:border-purple-500/50 hover:bg-gray-800'
-            }`}
-          >
-            {linkCopied ? (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Copied! Share in Telegram/Discord</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span>Copy Message for Telegram/Discord</span>
-              </>
-            )}
-          </motion.button>
-        </div>
-
-        {/* Share Tip */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2, delay: 0.2 }}
-          className="mt-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl"
-        >
-          <p className="text-xs text-gray-300 text-center">
-            <strong className="text-purple-300">Pro tip:</strong> Share your contract address so people can find and buy your token!
-          </p>
-        </motion.div>
-      </motion.div>
-
-      {/* Next Steps Section */}
-      <div className="mb-6">
-        <h4 className="text-lg font-semibold text-white mb-4">
-          Next Steps
-        </h4>
-        <div className="space-y-3">
-          {/* Step 1: Add Liquidity */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.25, delay: 0.1 }}
-            className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4"
-          >
-            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-lg">1️⃣</span>
-            </div>
-            <div className="flex-1">
-              <h5 className="font-semibold text-white mb-1">Add Liquidity</h5>
-              <p className="text-sm text-gray-300">
-                Make your token tradeable by adding liquidity on a DEX
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Step 2: Build Community */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.25, delay: 0.15 }}
-            className="flex items-start gap-3 bg-purple-500/10 border border-purple-500/20 rounded-xl p-4"
-          >
-            <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-lg">2️⃣</span>
-            </div>
-            <div className="flex-1">
-              <h5 className="font-semibold text-white mb-1">Build Your Community</h5>
-              <p className="text-sm text-gray-300">
-                Share on Twitter, create Telegram group, engage holders
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Step 3: Get Listed */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.25, delay: 0.2 }}
-            className="flex items-start gap-3 bg-orange-500/10 border border-orange-500/20 rounded-xl p-4"
-          >
-            <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-lg">3️⃣</span>
-            </div>
-            <div className="flex-1">
-              <h5 className="font-semibold text-white mb-1">Get Listed</h5>
-              <p className="text-sm text-gray-300">
-                Apply for CoinGecko, CoinMarketCap, and DEX aggregators
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="space-y-3">
-        {/* Main Action Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Link
-            to={liquidityUrl}
-            className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.primaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
-          >
-            <span>Add Liquidity</span>
-          </Link>
-          <Link
-            to="/tokens"
-            className={`inline-flex items-center justify-center px-6 min-h-[44px] ${colors.secondaryButton} rounded-xl font-medium transition-[background-color,color,border-color,box-shadow,opacity] duration-200 hover:shadow-lg`}
-          >
-            <span>View My Tokens</span>
-          </Link>
-        </div>
-
-        {/* Secondary Actions */}
-        <div className="flex flex-col sm:flex-row gap-2 pt-2">
-          <Link
-            to="/guides"
-            className="flex-1 text-center px-4 min-h-[44px] flex items-center justify-center text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
-          >
-            Read Guides
-          </Link>
-          <button
-            type="button"
-            onClick={() => {
+          </a>
+        )}
+        <Link to="/tokens" className={tertiary}>My tokens</Link>
+        <button
+          type="button"
+          onClick={() => {
+            if (onCreateAnother) {
+              onCreateAnother()
               window.scrollTo({ top: 0, behavior: 'smooth' })
+            } else {
+              // A full reload also re-initialises Privy, which is slow and
+              // jarring — the prop is the preferred path.
               window.location.reload()
-            }}
-            className="flex-1 text-center px-4 min-h-[44px] flex items-center justify-center text-sm text-gray-300 hover:text-white border border-gray-600 hover:border-gray-500 rounded-lg transition-colors"
-          >
-            Create Another Token
-          </button>
-        </div>
+            }
+          }}
+          className={tertiary}
+        >
+          Create another
+        </button>
       </div>
     </motion.div>
   )

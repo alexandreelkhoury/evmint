@@ -53,12 +53,19 @@ export default function ChartEmbed({ embedUrl, loading }: ChartEmbedProps) {
         </div>
       )}
 
+      {/* scrolling="no" suppresses the embedded document's own scrollbar. The
+          wrapper is overflow-hidden, but that only clips — it cannot stop the
+          iframe painting a scrollbar inside itself, which reads as a stray
+          scroller sitting in the middle of our page. Deprecated in the HTML
+          spec and still honoured by every browser; the CSS equivalent would
+          have to be applied inside the embed, which is not ours. */}
       <iframe
         src={embedUrl}
         title="Token Price Chart"
         className="w-full h-full absolute inset-0 border-0"
         style={{ colorScheme: 'dark' }}
         loading="lazy"
+        scrolling="no"
         onLoad={() => setIframeLoaded(true)}
         sandbox="allow-scripts allow-same-origin allow-popups"
       />
