@@ -187,6 +187,25 @@ export function validateAndFormatAddress(address: string): string {
 }
 
 /**
+ * Case-insensitive Ethereum address equality.
+ *
+ * The same contract reaches the UI in three different shapes: EIP-55
+ * checksummed (viem / RPC responses and most block-explorer copy buttons),
+ * all-lowercase (validateAndFormatAddress, localStorage records written by
+ * older builds), and whatever mixed casing the user pasted. `===` treats those
+ * as different contracts, which is how the wrong leg of a pair gets picked.
+ *
+ * Deliberately never throws — this is called inside renders, so a missing or
+ * malformed address must simply not match rather than blow up the tree. (This
+ * is why it is not viem's getAddress/isAddressEqual, both of which throw on
+ * anything that is not a well-formed address.)
+ */
+export function isSameAddress(a?: string | null, b?: string | null): boolean {
+  if (!a || !b) return false
+  return a.trim().toLowerCase() === b.trim().toLowerCase()
+}
+
+/**
  * Check if address is the zero address
  */
 export function isZeroAddress(address: string): boolean {

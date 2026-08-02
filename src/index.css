@@ -21,8 +21,8 @@
 
   /* Apply Orbitron to all headings for crypto/Web3 aesthetic */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', 'Exo 2', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'Inter Tight', 'Exo 2', system-ui, sans-serif;
+    letter-spacing: -0.03em;
   }
   
   body {

@@ -16,17 +16,21 @@
          href so the TLS handshakes to googleapis/gstatic overlap the request
          instead of following it. Do not move the stylesheet above them.
          Families and weights are exactly what src/ renders:
-           Exo 2          body / font-sans      400 500 600 700
-           Orbitron       h1-h6 / font-display  400 500 600 700 900
-           Source Serif 4 long-form prose       400 700
-         (Exo 2 300 and Orbitron 800 dropped — zero font-light/font-extrabold
-          in src/. See report for the JetBrains Mono + DM Sans removal.)
+           Exo 2          body / font-sans        400 500 600 700
+           Inter Tight    h1-h6 / font-display    500 600 700 800
+           Orbitron       wordmark / font-wordmark 600 700
+           Source Serif 4 long-form prose         400 700
+         Orbitron is deliberately scoped to the "EVMint" wordmark only. It used
+         to set every h1-h6, which put a wide display face on 246 headings —
+         including FAQ questions and card titles that are really body copy —
+         while the wordmark itself inherited the body font. Dropping it from
+         headings also took its weights from five to two.
          display=swap keeps text visible during font load. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;900&family=Source+Serif+4:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=Orbitron:wght@600;700&family=Source+Serif+4:wght@400;700&display=swap"
     />
 
     <meta name="keywords" content="evmint, multi-chain token launcher, erc20 token generator, create cryptocurrency, evm blockchain, no code crypto, token launcher, defi token maker, ethereum token, base token, arbitrum, polygon, multi-chain deployment, cheap token deployment" />

@@ -1,15 +1,16 @@
 # Security Policy for EVMint
 # Multi-Chain EVM Token Launcher
 
-Contact: https://github.com/anthropics/claude-code/issues
+Contact: mailto:security@evmint.io
 Expires: 2026-12-31T23:59:59.000Z
 Preferred-Languages: en
 Canonical: https://evmint.io/.well-known/security.txt
 
 # Security Disclosure Policy
 
-We take security seriously. If you discover a security vulnerability,
-please report it responsibly through our GitHub issues.
+If you discover a security vulnerability, please report it privately to
+security@evmint.io rather than disclosing it publicly, and give us a
+reasonable window to fix it before you do.
 
 # Scope
 
@@ -41,8 +42,9 @@ When reporting a vulnerability, please include:
 
 # Recognition
 
-We appreciate security researchers who help keep our platform safe.
-Responsible disclosures will be acknowledged in our security hall of fame.
+We appreciate security researchers who help keep our platform safe. If you
+would like credit for a disclosure, tell us how you'd like to be named and
+we will credit you when the fix ships.
 
 # Additional Information
 

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useScrollLock } from '../../hooks/useScrollLock'
 import { useModalA11y } from '../../hooks/useModalA11y'
 import CloseButton from '../CloseButton'
+import { isSameAddress } from '../../utils/validation'
 
 interface Token {
   address: string
@@ -188,7 +189,7 @@ export default function TokenSelectModal({
                 <TokenRow
                   key={`lp-${token.address}`}
                   token={token}
-                  isSelected={selectedToken?.address === token.address}
+                  isSelected={isSameAddress(selectedToken?.address, token.address)}
                   onSelect={() => onSelectToken(token)}
                   variant="lp"
                 />
@@ -211,7 +212,7 @@ export default function TokenSelectModal({
                 <TokenRow
                   key={token.address}
                   token={token}
-                  isSelected={selectedToken?.address === token.address}
+                  isSelected={isSameAddress(selectedToken?.address, token.address)}
                   onSelect={() => onSelectToken(token)}
                 />
               ))}

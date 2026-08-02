@@ -3,6 +3,7 @@ import { usePublicClient, useAccount, useChainId } from 'wagmi'
 import type { LPToken } from '../features/liquidity'
 import { TOKEN_ADDRESSES } from '../config/constants'
 import { loggers } from '../utils/logger'
+import { isSameAddress } from '../utils/validation'
 import { getChainById } from '../config/chains'
 
 // ERC20 ABI for token details
@@ -263,7 +264,7 @@ export function useTokenSelection() {
 
   // Remove custom token
   const removeToken = useCallback((tokenAddress: string) => {
-    setCustomTokens(prev => prev.filter(t => t.address !== tokenAddress))
+    setCustomTokens(prev => prev.filter(t => !isSameAddress(t.address, tokenAddress)))
   }, [])
 
   // Fetch token details by address (utility function)

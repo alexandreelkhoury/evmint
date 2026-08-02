@@ -5,6 +5,7 @@ import { baseSepolia } from 'viem/chains'
 import { getChainById } from '../../../config/chains'
 import { TIMEOUTS, RETRY_CONFIG } from '../../../config/constants'
 import { loggers } from '../../../utils/logger'
+import { isSameAddress } from '../../../utils/validation'
 import { LIQUIDITY_STORAGE_KEY, FACTORY_ABI, classifyTransactionError } from '../constants'
 import { useLiquidityContracts } from './useLiquidityContracts'
 import { useLPTokenStorage } from './useLPTokenStorage'
@@ -739,7 +740,11 @@ export function useUniswapV2Liquidity() {
 
       // Determine which token is the ERC20 token (not WETH)
       const wethAddress = getContracts().weth
-      const actualTokenAddress = token0Address === wethAddress ? token1Address : token0Address
+      // token0/token1 come back from the pair contract EIP-55 checksummed while
+      // weth comes from chain config, so this must be case-insensitive. A miss
+      // here silently names WETH as the "actual token", and useRemoveLiquidity
+      // then rejects the pair it was handed.
+      const actualTokenAddress = isSameAddress(token0Address, wethAddress) ? token1Address : token0Address
 
       loggers.liquidity.debug(' Fetching real token details for:', actualTokenAddress)
 

@@ -34,7 +34,7 @@ export default function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <HexagonStackIcon size={24} />
-            <span className="text-sm font-bold text-white">EVMint</span>
+            <span className="text-sm font-wordmark font-bold tracking-tight text-white">EVMint</span>
           </Link>
 
           {/* Desktop nav */}

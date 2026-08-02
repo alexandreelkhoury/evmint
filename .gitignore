@@ -107,3 +107,7 @@ compiled/
 artifacts/
 cache/
 typechain-types/
+
+# Claude Code local state — keep the shared dev-server config, ignore the rest
+.claude/*
+!.claude/launch.json

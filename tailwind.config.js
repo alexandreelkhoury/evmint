@@ -12,8 +12,11 @@ export default {
       fontFamily: {
         // Body text - Modern, clean, tech-forward
         sans: ['Exo 2', 'system-ui', 'sans-serif'],
-        // Display/Headings - Crypto, Web3, futuristic
-        display: ['Orbitron', 'Exo 2', 'sans-serif'],
+        // Headings - tight grotesk, set on h1-h6 in index.css
+        display: ['Inter Tight', 'Exo 2', 'sans-serif'],
+        // Brand mark only. Orbitron is a display face: it is deliberately not
+        // used for headings, where it slows down reading at body lengths.
+        wordmark: ['Orbitron', 'Exo 2', 'sans-serif'],
       },
       keyframes: {
         orbit: {

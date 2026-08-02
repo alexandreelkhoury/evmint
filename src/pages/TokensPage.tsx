@@ -4,6 +4,7 @@ import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import { usePrivy } from '@privy-io/react-auth'
 import { useChainId } from 'wagmi'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import WalletButton from '../components/WalletButton'
 import { GlassCard } from '../components/GlassCard'
@@ -15,6 +16,7 @@ import { animations, typography, colors, layout } from '../styles/designSystem'
 import { getChainById } from '../config/chains'
 import ChainIcon from '../components/ChainIcon'
 import StandardPageHeader from '../components/StandardPageHeader'
+import { loggers } from '../utils/logger'
 
 interface TokenCardProps {
   tokenData: {
@@ -209,6 +211,39 @@ export default function TokensPage() {
   const chainId = useChainId()
   const { allUserTokens, refetchUserTokens, updateCachedBalance, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
   const [chainFilter, setChainFilter] = useState<number | 'all'>('all')
+
+  // Refresh has to do two separate things. refetchUserTokens() only re-reads
+  // localStorage, which cannot have changed while the page is open — the numbers
+  // users actually watch (balance, supply) come from the per-card useTokenDetails
+  // reads, so those React Query entries are what needs invalidating.
+  const queryClient = useQueryClient()
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false)
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<number | null>(null)
+
+  const handleRefresh = async () => {
+    if (isManualRefreshing || isRefreshing) return
+    setIsManualRefreshing(true)
+    const startedAt = Date.now()
+    try {
+      await Promise.all([
+        refetchUserTokens(),
+        queryClient.invalidateQueries({ queryKey: ['readContract'] }),
+        queryClient.invalidateQueries({ queryKey: ['balance'] })
+      ])
+    } catch (error) {
+      loggers.ui.error('Portfolio refresh failed', error)
+    } finally {
+      // The localStorage read is synchronous and the contract reads are usually
+      // cached, so without a floor the spinner can come and go inside a single
+      // frame and the click looks like it did nothing.
+      const elapsed = Date.now() - startedAt
+      if (elapsed < 600) await new Promise(resolve => setTimeout(resolve, 600 - elapsed))
+      setIsManualRefreshing(false)
+      setLastRefreshedAt(Date.now())
+    }
+  }
+
+  const refreshing = isManualRefreshing || isRefreshing
 
   // Get unique chains from user's tokens
   const userChains = useMemo(() => {
@@ -478,31 +513,30 @@ export default function TokensPage() {
               Your Tokens ({displayTokens.length})
             </h2>
             <div className="flex items-center space-x-3">
+              {lastRefreshedAt && !refreshing && (
+                <span className="text-xs text-gray-400 tabular-nums" aria-live="polite">
+                  Updated {new Date(lastRefreshedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              )}
               <motion.button
-                onClick={() => {
-                  if (!isRefreshing) {
-                    refetchUserTokens();
-                  }
-                }}
-                disabled={isRefreshing}
-                whileHover={!isRefreshing ? { scale: 1.05 } : {}}
-                whileTap={!isRefreshing ? { scale: 0.95 } : {}}
-                className={`flex items-center space-x-2 px-4 min-h-[44px] text-white text-sm rounded-lg transition-colors ${
-                  isRefreshing
+                onClick={handleRefresh}
+                disabled={refreshing}
+                aria-label="Refresh token balances"
+                whileHover={!refreshing ? { scale: 1.05 } : {}}
+                whileTap={!refreshing ? { scale: 0.95 } : {}}
+                className={`flex items-center space-x-2 px-4 min-h-[44px] text-white text-sm rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-blue-400 ${
+                  refreshing
                     ? 'bg-gray-600 cursor-not-allowed opacity-75'
                     : 'bg-gray-700 hover:bg-gray-600 cursor-pointer'
                 }`}
               >
-                {isRefreshing ? (
+                {refreshing ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                     <span>Refreshing...</span>
                   </>
                 ) : (
-                  <>
-
-                    <span>Refresh</span>
-                  </>
+                  <span>Refresh</span>
                 )}
               </motion.button>
               <motion.div {...animations.buttonHover}>

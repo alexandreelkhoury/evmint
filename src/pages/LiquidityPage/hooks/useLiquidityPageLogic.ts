@@ -8,7 +8,7 @@ import { useTokenSelection } from '../../../hooks/useTokenSelection'
 import { useUniswapV2Liquidity } from '../../../features/liquidity'
 import { useGlobalToasts } from '../../../App'
 import { formatUnits } from 'viem'
-import { validateAndFormatAddress } from '../../../utils/validation'
+import { validateAndFormatAddress, isSameAddress } from '../../../utils/validation'
 import { loggers } from '../../../utils/logger'
 import { getChainById, getChainName } from '../../../config/chains'
 
@@ -305,9 +305,8 @@ export function useLiquidityPageLogic() {
       // handleAddLiquidity treats whichever side is not the wrapped native
       // token as the ERC20 leg. Without this guard, selecting two ERC20s
       // sends the second amount as native currency instead of that token.
-      const nativeLeg = wrappedTokenAddress?.toLowerCase()
-      const aIsNative = !!nativeLeg && tokenA?.address.toLowerCase() === nativeLeg
-      const bIsNative = !!nativeLeg && tokenB?.address.toLowerCase() === nativeLeg
+      const aIsNative = isSameAddress(tokenA?.address, wrappedTokenAddress)
+      const bIsNative = isSameAddress(tokenB?.address, wrappedTokenAddress)
       if (tokenA && tokenB && !aIsNative && !bIsNative) {
         errors.tokenB = `One side of the pair must be ${nativeTokenSymbol}. Pools here are always paired against ${nativeTokenSymbol}.`
       }
@@ -337,13 +336,13 @@ export function useLiquidityPageLogic() {
   // Optimized token balance fetching
   const { data: balanceA } = useBalance({
     address: userAddress,
-    token: tokenA?.address === wrappedTokenAddress ? undefined : tokenA?.address as `0x${string}`,
+    token: isSameAddress(tokenA?.address, wrappedTokenAddress) ? undefined : tokenA?.address as `0x${string}`,
     query: { enabled: !!userAddress && !!tokenA }
   })
 
   const { data: balanceB } = useBalance({
     address: userAddress,
-    token: tokenB?.address === wrappedTokenAddress ? undefined : tokenB?.address as `0x${string}`,
+    token: isSameAddress(tokenB?.address, wrappedTokenAddress) ? undefined : tokenB?.address as `0x${string}`,
     query: { enabled: !!userAddress && !!tokenB }
   })
 
@@ -392,7 +391,13 @@ export function useLiquidityPageLogic() {
       setShowProgressModal(true)
     }, 100)
 
-    const isTokenAEth = tokenA.address === wrappedTokenAddress
+    // Case-insensitive: tokenA.address may be checksummed (pasted, or returned
+    // by viem) while wrappedTokenAddress comes from chain config. A strict ===
+    // here disagreed with validateInputs and with AddLiquidityForm — both of
+    // which already lowercase — so the guard could pass, the form could show
+    // one leg as native, and this line could still send the ERC20 amount as
+    // msg.value to addLiquidityETH.
+    const isTokenAEth = isSameAddress(tokenA.address, wrappedTokenAddress)
     const customToken = isTokenAEth ? tokenB : tokenA
     const ethAmount = isTokenAEth ? amountA : amountB
     const tokenAmount = isTokenAEth ? amountB : amountA
