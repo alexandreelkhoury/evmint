@@ -84,14 +84,6 @@
 
   <!-- LANDING PAGES - Targeted Keywords -->
 
-  <!-- Multi-Chain Token Creator - Brand Keywords -->
-  <url>
-    <loc>https://evmint.io/multi-chain-token-creator</loc>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
   <!-- ERC20 Token Generator - High-Volume Keywords -->
   <url>
     <loc>https://evmint.io/erc20-token-generator</loc>

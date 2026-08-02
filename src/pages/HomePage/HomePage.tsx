@@ -31,11 +31,6 @@ const useCasePages = [
     title: 'Cryptocurrency Creator',
     desc: 'Token economics, distribution planning, and what happens after your contract goes live.',
   },
-  {
-    to: '/multi-chain-token-creator',
-    title: 'Multi-Chain Token Creator',
-    desc: 'How the 15+ supported networks compare on fees, speed, and credibility.',
-  },
 ]
 
 /**
@@ -145,7 +140,9 @@ export default function HomePage() {
                 Same deployer, different starting points.
               </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            {/* Three cards: 2-up would strand one on its own row, so go straight
+                from one column to three at md. */}
+            <div className="grid gap-4 md:grid-cols-3">
               {useCasePages.map(page => (
                 <Link
                   key={page.to}

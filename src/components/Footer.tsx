@@ -11,7 +11,6 @@ const footerLinks = {
     { to: '/erc20-token-generator', label: 'ERC20 Token Generator' },
     { to: '/meme-coin-creator', label: 'Meme Coin Creator' },
     { to: '/cryptocurrency-creator', label: 'Cryptocurrency Creator' },
-    { to: '/multi-chain-token-creator', label: 'Multi-Chain Token Creator' },
   ],
   Resources: [
     { to: '/guides', label: 'Guides' },

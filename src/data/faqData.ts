@@ -1,7 +1,7 @@
 export const faqs = [
   {
     question: "How much does it cost to create an ERC20 token across different blockchains?",
-    answer: "Token creation costs ~$80 USD equivalent on any chain, paid in native tokens (0.02 ETH on Ethereum/Base/Arbitrum/Optimism/Robinhood Chain/MegaETH, 0.075 BNB on BSC, 400 POL on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam, 0.1 MON on Monad). This single fee covers deployment, gas, and auto-verification. No subscription or hidden charges.",
+    answer: "Token creation costs ~$80 USD equivalent on any chain, paid in native tokens (0.02 ETH on Ethereum/Base/Arbitrum/Optimism/Robinhood Chain/MegaETH, 0.075 BNB on BSC, 400 POL on Polygon, 4 AVAX on Avalanche, 500 FTM on Fantom, 80 xDAI on Gnosis, 450 GLMR on Moonbeam, 0.1 MON on Monad). That is the platform fee only \u2014 network gas is charged separately by the blockchain on top of it, typically a few cents on a Layer 2 and potentially several dollars on Ethereum mainnet. Source verification on the block explorer is included. No subscription, and no cut of your supply.",
     relatedGuide: "create-base-token"
   },
   {
@@ -11,12 +11,12 @@ export const faqs = [
   },
   {
     question: "Can I create a token without coding experience?",
-    answer: "Yes! Our no-code token launcher allows anyone to create ERC20 tokens without programming knowledge. Simply fill in your token details (name, symbol, supply), select your blockchain, pay the gas fee, and your token is deployed automatically within 5 seconds.",
+    answer: "Yes! Our no-code token launcher allows anyone to create ERC20 tokens without programming knowledge. Simply fill in your token details (name, symbol, supply), select your blockchain, and confirm one transaction in your wallet. Deployment usually completes in under 60 seconds including the wallet confirmation.",
     relatedGuide: "create-base-token"
   },
   {
     question: "How long does token deployment take?",
-    answer: "Token deployment on EVM blockchains takes 5-15 seconds on average depending on the network. The process includes smart contract compilation, blockchain deployment, and automatic verification on block explorers. Your token becomes tradeable immediately after successful deployment.",
+    answer: "Token deployment usually completes in under 60 seconds, including the time you spend confirming in your wallet. The on-chain part is typically 5-15 seconds depending on the network. The process includes smart contract compilation, blockchain deployment, and automatic verification on block explorers. Your token becomes tradeable immediately after successful deployment.",
     relatedGuide: "create-base-token"
   },
   {

@@ -7,6 +7,18 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/multi-chain-token-creator",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/guide",
+        "destination": "/guides",
+        "type": 301
+      }
+    ],
     "rewrites": [
       {
         "source": "**",

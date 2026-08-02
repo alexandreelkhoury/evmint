@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/SEO'
 import { motion } from 'framer-motion'
-import { colors, typography } from '../styles/designSystem'
+import ChainIcon from '../components/ChainIcon'
+import { CHAIN_FEES, getChainById } from '../config/chains'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView, trackButtonClick } from '../utils/analytics'
 
@@ -14,40 +15,118 @@ import { trackPageView, trackButtonClick } from '../utils/analytics'
  */
 const faqs = [
   {
-    question: 'How much does it cost to create a meme coin?',
-    answer: 'With EVMint, the platform fee is ~$80 equivalent, paid in the native token of the chain you deploy on, plus gas. On Layer 2 networks like Base, gas is a few cents. Compare this to $5,000-20,000 for custom development.'
+    question: 'How much does it cost to launch a meme coin?',
+    answer: "A ~$80 platform fee, paid in the native token of whichever chain you pick — 0.02 ETH on Base, Arbitrum, Optimism or Ethereum, 0.075 BNB on BSC, 400 POL on Polygon. Network gas is charged separately on top: a few cents on a Layer 2, several dollars on Ethereum mainnet when it is busy. You will also need real money for the liquidity pool, which is usually the bigger number."
   },
   {
-    question: 'What makes a meme coin successful?',
-    answer: 'Community engagement, viral marketing, authentic humor, transparency, and consistent effort. The best meme coins have passionate communities that create content and spread the word organically.'
+    question: 'Can holders check that my coin is not a rug?',
+    answer: 'They can check the contract, and it will come back clean: there is no mint function, no owner, no pause, no blacklist and no transfer tax, so token sniffers and honeypot checkers have nothing to flag. What they cannot check from the contract is whether you sell your own bag or pull the liquidity — those are wallet and pool decisions. Lock your LP if you want to answer that question too.'
   },
   {
-    question: 'How do I get my meme coin listed on CoinGecko?',
-    answer: "After launching and adding liquidity, submit your token to CoinGecko's listing form. You'll need: verified contract, active trading, social media presence, and accurate information."
+    question: 'What actually makes a meme coin work?',
+    answer: 'A community that keeps showing up, an idea that is easy to retell, honest liquidity and a founder who does not vanish after launch day. The contract takes under 60 seconds; everything that determines the outcome happens after it.'
   },
   {
-    question: 'Should I use a ridiculous supply like 1 trillion tokens?',
-    answer: 'Large supplies (billions or trillions) create psychological affordability - people like owning millions of tokens. Just ensure your marketing communicates value in terms of market cap, not individual token price.'
+    question: 'Should I use a huge supply like one trillion?',
+    answer: 'It changes nothing mechanically — a trillion tokens at a tiny unit price and a million tokens at a larger one are the same market cap. Large supplies are popular because holding millions of something feels good. Just make sure your own messaging talks about market cap, not unit price, or you will attract people who do not understand what they bought.'
+  },
+  {
+    question: 'How do I get listed on DEXScreener and CoinGecko?',
+    answer: 'DEXScreener indexes new pools automatically, usually within minutes of your first liquidity being added — no application needed. CoinGecko and CoinMarketCap are manual submissions and expect a verified contract, sustained real trading volume, a working site and live social accounts before they will consider it.'
+  },
+  {
+    question: 'Can I change the name or supply after launch?',
+    answer: 'No. Name, symbol, decimals and supply are all baked into the contract at deployment and there is no admin function to change them. If you get the ticker wrong, the only fix is deploying again and paying again.'
+  }
+]
+
+/** Chains worth recommending for a meme launch, with the fee read from config. */
+const memeChains = [
+  {
+    id: 8453,
+    pitch: 'Cheap, fast, and the easiest place for a normal person to bridge into. The default pick unless you have a reason.',
+    tag: 'Start here'
+  },
+  {
+    id: 42161,
+    pitch: 'Deepest Layer 2 liquidity and a trading crowd that is already there. Slightly more serious energy than Base.',
+    tag: 'Traders'
+  },
+  {
+    id: 56,
+    pitch: 'Enormous retail audience and a meme culture that never really left. PancakeSwap instead of Uniswap.',
+    tag: 'Retail'
+  },
+  {
+    id: 1,
+    pitch: 'Maximum credibility and the deepest liquidity anywhere — and gas that can cost more than the fee itself.',
+    tag: 'Expensive'
+  }
+]
+
+const timeline = [
+  {
+    at: '0:00',
+    title: 'Pick the chain',
+    body: 'Network button in the header. Base if you are undecided.'
+  },
+  {
+    at: '0:10',
+    title: 'Name, ticker, supply',
+    body: 'Four fields. All four are permanent, so read the ticker twice.'
+  },
+  {
+    at: '0:25',
+    title: 'Sign once',
+    body: '~$80 fee goes out as the transaction value; gas is added by the chain.'
+  },
+  {
+    at: '0:60',
+    title: 'Contract is live',
+    body: 'Full supply in your wallet, source verified on the explorer.'
+  }
+]
+
+const mistakes: Array<{ h: string; p: string; link?: boolean }> = [
+  {
+    h: 'Launching with $500 of liquidity',
+    p: 'A thin pool means a $200 buy moves the price 40%. It looks like a scam chart within the hour and the first sellers get destroyed. Fund the pool properly, or wait until you can.'
+  },
+  {
+    h: 'Leaving the LP unlocked',
+    p: 'The one thing your contract cannot solve for you. The token has no owner and no mint function, but liquidity you are able to withdraw is liquidity holders have to trust you not to withdraw. Lock it, and show the lock.'
+  },
+  {
+    h: 'Bolting on clever tokenomics',
+    p: 'Reflections, buy-and-burn taxes and anti-whale limits all need code paths that a honeypot checker cannot tell apart from a trap. A plain fixed-supply ERC20 is the boring, verifiable option — see the ',
+    link: true
+  },
+  {
+    h: 'Going quiet after launch day',
+    p: 'Deployment is the fastest and least important part. The projects that survive are the ones still posting in week six.'
   }
 ]
 
 /**
  * SEO Landing Page: Meme Coin Creator
  * Targets keyword: "meme coin creator"
- * Provides value proposition before directing to /create
+ * The fastest-moving of the three landing pages — launch-day mechanics,
+ * a timeline rather than an essay, and blunt about what can still go wrong.
  */
 export default function MemeCoinCreatorPage() {
   const analytics = useFirebaseAnalytics()
+  const [openFaq, setOpenFaq] = useState<number | null>(0)
 
   useEffect(() => {
     trackPageView(analytics, 'meme_coin_creator')
   }, [analytics])
+
   const structuredData = [
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Meme Coin Creator - Launch Your Meme Token in Under 60 Seconds",
-      "description": "Create and launch your own meme coin on Base, Ethereum, Polygon & more. No coding required. Add liquidity and grow your community.",
+      "description": "Launch a meme coin on Base, Ethereum, BSC, Polygon and more. Fixed supply, no mint function, no owner. Add liquidity and grow your community. No coding required.",
       "url": "https://evmint.io/meme-coin-creator",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Web Browser",
@@ -60,17 +139,18 @@ export default function MemeCoinCreatorPage() {
         "@type": "Offer",
         "price": "80",
         "priceCurrency": "USD",
-        "description": "~$80 equivalent per deployment, paid in the native token of the chain you deploy on. Same price across all 15+ EVM networks.",
+        "description": "~$80 platform fee per deployment, paid in the native token of the chain you deploy on. Network gas is charged separately by the blockchain and is not included.",
         "priceValidUntil": "2027-12-31"
       },
       "featureList": [
         "Meme coin deployment in under 60 seconds",
-        "15+ EVM blockchains supported, including Base and Polygon",
+        "15 EVM mainnets supported, including Base, BSC and Polygon",
         "No coding skills required",
-        "OpenZeppelin audited smart contract templates",
+        "Built on OpenZeppelin's audited ERC20 libraries",
+        "Fixed supply — no mint, pause, blacklist or transfer tax in the deployed contract",
         "Built-in liquidity tools for Uniswap and other DEXs",
-        "Automatic verification on block explorers",
-        "Non-custodial — the deployer owns the contract and the full supply"
+        "Automatic source verification on block explorers",
+        "Non-custodial — the entire supply is minted to the deployer"
       ],
       "installUrl": "https://evmint.io/create"
     },
@@ -112,388 +192,451 @@ export default function MemeCoinCreatorPage() {
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black relative overflow-x-hidden">
       <SEO
-        title="Meme Coin Creator - Launch Your Meme Token in Under 60 Seconds | EVMint"
-        description="Create your own meme coin on Ethereum, Base, Arbitrum, Polygon & more. Deploy in under 60 seconds. No coding. Ultra-low fees on L2. Add liquidity on Uniswap. Start your meme coin empire!"
+        title="Meme Coin Creator - Launch a Token in 60s | EVMint"
+        description="Launch a meme coin on Base, BSC, Ethereum and 12 more EVM chains. Fixed supply, no mint function, no owner key. ~$80 platform fee plus network gas."
         keywords="meme coin creator, create meme coin, meme token maker, launch meme coin, doge coin creator, shiba inu maker, pepe token creator, viral crypto"
         canonical="/meme-coin-creator"
         structuredData={structuredData}
       />
 
-      <div className="relative z-10 container mx-auto px-4 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.25, delay: 0.036 }}
-            className="mb-8"
-          >
-            <div className="inline-block px-6 py-2 bg-green-500/10 border border-green-500/20 rounded-full mb-6">
-              <span className="text-green-400 text-sm font-semibold">Meme Coin Creator</span>
-            </div>
-          </motion.div>
+      <div className="relative z-10 container mx-auto px-4 py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto">
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+          {/* ── Hero ─────────────────────────────────────────────────── */}
+          <motion.header
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.055 }}
-            className={`${typography.pageTitle} mb-6`}
-          >
-            Launch Your Viral Meme Coin
-            <br />
-            <span className="bg-gradient-to-r from-green-400 via-yellow-400 to-orange-400 bg-clip-text text-transparent">
-              To The Moon!
-            </span>{' '}
-            <span className="inline-block"></span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.073 }}
-            className={`${typography.subtitle} mb-12 max-w-3xl mx-auto`}
-          >
-            The ultimate meme coin launcher. Create your DOGE, SHIB, or PEPE successor in under 60 seconds. Deploy on Base, Ethereum, or any EVM chain. Add liquidity, build your community, and go viral!
-          </motion.p>
-
-          {/* Main CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.091 }}
+            transition={{ duration: 0.25 }}
             className="mb-16"
           >
-            <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_primary_meme_coin', 'hero_section')}>
-              <button className={`group relative px-12 py-5 ${colors.primaryButton} text-lg active:scale-[0.97]`}>
-                <span className="relative z-10 flex items-center gap-3">
-                  Create Your Meme Coin Now
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
-              </button>
-            </Link>
-            <p className="text-gray-400 text-sm mt-4">Deploy in under 60 seconds • No coding • Add liquidity instantly</p>
-          </motion.div>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-2 border border-hairline-1 rounded-full text-xs font-semibold text-amber-300 uppercase tracking-widest mb-6">
+              Ship it today
+            </span>
 
-          {/* Features Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.109 }}
-            className="grid md:grid-cols-2 gap-6 mb-12"
-          >
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-green-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
-              <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl"></span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Sub-Minute Launch</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Launch your meme coin in under 60 seconds, wallet confirmation included. No technical skills needed. Just connect wallet and deploy.
-              </p>
-            </div>
+            <h1 className="text-4xl sm:text-6xl font-display font-bold tracking-tight text-white leading-[1.03] mb-6">
+              Launch the coin{' '}
+              <span className="bg-gradient-to-r from-amber-300 via-orange-400 to-pink-400 bg-clip-text text-transparent">
+                before the joke goes stale
+              </span>
+            </h1>
 
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-yellow-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
-              <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl"></span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Ultra-Low Fees</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Deploy on Layer 2 networks for pennies. Perfect for meme projects. ~$80 platform fee + minimal gas. No hidden costs.
-              </p>
-            </div>
-
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-orange-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
-              <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl"></span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Add Liquidity on Uniswap</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Make your meme coin tradeable instantly. Add liquidity on Uniswap directly from our platform. Get listed on DEX aggregators.
-              </p>
-            </div>
-
-            <div className={`${colors.glassCard} rounded-2xl p-8 text-left hover:border-red-500/30 transition-[background-color,color,border-color,box-shadow,opacity] duration-200`}>
-              <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl"></span>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">Build Your Community</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Share on Twitter, Telegram, and Discord. Built-in social sharing tools. Track your token on DEXScreener and CoinGecko.
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Meme Coin Success Guide */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.127 }}
-            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
-          >
-            <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              How to Launch a Successful Meme Coin 
-            </h2>
-            <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white font-bold">1</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-2">Create a Catchy Name & Meme</h4>
-                  <p className="text-gray-300">Think DOGE, SHIB, PEPE. Your name and visual identity are everything. Make it memorable, funny, and shareable.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white font-bold">2</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-2">Launch Your Token in Under 60 Seconds</h4>
-                  <p className="text-gray-300">
-                    Use our platform to deploy your meme coin in one transaction. Choose Base for speed, Ethereum for credibility, or Polygon for low fees — the{' '}
-                    <Link to="/multi-chain-token-creator" className="text-green-400 hover:text-green-300 underline underline-offset-2">multi-chain token creator</Link>
-                    {' '}covers every supported network.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white font-bold">3</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-2">Add Liquidity on Uniswap</h4>
-                  <p className="text-gray-300">Make your token tradeable. Add a liquidity pool (e.g., 1 ETH + tokens) so people can buy on DEXs. Lock liquidity for trust.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white font-bold">4</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-2">Build Community & Go Viral</h4>
-                  <p className="text-gray-300">Share on Twitter, create Telegram/Discord groups, post memes. Engage with your holders. The best meme coins have the strongest communities.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-white font-bold">5</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-2">Get Listed & Scale</h4>
-                  <p className="text-gray-300">Submit to DEXScreener, CoinGecko, CoinMarketCap. Apply to CEXs. Keep your community engaged with contests, giveaways, and partnerships.</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Why Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.145 }}
-            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12 bg-gradient-to-br from-green-500/5 via-yellow-500/5 to-orange-500/5 border-green-500/20`}>
-            <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              Why Create a Meme Coin? 
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="text-2xl"></div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Build a Movement</h4>
-                  <p className="text-gray-300">Meme coins aren't just tokens - they're communities. Rally people around a shared joke, cause, or vision.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="text-2xl"></div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Viral Potential</h4>
-                  <p className="text-gray-300">DOGE started as a joke. SHIB made millionaires. PEPE reached $1B market cap. Your meme coin could be next.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="text-2xl"></div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Low Barrier to Entry</h4>
-                  <p className="text-gray-300">No coding required. Deploy in under 60 seconds. Ultra-low fees on L2. Anyone can launch a meme coin empire.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="text-2xl"></div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Marketing Tools Built-In</h4>
-                  <p className="text-gray-300">Share on Twitter with one click. Add liquidity on Uniswap. Track on DEXScreener. Everything you need to go viral.</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Pro Tips */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.164 }}
-            className="p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl mb-12"
-          >
-            <p className="text-yellow-200">
-               <strong>Pro Tip:</strong> Successful meme coins focus on community building, viral marketing, and transparent liquidity.
-              Use our built-in tools to add liquidity and share your token on social media. Remember: diamond hands 
+            <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-4">
+              Deployment takes under 60 seconds. What you get is deliberately boring: a fixed
+              supply, no owner key, no mint function, nothing a honeypot checker can flag. The
+              interesting part is what you do with it afterwards.
             </p>
-          </motion.div>
+            <p className="text-base text-gray-400 leading-relaxed mb-8">
+              No presale mechanics, no bonding curve, no cut of your supply. Deploy, add liquidity
+              when you are ready, go and be funny somewhere.
+            </p>
 
-          {/* History of Meme Coins */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.173 }}
-            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
-          >
-            <h2 className="text-3xl font-bold text-white mb-6">
-              The Rise of Meme Coins: From Joke to Billions
-            </h2>
-            <div className="space-y-4 text-gray-300 leading-relaxed">
-              <p>
-                Meme coins have transformed from internet jokes into a serious force in cryptocurrency. What started with Dogecoin in 2013 - created as a parody of Bitcoin featuring the popular Shiba Inu dog meme - has evolved into a multi-billion dollar market segment that has created fortunes for early believers.
-              </p>
-              <p>
-                The meme coin phenomenon demonstrates a fundamental truth about value: it is driven by community belief, viral adoption, and cultural relevance. Unlike traditional cryptocurrencies that derive value from utility or technology, meme coins derive value from collective enthusiasm, social media presence, and the power of shared humor.
-              </p>
-              <p>
-                Dogecoin reached a market cap of over $80 billion in 2021, propelled by tweets from Elon Musk and a devoted community. Shiba Inu followed, creating thousands of millionaires among early holders. PEPE, launched in 2023, reached a $1 billion market cap within weeks. These success stories have inspired a new generation of creators to launch their own meme tokens.
-              </p>
-              <p>
-                Today, meme coins represent a legitimate path to building communities, launching viral projects, and participating in crypto culture. With platforms like EVMint making{' '}
-                <Link to="/cryptocurrency-creator" className="text-green-400 hover:text-green-300 underline underline-offset-2">cryptocurrency creation</Link>
-                {' '}accessible to everyone, the barrier to entry has never been lower for aspiring meme coin creators.
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <Link
+                to="/create"
+                onClick={() => trackButtonClick(analytics, 'cta_primary_meme_coin', 'hero_section')}
+                className="inline-flex items-center justify-center gap-2 min-h-[52px] px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-control shadow-lg shadow-blue-600/25 transition-colors duration-200 active:scale-[0.98] cursor-pointer"
+              >
+                Launch your coin
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+              <p className="text-sm text-gray-400 leading-snug">
+                ~$80 platform fee in the chain's native token.<br className="hidden sm:block" />
+                Gas is separate and goes to the network, not to us.
               </p>
             </div>
-          </motion.div>
+          </motion.header>
 
-          {/* Best Chains for Meme Coins */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+          {/* ── The clock ────────────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.182 }}
-            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+            transition={{ duration: 0.25, delay: 0.05 }}
+            className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              Best Blockchains for Meme Coins
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-2">
+              The whole launch, on the clock
             </h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="p-5 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <h4 className="text-white font-semibold mb-2">Base (Recommended)</h4>
-                <p className="text-gray-300 text-sm mb-2">Backed by Coinbase with access to 100M+ users. Ultra-low fees under $0.01, fast 2-second blocks, and a growing meme coin ecosystem.</p>
-                <span className="text-blue-400 text-xs">Best for: New meme coins, viral launches</span>
-              </div>
-              <div className="p-5 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <h4 className="text-white font-semibold mb-2">Arbitrum</h4>
-                <p className="text-gray-300 text-sm mb-2">Largest Layer 2 by total value locked. Established DeFi ecosystem, serious trading community, and proven infrastructure.</p>
-                <span className="text-blue-400 text-xs">Best for: DeFi integration, established communities</span>
-              </div>
-              <div className="p-5 bg-gray-500/10 border border-gray-500/20 rounded-xl">
-                <h4 className="text-white font-semibold mb-2">Ethereum</h4>
-                <p className="text-gray-300 text-sm mb-2">Maximum credibility and deepest liquidity. Higher fees but unmatched visibility and integration with major platforms.</p>
-                <span className="text-gray-400 text-xs">Best for: Established projects seeking legitimacy</span>
-              </div>
-              <div className="p-5 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-                <h4 className="text-white font-semibold mb-2">Polygon</h4>
-                <p className="text-gray-300 text-sm mb-2">Sub-cent transaction fees with massive adoption. Strong gaming and NFT ecosystem that complements meme culture.</p>
-                <span className="text-purple-400 text-xs">Best for: High-volume, gaming-adjacent memes</span>
-              </div>
-            </div>
-          </motion.div>
+            <p className="text-gray-400 mb-8">
+              One wallet signature, start to finish. Liquidity is a separate step whenever you are
+              ready for it.
+            </p>
 
-          {/* Common Mistakes to Avoid */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.191 }}
-            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
-          >
-            <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              Common Meme Coin Mistakes to Avoid
-            </h2>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-red-400 text-xl">X</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Not Locking Liquidity</h4>
-                  <p className="text-gray-300">Lock your LP tokens for at least 6 months. Unlocked liquidity signals potential rug pull and destroys community trust.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-red-400 text-xl">X</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Insufficient Initial Liquidity</h4>
-                  <p className="text-gray-300">Starting with $500 liquidity creates massive price impact and poor trading experience. Aim for at least $5,000-10,000 to start.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-red-400 text-xl">X</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Abandoning After Launch</h4>
-                  <p className="text-gray-300">Successful meme coins require consistent engagement, content creation, and community interaction. Launch is just the beginning.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-red-400 text-xl">X</span>
-                </div>
-                <div>
-                  <h4 className="text-white font-semibold mb-1">Complex or Confusing Tokenomics</h4>
-                  <p className="text-gray-300">
-                    Keep it simple. Complicated tax mechanisms, reflections, and burns confuse users. A plain fixed-supply{' '}
-                    <Link to="/erc20-token-generator" className="text-green-400 hover:text-green-300 underline underline-offset-2">ERC20 token</Link>
-                    {' '}works best for meme coins — that page explains exactly which parameters are locked in at deployment.
+            <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              {timeline.map(item => (
+                <li
+                  key={item.at}
+                  className="bg-surface-1 border border-hairline-1 rounded-card p-5 hover:border-hairline-2 transition-[border-color] duration-200"
+                >
+                  <p className="text-2xl font-display font-bold tracking-tight text-amber-300 tabular-nums mb-3">
+                    {item.at}
                   </p>
-                </div>
+                  <h3 className="text-base font-display font-semibold tracking-tight text-white mb-1.5">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{item.body}</p>
+                </li>
+              ))}
+            </ol>
+          </motion.section>
+
+          {/* ── Rug-proof by construction ────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
+            className="mb-16"
+          >
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-2">
+              The contract cannot rug. You still can.
+            </h2>
+            <p className="text-gray-400 mb-8">
+              Every meme coin buyer now pastes the address into a token sniffer before they touch
+              it. Here is exactly what they will and will not find.
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="bg-surface-1 border border-hairline-1 rounded-panel p-6">
+                <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">
+                  Impossible in the contract
+                </h3>
+                <ul className="space-y-2.5">
+                  {[
+                    'Minting more supply out of thin air',
+                    'Pausing transfers so nobody can sell',
+                    'Blacklisting a wallet that annoyed you',
+                    'Adding a transfer tax after the fact',
+                    'Upgrading the code to do any of the above'
+                  ].map(item => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-gray-300">
+                      <span className="text-amber-300 mt-px font-bold" aria-hidden="true">✕</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+                  None of these functions exist in the deployed bytecode. There is no owner address
+                  to hold them.
+                </p>
+              </div>
+
+              <div className="bg-surface-1 border border-hairline-1 rounded-panel p-6">
+                <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">
+                  Still entirely on you
+                </h3>
+                <ul className="space-y-2.5">
+                  {[
+                    'Selling the supply that was minted to your wallet',
+                    'Withdrawing liquidity from an unlocked pool',
+                    'Distributing fairly instead of to five alt wallets',
+                    'Turning up after launch day'
+                  ].map(item => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-gray-300">
+                      <span className="text-gray-400 mt-px font-bold" aria-hidden="true">•</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+                  No token contract can fix these, and any platform claiming otherwise is selling
+                  you something.
+                </p>
               </div>
             </div>
-          </motion.div>
 
-          {/* FAQ Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            <p className="text-sm text-gray-400 mt-3 leading-relaxed">
+              The ERC20 logic comes from OpenZeppelin's audited libraries. EVMint's own wrapper
+              around them has not been through a third-party audit — it is verified on the explorer
+              the moment you deploy, so you and your holders can read it. Full function-by-function
+              breakdown on the{' '}
+              <Link to="/erc20-token-generator" className="text-amber-300 hover:text-amber-200 underline underline-offset-2">
+                ERC20 token generator
+              </Link>{' '}
+              page.
+            </p>
+          </motion.section>
+
+          {/* ── Cost ─────────────────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.2 }}
-            className={`${colors.glassCard} rounded-2xl p-10 text-left mb-12`}
+            transition={{ duration: 0.25, delay: 0.15 }}
+            className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-white mb-6 text-center">
-              Meme Coin Creator FAQ
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-2">
+              Three costs, and only one is ours
             </h2>
-            <div className="space-y-6">
-              {faqs.map(faq => (
-                <div key={faq.question}>
-                  <h4 className="text-white font-semibold mb-2">{faq.question}</h4>
-                  <p className="text-gray-400">{faq.answer}</p>
+            <p className="text-gray-400 mb-8">
+              People quote the first number and forget the third. The third is the one that decides
+              whether your chart looks real.
+            </p>
+
+            <div className="grid sm:grid-cols-3 gap-3">
+              {[
+                {
+                  amount: '~$80',
+                  who: 'Platform fee → EVMint',
+                  d: "Flat, one-off, sent as the value of the deployment transaction in the chain's native token. No subscription and no share of your supply."
+                },
+                {
+                  amount: '+ gas',
+                  who: 'Network fee → the chain',
+                  d: 'Charged on top by the blockchain at the going rate. Cents on Base, Arbitrum or Polygon; several dollars on Ethereum mainnet under load.'
+                },
+                {
+                  amount: 'your call',
+                  who: 'Liquidity → the pool',
+                  d: 'Real ETH or stablecoins you deposit alongside your tokens. Not a fee — you still own it — but it is the largest number in a serious launch.'
+                }
+              ].map(item => (
+                <div key={item.who} className="bg-surface-2 border border-hairline-1 rounded-card p-5">
+                  <p className="text-2xl font-display font-bold tracking-tight text-white tabular-nums mb-1">
+                    {item.amount}
+                  </p>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+                    {item.who}
+                  </p>
+                  <p className="text-sm text-gray-400 leading-relaxed">{item.d}</p>
                 </div>
               ))}
             </div>
-          </motion.div>
+          </motion.section>
 
-          {/* Secondary CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+          {/* ── Chain picks ──────────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.182 }}
-            className="text-center"
+            transition={{ duration: 0.25, delay: 0.2 }}
+            className="mb-16"
           >
-            <Link to="/create" onClick={() => trackButtonClick(analytics, 'cta_secondary_meme_coin', 'bottom_section')}>
-              <button className="px-10 py-4 bg-white/5 border-2 border-white/10 rounded-xl font-semibold text-white hover:bg-white/10 hover:border-white/20 transition-[background-color,color,border-color,box-shadow,opacity] duration-200">
-                Launch Your Meme Coin Empire →
-              </button>
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-2">
+              Where meme coins actually land
+            </h2>
+            <p className="text-gray-400 mb-8">
+              All 15 supported mainnets work identically and cost the same ~$80 platform fee. These
+              four are where the audience is.
+            </p>
+
+            <ul className="grid sm:grid-cols-2 gap-3">
+              {memeChains.map(pick => {
+                const chain = getChainById(pick.id)
+                if (!chain) return null
+                return (
+                  <li
+                    key={pick.id}
+                    className="bg-surface-1 border border-hairline-1 rounded-card p-5 hover:border-hairline-2 transition-[border-color] duration-200"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <ChainIcon chainId={chain.id} size={28} />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-base font-display font-semibold tracking-tight text-white truncate">
+                          {chain.name}
+                        </h3>
+                        <p className="text-xs text-gray-400 font-mono tabular-nums">
+                          {CHAIN_FEES[chain.id]} {chain.nativeCurrency.symbol} fee + gas
+                        </p>
+                      </div>
+                      <span className="flex-shrink-0 text-[10px] font-semibold uppercase tracking-wider text-amber-300 bg-surface-2 border border-hairline-1 rounded px-2 py-1">
+                        {pick.tag}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-400 leading-relaxed">{pick.pitch}</p>
+                  </li>
+                )
+              })}
+            </ul>
+          </motion.section>
+
+          {/* ── Mistakes ─────────────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
+            className="mb-16"
+          >
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-2">
+              Four ways launches die
+            </h2>
+            <p className="text-gray-400 mb-8">
+              None of these are contract problems, which is exactly why they keep happening.
+            </p>
+
+            <div className="space-y-2">
+              {mistakes.map((m, i) => (
+                <div
+                  key={m.h}
+                  className="flex items-start gap-4 bg-surface-1 border border-hairline-1 rounded-card p-5"
+                >
+                  <span
+                    className="flex-shrink-0 w-8 h-8 rounded-control bg-surface-3 border border-hairline-1 flex items-center justify-center text-sm font-display font-bold text-amber-300 tabular-nums"
+                    aria-hidden="true"
+                  >
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-display font-semibold tracking-tight text-white mb-1.5">
+                      {m.h}
+                    </h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      {m.p}
+                      {m.link && (
+                        <>
+                          <Link to="/erc20-token-generator" className="text-amber-300 hover:text-amber-200 underline underline-offset-2">
+                            full ABI surface
+                          </Link>
+                          , which is the nine standard ERC20 functions plus two read-only
+                          constants, and nothing else.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* ── DIY comparison ───────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
+            className="mb-16"
+          >
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-2">
+              Or do it yourself
+            </h2>
+            <p className="text-gray-400 mb-8">
+              Genuinely an option, and free apart from gas. Here is what you are trading away.
+            </p>
+
+            <div className="bg-surface-1 border border-hairline-1 rounded-panel overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm min-w-[34rem]">
+                  <caption className="sr-only">
+                    Launching with EVMint compared with deploying the contract yourself
+                  </caption>
+                  <thead>
+                    <tr className="border-b border-hairline-1">
+                      <th scope="col" className="text-left font-semibold text-gray-400 py-3 px-5 w-1/4">Step</th>
+                      <th scope="col" className="text-left font-semibold text-white py-3 px-5">EVMint</th>
+                      <th scope="col" className="text-left font-semibold text-gray-400 py-3 px-5">Remix, by hand</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ['Find a contract', 'Fixed template, no admin functions', 'Copy one off the internet and hope it is not backdoored'],
+                      ['Deploy it', 'One confirmation, under 60 seconds', 'Pay gas, hit a revert, pay gas again'],
+                      ['Verify the source', 'Automatic, before anyone asks', 'Flatten it and submit by hand, or look sketchy'],
+                      ['Open the pool', 'Built into the Liquidity page', 'Call the router yourself and hope the ordering is right'],
+                      ['Total', '~$80 fee + gas', 'Gas only, plus your evening']
+                    ].map(([label, ours, diy], i) => (
+                      <tr key={label} className={i % 2 === 1 ? 'bg-surface-1' : undefined}>
+                        <th scope="row" className="text-left font-medium text-gray-400 py-3 px-5 align-top">{label}</th>
+                        <td className="py-3 px-5 text-gray-200 align-top">{ours}</td>
+                        <td className="py-3 px-5 text-gray-400 align-top">{diy}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* ── FAQ ──────────────────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
+            className="mb-16"
+          >
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-8">
+              Meme coin FAQ
+            </h2>
+
+            <div className="space-y-2">
+              {faqs.map((faq, index) => {
+                const isOpen = openFaq === index
+                return (
+                  <div
+                    key={faq.question}
+                    className="bg-surface-1 border border-hairline-1 rounded-card overflow-hidden transition-[border-color] duration-200 hover:border-hairline-2"
+                  >
+                    <h3>
+                      <button
+                        type="button"
+                        onClick={() => setOpenFaq(isOpen ? null : index)}
+                        aria-expanded={isOpen}
+                        aria-controls={`meme-faq-${index}`}
+                        id={`meme-faq-q-${index}`}
+                        className="w-full min-h-[56px] flex items-start justify-between gap-4 text-left px-5 py-4 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-inset"
+                      >
+                        <span className="font-display font-semibold tracking-tight text-white">
+                          {faq.question}
+                        </span>
+                        <svg
+                          className={`flex-shrink-0 w-5 h-5 mt-0.5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </h3>
+                    {/*
+                      Always mounted, collapsed with CSS only. The FAQPage JSON-LD
+                      above is generated from this same `faqs` array, and Google
+                      requires the answer text to exist in the delivered HTML for
+                      the markup to be eligible — unmounting on collapse would
+                      ship questions with no answers.
+                    */}
+                    <div
+                      id={`meme-faq-${index}`}
+                      role="region"
+                      aria-labelledby={`meme-faq-q-${index}`}
+                      className={`grid transition-[grid-template-rows,opacity,visibility] duration-200 ease-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 invisible'}`}
+                    >
+                      <div className="overflow-hidden min-h-0">
+                        <p className="px-5 pb-5 text-sm text-gray-400 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </motion.section>
+
+          {/* ── Closing CTA ──────────────────────────────────────────── */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.2 }}
+            className="bg-surface-2 border border-hairline-1 rounded-panel p-8 sm:p-10 text-center"
+          >
+            <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white mb-3">
+              The contract is the easy part
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto mb-8">
+              Under 60 seconds and one signature. Everything that decides whether it works happens
+              after that — so get this bit over with.
+            </p>
+            <Link
+              to="/create"
+              onClick={() => trackButtonClick(analytics, 'cta_secondary_meme_coin', 'bottom_section')}
+              className="inline-flex items-center justify-center gap-2 min-h-[52px] px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-control shadow-lg shadow-blue-600/25 transition-colors duration-200 active:scale-[0.98] cursor-pointer"
+            >
+              Launch your coin
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </Link>
-          </motion.div>
-        </motion.div>
+          </motion.section>
+
+        </div>
       </div>
     </div>
   )

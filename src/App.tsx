@@ -23,7 +23,6 @@ const FAQPage = lazy(() => import('./pages/FAQPage'))
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'))
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'))
 const LegalDisclaimersPage = lazy(() => import('./pages/LegalDisclaimersPage'))
-const MultiChainTokenCreatorPage = lazy(() => import('./pages/MultiChainTokenCreatorPage'))
 const ERC20TokenGeneratorPage = lazy(() => import('./pages/ERC20TokenGeneratorPage'))
 const MemeCoinCreatorPage = lazy(() => import('./pages/MemeCoinCreatorPage'))
 const CryptocurrencyCreatorPage = lazy(() => import('./pages/CryptocurrencyCreatorPage'))
@@ -80,7 +79,10 @@ function AppContent() {
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms" element={<TermsOfServicePage />} />
                 <Route path="/disclaimers" element={<LegalDisclaimersPage />} />
-                <Route path="/multi-chain-token-creator" element={<MultiChainTokenCreatorPage />} />
+                {/* Retired: its pitch (deploy on 15+ chains) duplicated the homepage and
+                    /erc20-token-generator. Firebase serves a 301 for crawlers; this is the
+                    in-app fallback for client-side navigations. */}
+                <Route path="/multi-chain-token-creator" element={<Navigate to="/" replace />} />
                 <Route path="/erc20-token-generator" element={<ERC20TokenGeneratorPage />} />
                 <Route path="/meme-coin-creator" element={<MemeCoinCreatorPage />} />
                 <Route path="/cryptocurrency-creator" element={<CryptocurrencyCreatorPage />} />

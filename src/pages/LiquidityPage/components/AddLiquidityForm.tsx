@@ -467,8 +467,8 @@ function LiquiditySummary({
           ) : (
             <p className="text-[12px] leading-snug text-gray-400">
               These amounts <span className="text-gray-300">set the opening price</span>. Once the pool is live anyone can trade
-              against it — and it can be bought out. You can withdraw your liquidity at any time; buyers know this, so many projects
-              lock or burn their LP tokens. No slippage risk on creation — the sniping risk starts the moment the pool goes live.
+              against it. You can withdraw your liquidity at any time; buyers know this, so many projects lock or burn their
+              LP tokens.
             </p>
           )}
         </div>

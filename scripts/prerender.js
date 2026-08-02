@@ -43,8 +43,14 @@ const EXTRA_ROUTES = [
 /**
  * Never prerender these. `/token/:address` is unbounded and user-generated;
  * it stays on the SPA fallback.
+ *
+ * `/guide` and `/multi-chain-token-creator` render a <Navigate>, not a page.
+ * Prerendering one would capture the *redirect target's* DOM under the old
+ * URL — a duplicate of /guides or / with a canonical pointing elsewhere, and
+ * a real static file that would shadow the Firebase 301. Both are already
+ * absent from sitemap.xml and EXTRA_ROUTES; this is the belt-and-braces.
  */
-const EXCLUDE = [/^\/token\//, /^\/500$/]
+const EXCLUDE = [/^\/token\//, /^\/500$/, /^\/guide$/, /^\/multi-chain-token-creator$/]
 
 // ---------------------------------------------------------------------------
 // Route discovery
@@ -222,7 +228,7 @@ async function prerenderRoute(browser, route) {
 
       // 1b. Drop HTML comments. index.html carries a fair amount of authoring
       //     commentary that is useful in source and pointless in the shipped
-      //     output, where it repeats on all 39 routes and is readable by
+      //     output, where it repeats on every route and is readable by
       //     anyone opening view-source.
       const commentWalker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_COMMENT)
       const comments = []

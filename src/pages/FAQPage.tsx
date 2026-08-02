@@ -216,8 +216,8 @@ export default function FAQPage() {
         </motion.div>
         
         {/* Modern FAQ Grid */}
-        <div className="max-w-5xl mx-auto mb-24">
-          <div className="grid gap-4">
+        <div className="max-w-3xl mx-auto mb-24">
+          <div className="grid gap-2">
             {filteredFaqs.length > 0 ? (
               filteredFaqs.map((faq, index) => {
                 const isOpen = openFaq === index || allFaqsOpen
@@ -231,10 +231,10 @@ export default function FAQPage() {
                   >
                     {/* Modern card with design system glassmorphism */}
                     <div className={`
-                      relative rounded-2xl border transition-[background-color,color,border-color,box-shadow,opacity] duration-200
-                      ${isOpen 
-                        ? `${colors.glassCardHover} shadow-2xl` 
-                        : `${colors.glassCard} hover:border-white/[0.2] hover:bg-white/[0.1]`
+                      relative rounded-xl border transition-[background-color,border-color] duration-200
+                      ${isOpen
+                        ? 'bg-white/[0.05] border-white/[0.12]'
+                        : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.10]'
                       }
                     `}>
                       
@@ -244,40 +244,34 @@ export default function FAQPage() {
                         aria-expanded={isOpen}
                         aria-controls={`faq-answer-${index}`}
                         aria-label={`${isOpen ? 'Collapse' : 'Expand'} FAQ: ${faq.question}`}
-                        className="w-full text-left p-6 lg:p-8 focus:outline-none cursor-pointer"
+                        className="w-full text-left px-4 sm:px-5 py-3.5 min-h-[56px] focus-visible:ring-2 focus-visible:ring-blue-400 rounded-xl cursor-pointer"
                         whileTap={{ scale: 0.995 }}
                       >
-                        <div className="flex items-start justify-between">
-                          {/* Question text */}
+                        <div className="flex items-center justify-between gap-3">
+                          {/* Question text. Kept to a single scannable line height —
+                              36 collapsed rows at the old p-6/lg:p-8 + text-xl came
+                              to ~100px each, roughly 3,600px of padding to scroll
+                              past before you could see what was available. */}
                           <h3 id={`faq-question-${index}`} className={`
-                            ${typography.cardTitleSmall} text-lg lg:text-xl pr-8 leading-relaxed transition-[background-color,color,border-color,box-shadow,opacity] duration-200
-                            ${isOpen 
-                              ? `text-transparent ${typography.gradientText}` 
-                              : `${typography.pageTitleWhite} group-hover:text-gray-100`
-                            }
+                            text-[15px] font-medium leading-snug transition-colors duration-200
+                            ${isOpen ? 'text-white' : 'text-gray-200 group-hover:text-white'}
                           `}>
                             {faq.question}
                           </h3>
                           
                           {/* Expand icon */}
-                          <div className={`
-                            flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-[background-color,color,border-color,box-shadow,opacity] duration-200
-                            ${isOpen 
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-500 rotate-180' 
-                              : 'bg-white/10 group-hover:bg-white/20'
-                            }
-                          `}>
-                            <motion.svg 
-                              className={`w-5 h-5 ${isOpen ? 'text-white' : 'text-blue-400'}`}
-                              fill="none" 
-                              viewBox="0 0 24 24" 
-                              stroke="currentColor"
-                              animate={{ rotate: isOpen ? 180 : 0 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                            </motion.svg>
-                          </div>
+                          <motion.svg
+                            className={`flex-shrink-0 w-4 h-4 ${isOpen ? 'text-blue-400' : 'text-gray-400 group-hover:text-gray-300'}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2.5}
+                            aria-hidden="true"
+                            animate={{ rotate: isOpen ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </motion.svg>
                         </div>
                       </motion.button>
                       
@@ -302,9 +296,9 @@ export default function FAQPage() {
                         `}
                       >
                         <div className="overflow-hidden min-h-0">
-                          <div className="px-6 lg:px-8 pb-6 lg:pb-8">
-                            <div className="border-t border-white/10 pt-6">
-                              <p className={`${typography.bodyText} text-gray-300 leading-relaxed text-base lg:text-lg mb-4`}>
+                          <div className="px-4 sm:px-5 pb-4">
+                            <div className="border-t border-white/[0.08] pt-4">
+                              <p className={`${typography.bodyText} text-gray-300 leading-relaxed text-[15px] mb-3`}>
                                 {faq.answer}
                               </p>
 

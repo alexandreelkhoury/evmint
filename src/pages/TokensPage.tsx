@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
 import { trackPageView } from '../utils/analytics'
 import { usePrivy } from '@privy-io/react-auth'
-import { useChainId } from 'wagmi'
+import { useChainId, useAccount } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import WalletButton from '../components/WalletButton'
@@ -209,8 +209,16 @@ export default function TokensPage() {
   const analytics = useFirebaseAnalytics()
   const { ready, authenticated } = usePrivy()
   const chainId = useChainId()
+  const { address } = useAccount()
   const { allUserTokens, refetchUserTokens, updateCachedBalance, isRefreshing, isInitialLoading } = useOpenZeppelinTokenDeployment()
   const [chainFilter, setChainFilter] = useState<number | 'all'>('all')
+
+  // Privy and wagmi hydrate on different timelines: there is a window, often a
+  // couple of seconds, where Privy already reports `authenticated` but
+  // useAccount() still has no address. Tokens are loaded keyed on that address,
+  // so rendering the list during that window shows "No Tokens Found" to someone
+  // who does have tokens — they then pop in when wagmi catches up.
+  const walletHydrating = authenticated && !address
 
   // Refresh has to do two separate things. refetchUserTokens() only re-reads
   // localStorage, which cannot have changed while the page is open — the numbers
@@ -427,7 +435,7 @@ export default function TokensPage() {
           ]}
         />
 
-      {isInitialLoading ? (
+      {isInitialLoading || walletHydrating ? (
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-2xl font-bold text-white">
