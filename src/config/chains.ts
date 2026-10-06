@@ -1372,14 +1372,13 @@ export function getAllViemChains(): Chain[] {
 export const CHAIN_FEES: Record<number, string> = {
   // ETH-based chains (ETH as gas token)
   1: '0.02',         // Ethereum Mainnet
-  // ⚠️ TEMPORARY TEST PRICING — revert to '0.02' (~$80) before launch
-  8453: '0.0000025',   // Base — ~$0.01 at ETH $4,000 (TESTING)
+  8453: '0.02',      // Base
   42161: '0.02',     // Arbitrum One
   10: '0.02',        // Optimism
   480: '0.02',       // World Chain
   81457: '0.02',     // Blast
   4326: '0.02',      // MegaETH Mainnet
-  4663: '0.0000025',   // Robinhood Chain — ~$0.01 at ETH $4,000 (TESTING)
+  4663: '0.02',      // Robinhood Chain
 
   // BNB chain
   56: '0.075',       // BSC Mainnet
@@ -1444,8 +1443,7 @@ export function getDeploymentFee(chainId: number): string {
 export function getDeploymentFeeUSD(chainId: number): number {
   // Approximate USD values (update periodically)
   const usdValues: Record<number, number> = {
-    1: 80, 42161: 80, 10: 80, 480: 80, 81457: 80, 4326: 80,  // ETH chains
-    8453: 0.01, 4663: 0.01,               // ⚠️ TESTING — see CHAIN_FEES
+    1: 80, 8453: 80, 42161: 80, 10: 80, 480: 80, 81457: 80, 4326: 80, 4663: 80,  // ETH chains
     56: 82.5,                             // BSC
     137: 80,                              // Polygon
     43114: 80,                            // Avalanche
