@@ -4,6 +4,8 @@ import { useState } from 'react'
 import WalletButtonLazy from './WalletButtonLazy'
 import { HexagonStackIcon } from './HexagonStackLogo'
 import { useScrollLock } from '../hooks/useScrollLock'
+import { useFirebaseAnalytics } from './FirebaseProvider'
+import { trackFunnelStep, trackButtonClick } from '../utils/analytics'
 
 const navLinks = [
   { name: 'Deploy', href: '/create' },
@@ -16,6 +18,7 @@ const navLinks = [
 
 export default function Header() {
   const location = useLocation()
+  const analytics = useFirebaseAnalytics()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useScrollLock(mobileMenuOpen)
@@ -43,6 +46,10 @@ export default function Header() {
               <Link
                 key={item.name}
                 to={item.href}
+                onClick={() => {
+                  if (item.href === '/create') trackFunnelStep(analytics, 'create_token_clicked', { cta_location: 'navbar' })
+                  else trackButtonClick(analytics, item.name, 'navbar')
+                }}
                 className={`text-sm font-medium px-3 py-1.5 rounded-md transition-[background-color,color] duration-150 ${
                   isActive(item.href)
                     ? 'text-white bg-white/10'
@@ -93,7 +100,11 @@ export default function Header() {
                 <Link
                   key={item.name}
                   to={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    if (item.href === '/create') trackFunnelStep(analytics, 'create_token_clicked', { cta_location: 'mobile_nav' })
+                    else trackButtonClick(analytics, item.name, 'mobile_nav')
+                  }}
                   className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-[background-color,color] duration-150 ${
                     isActive(item.href)
                       ? 'text-white bg-white/10'

@@ -1,37 +1,22 @@
 import type { Analytics } from 'firebase/analytics'
 
-/**
- * Analytics Event Queue
- *
- * Events are queued when analytics isn't ready yet, then flushed
- * once the Firebase Analytics SDK is loaded.
- */
+// ─── Event Queue ────────────────────────────────────────────────────────────
 interface QueuedEvent {
   eventName: string
   eventParams?: Record<string, any>
   timestamp: number
 }
 
-// Event queue for events fired before analytics is ready
 const eventQueue: QueuedEvent[] = []
 const MAX_QUEUE_SIZE = 100
 
-// Global analytics instance reference (set by FirebaseProvider)
 let globalAnalyticsInstance: Analytics | null = null
-
-// Flag to track if logEvent function is available
 let logEventFn: ((analytics: Analytics, eventName: string, eventParams?: Record<string, any>) => void) | null = null
 
-/**
- * Set the global analytics instance (called by FirebaseProvider after lazy load)
- */
 export const setAnalyticsInstance = (analytics: Analytics) => {
   globalAnalyticsInstance = analytics
 }
 
-/**
- * Lazy load the logEvent function
- */
 const getLogEvent = async () => {
   if (!logEventFn) {
     const { logEvent } = await import('firebase/analytics')
@@ -40,16 +25,10 @@ const getLogEvent = async () => {
   return logEventFn
 }
 
-/**
- * Flush queued events once analytics is ready
- */
 export const flushEventQueue = async () => {
   if (!globalAnalyticsInstance || eventQueue.length === 0) return
-
   const logEvent = await getLogEvent()
-
   if (import.meta.env.DEV) console.log(`[Analytics] Flushing ${eventQueue.length} queued events`)
-
   while (eventQueue.length > 0) {
     const event = eventQueue.shift()
     if (event) {
@@ -59,170 +38,212 @@ export const flushEventQueue = async () => {
           queued: true,
           queue_delay_ms: Date.now() - event.timestamp
         })
-      } catch (error) {
-        console.error('[Analytics] Failed to flush event:', event.eventName, error)
-      }
+      } catch { /* silent */ }
     }
   }
 }
 
-/**
- * Queue an event if analytics isn't ready yet
- */
 const queueEvent = (eventName: string, eventParams?: Record<string, any>) => {
-  if (eventQueue.length >= MAX_QUEUE_SIZE) {
-    // Remove oldest event to make room
-    eventQueue.shift()
-  }
-
-  eventQueue.push({
-    eventName,
-    eventParams,
-    timestamp: Date.now()
-  })
-
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] Event queued:', eventName)
-  }
+  if (eventQueue.length >= MAX_QUEUE_SIZE) eventQueue.shift()
+  eventQueue.push({ eventName, eventParams, timestamp: Date.now() })
+  if (import.meta.env.DEV) console.log('[Analytics] Event queued:', eventName)
 }
 
-/**
- * Track an event - queues if analytics not ready
- */
+// ─── Core tracking ──────────────────────────────────────────────────────────
 const trackEvent = async (
   analytics: Analytics | null,
   eventName: string,
   eventParams?: Record<string, any>
 ) => {
-  // Use provided analytics or global instance
   const instance = analytics || globalAnalyticsInstance
-
   if (!instance) {
-    // Queue event for later
     queueEvent(eventName, eventParams)
     return
   }
-
   try {
     const logEvent = await getLogEvent()
     logEvent(instance, eventName, eventParams)
-  } catch (error) {
-    console.error('[Analytics] Failed to track event:', eventName, error)
-    // Queue for retry
+  } catch {
     queueEvent(eventName, eventParams)
   }
 }
 
-// Enhanced error tracking with normalization and deduplication
-const errorCache = new Set<string>();
-const CACHE_EXPIRY = 60000; // 1 minute
+// ─── Analytics readiness guard ──────────────────────────────────────────────
+export const isAnalyticsReady = (analytics?: Analytics | null): boolean => {
+  if (typeof window === 'undefined') return false
+  return !!(analytics || globalAnalyticsInstance)
+}
 
-// Clear error cache periodically to prevent memory leaks
-setInterval(() => {
-  errorCache.clear();
-}, CACHE_EXPIRY);
+// ─── Traffic source persistence ─────────────────────────────────────────────
+export const persistTrafficSource = () => {
+  try {
+    if (typeof window === 'undefined') return
+    // Only persist once per session
+    if (sessionStorage.getItem('traffic_source')) return
 
-// Normalize error messages for better grouping
+    const params = new URLSearchParams(window.location.search)
+    const source = params.get('utm_source') || ''
+    const medium = params.get('utm_medium') || ''
+    const campaign = params.get('utm_campaign') || ''
+    const referrer = document.referrer || ''
+
+    // Derive source from referrer if no UTM
+    let derivedSource = source
+    let derivedMedium = medium
+    if (!source && referrer) {
+      try {
+        const refHost = new URL(referrer).hostname
+        if (refHost.includes('google')) { derivedSource = 'google'; derivedMedium = derivedMedium || 'organic' }
+        else if (refHost.includes('twitter') || refHost.includes('x.com')) { derivedSource = 'twitter'; derivedMedium = derivedMedium || 'social' }
+        else if (refHost.includes('telegram')) { derivedSource = 'telegram'; derivedMedium = derivedMedium || 'social' }
+        else if (refHost.includes('reddit')) { derivedSource = 'reddit'; derivedMedium = derivedMedium || 'social' }
+        else { derivedSource = refHost; derivedMedium = derivedMedium || 'referral' }
+      } catch { /* invalid referrer URL */ }
+    }
+    if (!derivedSource) { derivedSource = 'direct'; derivedMedium = 'none' }
+
+    sessionStorage.setItem('traffic_source', JSON.stringify({
+      source: derivedSource.slice(0, 90),
+      medium: derivedMedium.slice(0, 90),
+      campaign: campaign.slice(0, 90),
+      referrer: referrer.slice(0, 90),
+    }))
+  } catch { /* sessionStorage unavailable */ }
+}
+
+export const getTrafficSource = (): { source: string; medium: string; campaign: string; referrer: string } => {
+  try {
+    const raw = sessionStorage.getItem('traffic_source')
+    if (raw) return JSON.parse(raw)
+  } catch { /* silent */ }
+  return { source: 'direct', medium: 'none', campaign: '', referrer: '' }
+}
+
+// ─── Error handling ─────────────────────────────────────────────────────────
+const errorCache = new Set<string>()
+const CACHE_EXPIRY = 60000
+setInterval(() => { errorCache.clear() }, CACHE_EXPIRY)
+
 const normalizeErrorMessage = (message: string): string => {
-  if (!message || typeof message !== 'string') {
-    return 'Unknown error';
-  }
-
-  // Clean up common error patterns
+  if (!message || typeof message !== 'string') return 'Unknown error'
   return message
-    .replace(/0x[a-fA-F0-9]{40,64}/g, '0x<ADDRESS>') // Replace addresses
-    .replace(/\"[^\"]*\"/g, '"<STRING>"') // Replace quoted strings
-    .replace(/\d{13,}/g, '<TIMESTAMP>') // Replace timestamps
-    .replace(/\d+\.\d+/g, '<DECIMAL>') // Replace decimal numbers
-    .replace(/\d+/g, '<NUMBER>') // Replace large numbers
-    .trim();
-};
+    .replace(/0x[a-fA-F0-9]{40,64}/g, '0x…')
+    .replace(/\d{13,}/g, '<TS>')
+    .replace(/\d+\.\d+/g, '<N>')
+    .replace(/\b\d{4,}\b/g, '<N>')
+    .trim()
+    .slice(0, 95)
+}
 
-// Helper function to check if analytics is available
-const isAnalyticsReady = (analytics: Analytics | null): boolean => {
-  if (typeof window === 'undefined') {
-    console.warn('[Analytics] Not in browser environment');
-    return false;
+// Error code mapping
+const ERROR_CODES: Record<string, string> = {
+  'insufficient funds': 'INSUFFICIENT_BALANCE',
+  'insufficient balance': 'INSUFFICIENT_BALANCE',
+  'user rejected': 'USER_REJECTED',
+  'user denied': 'USER_REJECTED',
+  'cancelled by user': 'USER_REJECTED',
+  'transaction was rejected': 'USER_REJECTED',
+  'expired': 'TX_EXPIRED',
+  'deadline': 'TX_EXPIRED',
+  'simulation failed': 'TX_SIM_FAILED',
+  'execution reverted': 'TX_SIM_FAILED',
+  'network': 'NETWORK_ERROR',
+  'timeout': 'NETWORK_ERROR',
+  'disconnected': 'WALLET_NOT_CONNECTED',
+  'not connected': 'WALLET_NOT_CONNECTED',
+  'no provider': 'WALLET_NOT_CONNECTED',
+}
+
+const classifyError = (message: string): string => {
+  const lower = message.toLowerCase()
+  for (const [pattern, code] of Object.entries(ERROR_CODES)) {
+    if (lower.includes(pattern)) return code
   }
+  return 'UNKNOWN'
+}
 
-  const instance = analytics || globalAnalyticsInstance
-  if (!instance) {
-    // Not an error - we'll queue the event
-    return false;
-  }
-
-  return true;
-};
-
-// Page tracking
-// Sends GA4's standard page_location / page_path alongside the legacy page_name
+// ─── Page tracking ──────────────────────────────────────────────────────────
 export const trackPageView = (analytics: Analytics | null, pageName: string) => {
+  const traffic = getTrafficSource()
   trackEvent(analytics, 'page_view', {
     page_name: pageName,
-    page_location: typeof window !== 'undefined' ? window.location.href : undefined,
-    page_path: typeof window !== 'undefined' ? window.location.pathname : undefined
+    page_location: typeof window !== 'undefined' ? window.location.href.slice(0, 95) : undefined,
+    page_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+    traffic_source: traffic.source,
+    traffic_medium: traffic.medium,
   })
 }
 
-// Token creation tracking
+// ─── Conversion funnel ──────────────────────────────────────────────────────
+export const trackFunnelStep = (
+  analytics: Analytics | null,
+  step: string,
+  params: Record<string, any> = {}
+) => {
+  const traffic = getTrafficSource()
+  trackEvent(analytics, step, {
+    ...params,
+    traffic_source: traffic.source,
+    traffic_medium: traffic.medium,
+    funnel_step: step,
+  })
+}
+
+// ─── Token creation tracking ────────────────────────────────────────────────
 export const trackTokenCreation = (analytics: Analytics | null, tokenData: {
-  name: string
-  symbol: string
-  supply: string
-  network: string
+  name: string; symbol: string; supply: string; network: string
 }) => {
+  // Fire as funnel step
+  trackFunnelStep(analytics, 'token_created_success', {
+    token_name: tokenData.name.slice(0, 90),
+    token_symbol: tokenData.symbol.slice(0, 10),
+    total_supply: tokenData.supply.slice(0, 30),
+    network: tokenData.network.slice(0, 30),
+  })
+  // Fire as dedicated top-level event
   trackEvent(analytics, 'token_created', {
-    token_name: tokenData.name,
-    token_symbol: tokenData.symbol,
-    total_supply: tokenData.supply,
-    network: tokenData.network
+    token_name: tokenData.name.slice(0, 90),
+    token_symbol: tokenData.symbol.slice(0, 10),
+    total_supply: tokenData.supply.slice(0, 30),
+    network: tokenData.network.slice(0, 30),
   })
 }
 
 export const trackTokenResult = (analytics: Analytics | null, result: {
-  success: boolean
-  tokenAddress?: string
-  error?: string
+  success: boolean; tokenAddress?: string; error?: string
 }) => {
   trackEvent(analytics, 'token_deployment_result', {
     success: result.success,
-    token_address: result.tokenAddress,
-    error: result.error
+    token_address: result.tokenAddress?.slice(0, 42),
+    error: result.error?.slice(0, 95),
   })
 }
 
-// Liquidity tracking
+// ─── Liquidity tracking ─────────────────────────────────────────────────────
 export const trackLiquidityAdded = (analytics: Analytics | null, data: {
-  tokenAddress: string
-  tokenAmount: string
-  ethAmount: string
-  network: string
+  tokenAddress: string; tokenAmount: string; ethAmount: string; network: string
 }) => {
   trackEvent(analytics, 'liquidity_added', {
     token_address: data.tokenAddress,
-    token_amount: data.tokenAmount,
-    eth_amount: data.ethAmount,
-    network: data.network
+    token_amount: data.tokenAmount.slice(0, 30),
+    eth_amount: data.ethAmount.slice(0, 30),
+    network: data.network,
   })
 }
 
 export const trackLiquidityRemoved = (analytics: Analytics | null, data: {
-  tokenAddress: string
-  lpTokenAmount: string
-  network: string
+  tokenAddress: string; lpTokenAmount: string; network: string
 }) => {
   trackEvent(analytics, 'liquidity_removed', {
     token_address: data.tokenAddress,
-    lp_token_amount: data.lpTokenAmount,
-    network: data.network
+    lp_token_amount: data.lpTokenAmount.slice(0, 30),
+    network: data.network,
   })
 }
 
-// User interaction tracking
+// ─── User interaction tracking ──────────────────────────────────────────────
 export const trackWalletConnect = (analytics: Analytics | null, walletType: string) => {
-  trackEvent(analytics, 'wallet_connected', {
-    wallet_type: walletType
-  })
+  trackFunnelStep(analytics, 'wallet_connected', { wallet_type: walletType.slice(0, 50) })
 }
 
 export const trackWalletDisconnect = (analytics: Analytics | null) => {
@@ -236,145 +257,133 @@ export const trackNetworkSwitch = (
   additionalParams: Record<string, any> = {}
 ) => {
   trackEvent(analytics, 'network_switched', {
-    from_network: fromNetwork,
-    to_network: toNetwork,
-    ...additionalParams
+    from_network: fromNetwork.slice(0, 30),
+    to_network: toNetwork.slice(0, 30),
+    ...additionalParams,
   })
 }
 
-// Enhanced error tracking with deduplication and comprehensive context
+// ─── Error tracking (with dedup + normalization) ────────────────────────────
 export const trackError = (
   analytics: Analytics | null,
   errorMessage: string,
   errorLocation: string,
   additionalContext: Record<string, any> = {}
 ) => {
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] trackError called:', { errorMessage, errorLocation, additionalContext });
-  }
+  const normalizedMessage = normalizeErrorMessage(errorMessage)
+  const location = (errorLocation || 'unknown').slice(0, 50)
+  const errorCode = classifyError(errorMessage)
 
-  // Ensure we have valid parameters
-  const normalizedMessage = normalizeErrorMessage(errorMessage);
-  const location = errorLocation || 'unknown_location';
+  const errorKey = `${normalizedMessage}::${location}`
+  if (errorCache.has(errorKey)) return
+  errorCache.add(errorKey)
 
-  // Create a unique key for deduplication
-  const errorKey = `${normalizedMessage}::${location}`;
-
-  // Skip if we've seen this exact error recently
-  if (errorCache.has(errorKey)) {
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] Duplicate error blocked:', errorKey);
-    }
-    return;
-  }
-
-  // Add to cache to prevent duplicates
-  errorCache.add(errorKey);
-
-  const errorData = {
+  trackEvent(analytics, 'error_occurred', {
     error_message: normalizedMessage,
     error_location: location,
-    original_message: errorMessage,
-    timestamp: Date.now(),
+    error_code: errorCode,
     page_path: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
-    user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-    ...additionalContext
-  };
+    ...additionalContext,
+  })
 
-  trackEvent(analytics, 'error_occurred', errorData);
+  // Fire dedicated event for balance errors (high-value signal)
+  if (errorCode === 'INSUFFICIENT_BALANCE') {
+    trackEvent(analytics, 'insufficient_balance', {
+      error_location: location,
+      page_path: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+      ...additionalContext,
+    })
+  }
 
   if (import.meta.env.DEV) {
-    console.log('[Analytics] Error tracked:', errorData);
+    console.log('[Analytics] Error tracked:', { normalizedMessage, location, errorCode })
   }
-};
-
-// Legacy function for backward compatibility
-export const trackErrorLegacy = (analytics: Analytics | null, errorData: {
-  error_type: string
-  error_message: string
-  error_location: string
-  user_action?: string
-}) => {
-  trackError(analytics, errorData.error_message, errorData.error_location, {
-    error_type: errorData.error_type,
-    user_action: errorData.user_action
-  });
 }
 
-// Enhanced tracking functions for specific scenarios
 export const trackWalletError = (analytics: Analytics | null, errorMessage: string, action: string) => {
-  trackError(analytics, errorMessage, 'wallet_connection_error', {
-    error_type: 'wallet_error',
-    user_action: action,
-    attempted_action: action
-  });
-};
+  trackError(analytics, errorMessage, 'wallet_error', {
+    user_action: action.slice(0, 50),
+  })
+}
 
 export const trackTokenCreationError = (analytics: Analytics | null, error: any, tokenData: any = {}) => {
-  trackError(analytics, error.message || error.toString(), 'token_creation_error', {
-    error_type: 'token_creation_failure',
-    token_name: tokenData.name,
-    token_symbol: tokenData.symbol,
-    token_supply: tokenData.supply,
-    network: tokenData.network,
-    error_code: error.code,
-    error_stack: error.stack?.split('\n')[0] || 'No stack trace',
-    full_error_message: error.toString()
-  });
-};
+  trackFunnelStep(analytics, 'token_creation_failed', {
+    error_message: normalizeErrorMessage(error.message || error.toString()),
+    error_code: classifyError(error.message || ''),
+    token_name: tokenData.name?.slice(0, 50),
+    token_symbol: tokenData.symbol?.slice(0, 10),
+    network: tokenData.network?.slice(0, 30),
+  })
+  trackError(analytics, error.message || error.toString(), 'token_creation', {
+    token_name: tokenData.name?.slice(0, 50),
+    token_symbol: tokenData.symbol?.slice(0, 10),
+    network: tokenData.network?.slice(0, 30),
+  })
+}
 
 export const trackLiquidityError = (analytics: Analytics | null, error: any, liquidityData: any = {}) => {
-  trackError(analytics, error.message || error.toString(), 'liquidity_operation_error', {
-    error_type: 'liquidity_error',
-    token_address: liquidityData.tokenAddress,
-    token_amount: liquidityData.tokenAmount,
-    eth_amount: liquidityData.ethAmount,
-    operation_type: liquidityData.operationType || 'add_liquidity',
-    network: liquidityData.network,
-    error_code: error.code,
-    error_stack: error.stack?.split('\n')[0] || 'No stack trace',
-    full_error_message: error.toString()
-  });
-};
+  trackError(analytics, error.message || error.toString(), 'liquidity_operation', {
+    operation_type: liquidityData.operationType?.slice(0, 30),
+    token_address: liquidityData.tokenAddress?.slice(0, 42),
+    network: liquidityData.network?.slice(0, 30),
+  })
+}
 
 export const trackNetworkError = (analytics: Analytics | null, error: any, context: string = 'unknown') => {
-  trackError(analytics, error.message || error.toString(), `network_error_${context}`, {
-    error_type: 'network_error',
-    context: context,
-    error_code: error.code,
-    error_stack: error.stack?.split('\n')[0] || 'No stack trace',
-    full_error_message: error.toString()
-  });
-};
+  trackError(analytics, error.message || error.toString(), `network_${context}`, {
+    context: context.slice(0, 30),
+  })
+}
 
-// User engagement tracking
+// ─── Button / form tracking ─────────────────────────────────────────────────
 export const trackButtonClick = (analytics: Analytics | null, buttonName: string, location: string) => {
   trackEvent(analytics, 'button_clicked', {
-    button_name: buttonName,
-    location: location
+    button_name: buttonName.slice(0, 50),
+    location: location.slice(0, 50),
   })
 }
 
 export const trackFormSubmission = (analytics: Analytics | null, formName: string, success: boolean) => {
   trackEvent(analytics, 'form_submitted', {
-    form_name: formName,
-    success: success
+    form_name: formName.slice(0, 50),
+    success,
   })
 }
 
-/**
- * Generic event logging wrapper
- * Use this for custom events in components
- *
- * Note: This is a re-export for backward compatibility.
- * The function is loaded lazily, so it may not be immediately available.
- * Prefer using the typed track* functions above.
- */
+// ─── Post-conversion tracking ───────────────────────────────────────────────
+export const trackCopyAction = (analytics: Analytics | null, target: string, source: string) => {
+  trackEvent(analytics, 'copy_action', {
+    copy_target: target.slice(0, 50),
+    copy_source: source.slice(0, 50),
+  })
+}
+
+export const trackSocialShare = (analytics: Analytics | null, platform: string, source: string) => {
+  trackEvent(analytics, 'social_share', {
+    platform: platform.slice(0, 30),
+    share_source: source.slice(0, 50),
+  })
+}
+
+export const trackSuccessModalCTA = (analytics: Analytics | null, ctaType: string, source: string) => {
+  trackEvent(analytics, 'success_modal_cta', {
+    cta_type: ctaType.slice(0, 50),
+    cta_source: source.slice(0, 50),
+  })
+}
+
+// ─── Engagement tracking ────────────────────────────────────────────────────
+export const trackEngagement = (analytics: Analytics | null, action: string, location: string) => {
+  trackEvent(analytics, action.slice(0, 40), {
+    engagement_location: location.slice(0, 50),
+  })
+}
+
+// ─── Generic event wrapper ──────────────────────────────────────────────────
 export const logEvent = async (
   analytics: Analytics | null,
   eventName: string,
   eventParams?: Record<string, any>
 ) => {
-  // Use trackEvent which handles null analytics and queuing
   await trackEvent(analytics, eventName, eventParams)
 }

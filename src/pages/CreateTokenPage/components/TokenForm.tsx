@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useRef, useCallback } from 'react'
+import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
+import { trackFunnelStep } from '../../../utils/analytics'
 
 interface TokenFormProps {
   formData: {
@@ -59,6 +62,31 @@ export default function TokenForm({
   handleInputChange,
   getFieldValidation
 }: TokenFormProps) {
+  const analytics = useFirebaseAnalytics()
+  const formStartedRef = useRef(false)
+  const basicInfoFiredRef = useRef(false)
+
+  const trackFormStarted = useCallback(() => {
+    if (!formStartedRef.current) {
+      formStartedRef.current = true
+      trackFunnelStep(analytics, 'form_started')
+    }
+  }, [analytics])
+
+  const wrappedHandleInputChange = useCallback((field: string, value: string | number) => {
+    trackFormStarted()
+    handleInputChange(field, value)
+
+    // Track basic_info_completed when all three core fields are filled
+    if (!basicInfoFiredRef.current) {
+      const next = { ...formData, [field]: value }
+      if (next.name && next.symbol && next.totalSupply) {
+        basicInfoFiredRef.current = true
+        trackFunnelStep(analytics, 'basic_info_completed')
+      }
+    }
+  }, [trackFormStarted, handleInputChange, formData, analytics])
+
   return (
     <>
       {/* Header */}
@@ -96,7 +124,7 @@ export default function TokenForm({
             type="text"
             placeholder="e.g., My Awesome Token"
             value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={(e) => wrappedHandleInputChange('name', e.target.value)}
             className={inputBase}
             maxLength={50}
             required
@@ -115,7 +143,7 @@ export default function TokenForm({
             type="text"
             placeholder="e.g., MAT"
             value={formData.symbol}
-            onChange={(e) => handleInputChange('symbol', e.target.value.toUpperCase())}
+            onChange={(e) => wrappedHandleInputChange('symbol', e.target.value.toUpperCase())}
             className={`${inputBase} uppercase`}
             maxLength={10}
             required
@@ -135,7 +163,7 @@ export default function TokenForm({
             max={18}
             placeholder="18"
             value={formData.decimals}
-            onChange={(e) => handleInputChange('decimals', parseInt(e.target.value) || 18)}
+            onChange={(e) => wrappedHandleInputChange('decimals', parseInt(e.target.value) || 18)}
             className={inputBase}
           />
         </FormField>
@@ -152,7 +180,7 @@ export default function TokenForm({
             type="text"
             placeholder="1000000000"
             value={formData.totalSupply}
-            onChange={(e) => handleInputChange('totalSupply', e.target.value)}
+            onChange={(e) => wrappedHandleInputChange('totalSupply', e.target.value)}
             className={inputBase}
             required
           />

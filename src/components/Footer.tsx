@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { HexagonStackIcon } from './HexagonStackLogo'
+import { useFirebaseAnalytics } from './FirebaseProvider'
+import { trackEngagement } from '../utils/analytics'
 
 const footerLinks = {
   Product: [
@@ -26,6 +28,8 @@ const footerLinks = {
 }
 
 export default function Footer() {
+  const analytics = useFirebaseAnalytics()
+
   return (
     <footer className="border-t border-white/[0.06] bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
@@ -43,13 +47,15 @@ export default function Footer() {
             <p className="text-xs text-gray-400 leading-relaxed">
               Multi-chain token launcher. Deploy ERC-20 tokens on 15+ EVM blockchains.
             </p>
+            <p className="mt-3 text-[10px] text-gray-500 uppercase tracking-wider">Also by us</p>
             <a
               href="https://spltokenlauncher.pro"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-3 text-xs text-purple-400 hover:text-purple-300 transition-colors"
+              onClick={() => trackEngagement(analytics, 'spltokenlauncher_click', 'footer')}
+              className="inline-block mt-1 text-xs text-purple-400 hover:text-purple-300 transition-colors"
             >
-              Solana tokens → spltokenlauncher.pro
+              Solana Token Launcher — Create SPL tokens on Solana
             </a>
           </div>
 

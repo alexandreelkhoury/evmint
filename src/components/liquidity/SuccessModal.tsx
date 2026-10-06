@@ -6,6 +6,8 @@ import { getGeckoNetworkId, DEXSCREENER_SLUGS } from '../../services/geckoTermin
 import { useScrollLock } from '../../hooks/useScrollLock'
 import { useModalA11y } from '../../hooks/useModalA11y'
 import CloseButton from '../CloseButton'
+import { useFirebaseAnalytics } from '../FirebaseProvider'
+import { trackCopyAction, trackSocialShare, trackSuccessModalCTA } from '../../utils/analytics'
 
 interface SuccessModalProps {
   isOpen: boolean
@@ -79,6 +81,7 @@ const isRealAddress = (a?: string) =>
   !!a && a.length === 42 && a.startsWith('0x') && a !== '0x0000000000000000000000000000000000000000'
 
 export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdrawal = false }: SuccessModalProps) {
+  const analytics = useFirebaseAnalytics()
   const [copied, setCopied] = useState<'lp' | 'message' | null>(null)
 
   useScrollLock(isOpen)
@@ -220,7 +223,7 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
 
               {isRealAddress(pool.lpTokenAddress) && (
                 <button
-                  onClick={() => copy(pool.lpTokenAddress!, 'lp')}
+                  onClick={() => { copy(pool.lpTokenAddress!, 'lp'); trackCopyAction(analytics, 'lp_token_address', 'liquidity_success_modal') }}
                   className="mt-2 w-full flex items-center gap-2 min-h-[44px] px-4 rounded-xl bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06] transition-[background-color,scale] duration-150 active:scale-[0.96] text-left focus-visible:ring-2 focus-visible:ring-blue-400"
                   aria-label="Copy LP token address"
                 >
@@ -243,6 +246,7 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
                   href={tokenPageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackSuccessModalCTA(analytics, 'open_token_page', 'liquidity_success_modal')}
                   className="mt-4 w-full flex items-center justify-center gap-2 min-h-[44px] rounded-xl bg-white text-gray-900 text-sm font-semibold hover:bg-gray-100 transition-[background-color,scale] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400"
                 >
                   Open token page
@@ -256,6 +260,7 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
                 href={twitterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackSocialShare(analytics, 'twitter', 'liquidity_success_modal')}
                 className={`w-full flex items-center justify-center gap-2 min-h-[44px] rounded-xl text-sm font-semibold transition-[background-color,scale] duration-150 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-blue-400 ${
                   tokenPageUrl
                     ? 'mt-2 bg-white/[0.05] border border-white/[0.10] text-gray-200 hover:bg-white/[0.09]'
@@ -269,15 +274,15 @@ export default function SuccessModal({ isOpen, onClose, pool, chainId, isWithdra
               </a>
 
               <div className="mt-1 flex items-center justify-between">
-                <button onClick={() => copy(shareText, 'message')} className={secondaryLink}>
+                <button onClick={() => { copy(shareText, 'message'); trackCopyAction(analytics, 'share_message', 'liquidity_success_modal') }} className={secondaryLink}>
                   <CopyLabel copied={copied === 'message'} idle="Copy message" done="Copied" />
                 </button>
                 {dexscreenerUrl && (
-                  <a href={dexscreenerUrl} target="_blank" rel="noopener noreferrer" className={secondaryLink}>
+                  <a href={dexscreenerUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackSuccessModalCTA(analytics, 'dexscreener_chart', 'liquidity_success_modal')} className={secondaryLink}>
                     Chart <ArrowIcon />
                   </a>
                 )}
-                <a href={`${explorerUrl}/tx/${pool.txHash}`} target="_blank" rel="noopener noreferrer" className={secondaryLink}>
+                <a href={`${explorerUrl}/tx/${pool.txHash}`} target="_blank" rel="noopener noreferrer" onClick={() => trackSuccessModalCTA(analytics, 'view_transaction', 'liquidity_success_modal')} className={secondaryLink}>
                   Transaction <ArrowIcon />
                 </a>
               </div>

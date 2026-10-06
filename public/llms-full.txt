@@ -1,0 +1,178 @@
+# EVMint — Multi-Chain EVM Token Launcher (Full Reference)
+# https://evmint.io
+# Last updated: 2026-08-18
+
+## What is EVMint?
+
+EVMint is a no-code platform for creating and deploying ERC-20 tokens on 15+ EVM blockchains. Users connect a Web3 wallet, fill in token details (name, symbol, total supply, decimals), and deploy in under 60 seconds. The smart contract is automatically verified on the chain's block explorer. Liquidity can be added immediately via integrated DEX support.
+
+EVMint is non-custodial: the deployer owns the token contract. There is no admin key, no upgrade proxy, and no pause function. The contract extends OpenZeppelin's audited ERC20 implementation.
+
+## Pricing
+
+| Item | Cost |
+|------|------|
+| Token deployment | ~$80 equivalent in native token (any chain) |
+| Gas fees | Varies by chain (< $0.01 on L2s, $1-5 on Ethereum) |
+| Subscription | None |
+| Testnet deployment | Near-free (faucet tokens) |
+
+No hidden fees. One transaction covers deployment, verification, and fee payment.
+
+## Step-by-Step Token Creation Process
+
+1. **Connect wallet** — MetaMask, Coinbase Wallet, WalletConnect, Rainbow, or Privy embedded wallet
+2. **Select blockchain** — Choose from 15+ supported EVM networks
+3. **Enter token details** — Name, symbol, total supply (default 1B), decimals (default 18)
+4. **Click "Create Token"** — One transaction deploys the contract and pays the fee
+5. **Automatic verification** — Source code is verified on the block explorer within 2 minutes
+6. **Add liquidity (optional)** — Pair your token with the native token on the chain's DEX
+
+## Supported Chains (15+)
+
+| Chain | Chain ID | DEX | Explorer | Fee (native) |
+|-------|----------|-----|----------|-------------|
+| Ethereum | 1 | Uniswap V2 | Etherscan | 0.03 ETH |
+| Base | 8453 | Uniswap V2 | Basescan | 0.03 ETH |
+| Arbitrum | 42161 | Uniswap V2 | Arbiscan | 0.03 ETH |
+| Optimism | 10 | Uniswap V2 | Optimistic Etherscan | 0.03 ETH |
+| Robinhood Chain | 4663 | Uniswap V2 | Blockscout | 0.03 ETH |
+| MegaETH | 4326 | Uniswap V2 | MegaScan | 0.03 ETH |
+| BSC | 56 | PancakeSwap | BscScan | 0.13 BNB |
+| Polygon | 137 | QuickSwap | Polygonscan | 130 POL |
+| Avalanche | 43114 | Trader Joe | Snowtrace | 2.8 AVAX |
+| Monad | 143 | Uniswap V2 | MonadScan | 0.03 MON |
+| Fantom | 250 | SpookySwap | FTMScan | 115 FTM |
+| Gnosis | 100 | SushiSwap | Gnosisscan | 75 xDAI |
+| Moonbeam | 1284 | SushiSwap | Moonscan | 350 GLMR |
+| World Chain | 480 | Uniswap V2 | WorldScan | 0.03 ETH |
+| Blast | 81457 | Uniswap V2 | Blastscan | 0.03 ETH |
+
+All fees are approximately $80 USD equivalent.
+
+## Key Features
+
+- **No coding required** — Visual form-based token creation
+- **OpenZeppelin contracts** — Industry-standard audited ERC20 implementation
+- **Auto-verification** — Source code published on Etherscan, Basescan, Arbiscan, Blockscout, etc.
+- **Built-in liquidity** — Add/remove liquidity via Uniswap V2 and compatible DEX protocols
+- **Non-custodial** — Deployer owns the contract; no admin keys or upgrade proxies
+- **Mobile-friendly** — Full responsive design, works on any device
+- **15+ EVM chains** — Deploy on any supported network with one interface
+- **Testnet support** — Test deployments on Base Sepolia, Arbitrum Sepolia, etc.
+- **LP token management** — Track and withdraw LP positions
+- **Portfolio view** — See all tokens you've deployed across chains
+
+## Technical Architecture
+
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS with Framer Motion animations
+- **Web3**: Privy authentication + Wagmi v2 + Viem
+- **State**: TanStack React Query for async operations
+- **Analytics**: Firebase Analytics (GA4)
+- **Hosting**: Firebase Hosting with CDN
+- **Smart Contracts**: OpenZeppelin ERC20 (Solidity 0.8.x)
+- **Verification**: Automated via Etherscan/Blockscout APIs
+
+## Token Standards Supported
+
+- **ERC-20** — Standard fungible token (the only standard currently supported)
+  - Fixed supply (minted to deployer at creation)
+  - Standard 9 methods: name, symbol, decimals, totalSupply, balanceOf, transfer, approve, transferFrom, allowance
+  - No mint, burn, pause, or owner functions
+  - Fully compatible with all DeFi protocols, wallets, and DEXes
+
+## Comparison with Alternatives
+
+| Feature | EVMint | Remix IDE | TokenMint | Coin Tool |
+|---------|--------|-----------|-----------|-----------|
+| No coding | Yes | No | Yes | Yes |
+| Multi-chain | 15+ chains | Any EVM | 5 chains | 3 chains |
+| Auto-verification | Yes | Manual | Some | No |
+| Built-in liquidity | Yes | No | No | No |
+| Price | ~$80 | Free (gas only) | $99-299 | $50-200 |
+| Contract audit | OpenZeppelin | User's code | Custom | Custom |
+| Non-custodial | Yes | Yes | Varies | Varies |
+
+## Common Questions
+
+### How much does it cost to create a token on Base?
+Creating a token on Base with EVMint costs approximately 0.03 ETH (~$80) plus minimal gas fees (usually under $0.01). The fee covers deployment, verification, and platform maintenance.
+
+### Do I need to know Solidity?
+No. EVMint handles all smart contract code. You fill in a form with your token name, symbol, and supply. The contract uses audited OpenZeppelin templates.
+
+### Is the contract audited?
+The ERC20 implementation extends OpenZeppelin's battle-tested contracts, which have been audited by multiple firms and secure billions in value.
+
+### Can I add liquidity after creating my token?
+Yes. EVMint has built-in liquidity management. After deployment, you can add liquidity on the chain's DEX (Uniswap V2, PancakeSwap, etc.) directly from the app.
+
+### Who owns the token contract?
+You do. EVMint is non-custodial. The deployer's wallet receives the full token supply. There are no admin keys, upgrade proxies, or pause functions.
+
+### Can I create a meme coin?
+Yes. Meme coins are standard ERC-20 tokens. Set your name, symbol (e.g., DOGE2), and supply. Most meme coins use 1 billion total supply with 18 decimals.
+
+### Which chain should I choose?
+Base and Arbitrum have the lowest fees ($0.01 gas) and strong DEX liquidity. Ethereum has the highest credibility but higher gas. Robinhood Chain is trending for new launches.
+
+### Can I deploy on testnet first?
+Yes. Switch to a testnet (Base Sepolia, Arbitrum Sepolia) in your wallet. Testnet deployments use faucet tokens and cost nothing.
+
+### What wallets are supported?
+MetaMask, Coinbase Wallet, Rainbow, WalletConnect-compatible wallets, and Privy embedded wallets (email/social login).
+
+### Is there a token limit?
+No. You can create unlimited tokens across any chain.
+
+## All Pages
+
+- Homepage: https://evmint.io
+- Create Token: https://evmint.io/create
+- My Tokens: https://evmint.io/tokens
+- Liquidity: https://evmint.io/liquidity
+- Guides: https://evmint.io/guides
+- FAQ: https://evmint.io/faq
+- Blog: https://evmint.io/blog
+- About: https://evmint.io/about
+- ERC20 Token Generator: https://evmint.io/erc20-token-generator
+- Meme Coin Creator: https://evmint.io/meme-coin-creator
+- Cryptocurrency Creator: https://evmint.io/cryptocurrency-creator
+- Privacy Policy: https://evmint.io/privacy
+- Terms of Service: https://evmint.io/terms
+- Disclaimers: https://evmint.io/disclaimers
+
+### Guides
+- How to Create an ERC20 Token: https://evmint.io/guides/create-base-token
+- How to Add Liquidity: https://evmint.io/guides/add-liquidity
+- Token Security Best Practices: https://evmint.io/guides/token-security
+- Advanced Token Features: https://evmint.io/guides/advanced-features
+
+### Blog Posts
+- How to Create an ERC20 Token in 2026: https://evmint.io/blog/how-to-create-erc20-token-2026
+- Ethereum vs Base: Best Chain for Token Deployment: https://evmint.io/blog/ethereum-vs-base-best-chain-token-deployment
+- Complete Meme Coin Launch Guide: https://evmint.io/blog/complete-meme-coin-launch-guide
+- Adding Liquidity to Uniswap Step by Step: https://evmint.io/blog/adding-liquidity-uniswap-step-by-step
+- Multi-Chain Token Strategy 2026: https://evmint.io/blog/multi-chain-token-strategy-2026
+
+### Chain-Specific Guides
+- Create Token on Base: https://evmint.io/blog/how-to-create-token-on-base
+- Create Token on Ethereum: https://evmint.io/blog/how-to-create-token-on-ethereum
+- Create Token on Arbitrum: https://evmint.io/blog/how-to-create-token-on-arbitrum
+- Create Token on Robinhood Chain: https://evmint.io/blog/how-to-create-token-on-robinhood-chain
+- Create Token on Optimism: https://evmint.io/blog/how-to-create-token-on-optimism
+- Create Token on Polygon: https://evmint.io/blog/how-to-create-token-on-polygon
+- Create Token on BSC: https://evmint.io/blog/how-to-create-token-on-bsc
+- Create Token on Monad: https://evmint.io/blog/how-to-create-token-on-monad
+- Create Token on MegaETH: https://evmint.io/blog/how-to-create-token-on-megaeth
+- Create Token on Avalanche: https://evmint.io/blog/how-to-create-token-on-avalanche
+- Create Token on Fantom: https://evmint.io/blog/how-to-create-token-on-fantom
+- Create Token on Blast: https://evmint.io/blog/how-to-create-token-on-blast
+- Create Token on Gnosis: https://evmint.io/blog/how-to-create-token-on-gnosis
+- Create Token on Moonbeam: https://evmint.io/blog/how-to-create-token-on-moonbeam
+- Create Token on World Chain: https://evmint.io/blog/how-to-create-token-on-world-chain
+
+## Sister Project
+
+For Solana (SPL) token creation, visit https://spltokenlauncher.pro — same team, same simplicity, for the Solana ecosystem.

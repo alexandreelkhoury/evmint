@@ -32,6 +32,10 @@ const AboutPage = lazy(() => import('./pages/AboutPage'))
 const TokenDetailPage = lazy(() => import('./pages/TokenDetailPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const ServerErrorPage = lazy(() => import('./pages/ServerErrorPage'))
+const BestEvmTokenCreator2026Page = lazy(() => import('./pages/comparisons/BestEvmTokenCreator2026Page'))
+const BaseVsEthereumTokenCreationPage = lazy(() => import('./pages/comparisons/BaseVsEthereumTokenCreationPage'))
+const EvmintVsRemixPage = lazy(() => import('./pages/comparisons/EvmintVsRemixPage'))
+const HowMuchDoesItCostPage = lazy(() => import('./pages/blog/HowMuchDoesItCostPage'))
 
 // Create a context for toasts to be used globally
 
@@ -86,6 +90,10 @@ function AppContent() {
                 <Route path="/erc20-token-generator" element={<ERC20TokenGeneratorPage />} />
                 <Route path="/meme-coin-creator" element={<MemeCoinCreatorPage />} />
                 <Route path="/cryptocurrency-creator" element={<CryptocurrencyCreatorPage />} />
+                <Route path="/comparisons/best-evm-token-creator-2026" element={<BestEvmTokenCreator2026Page />} />
+                <Route path="/comparisons/base-vs-ethereum-token-creation" element={<BaseVsEthereumTokenCreationPage />} />
+                <Route path="/comparisons/evmint-vs-remix" element={<EvmintVsRemixPage />} />
+                <Route path="/blog/how-much-does-it-cost-to-create-erc20-token" element={<HowMuchDoesItCostPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/token/:address" element={<TokenDetailPage />} />

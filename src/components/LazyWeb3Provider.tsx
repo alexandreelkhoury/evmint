@@ -14,7 +14,6 @@
  */
 
 import { ReactNode, Suspense, lazy, useState, useCallback, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 
 // Lazy load the actual Privy/Wagmi provider
@@ -35,21 +34,16 @@ interface LazyWeb3ProviderProps {
   children: ReactNode
 }
 
-// Non-blocking loading indicator — shown as a small top bar, not a fullscreen blocker
+// Non-blocking loading indicator — pure CSS for zero JS overhead on the critical path
 function Web3LoadingBar() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed top-0 left-0 right-0 z-[9999] h-0.5"
-    >
-      <motion.div
-        className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"
-        animate={{ x: ['-100%', '100%'] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+    <div className="fixed top-0 left-0 right-0 z-[9999] h-0.5 overflow-hidden">
+      <div
+        className="h-full w-[40%] bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500"
+        style={{ animation: 'web3-slide 1.5s ease-in-out infinite' }}
       />
-    </motion.div>
+      <style>{`@keyframes web3-slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}`}</style>
+    </div>
   )
 }
 

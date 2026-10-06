@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { colors, typography } from '../styles/designSystem'
+import { useFirebaseAnalytics } from './FirebaseProvider'
+import { trackFunnelStep, trackButtonClick } from '../utils/analytics'
 
 export interface CTAButton {
   text: string
@@ -44,6 +46,7 @@ export default function CTACard({
   className = '',
   delay = 0
 }: CTACardProps) {
+  const analytics = useFirebaseAnalytics()
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -92,11 +95,18 @@ export default function CTACard({
                   whileTap={{ scale: 0.95 }}
                 >
                   {button.href ? (
-                    <Link to={button.href} className={buttonClasses}>
+                    <Link
+                      to={button.href}
+                      className={buttonClasses}
+                      onClick={() => {
+                        if (button.href === '/create') trackFunnelStep(analytics, 'create_token_clicked', { cta_location: 'cta_card' })
+                        else trackButtonClick(analytics, button.text, 'cta_card')
+                      }}
+                    >
                       {buttonContent}
                     </Link>
                   ) : (
-                    <button onClick={button.onClick} className={buttonClasses}>
+                    <button onClick={() => { button.onClick?.(); trackButtonClick(analytics, button.text, 'cta_card') }} className={buttonClasses}>
                       {buttonContent}
                     </button>
                   )}

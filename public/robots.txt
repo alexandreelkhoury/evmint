@@ -1,20 +1,46 @@
 # EVMint — Multi-Chain EVM Token Launcher
 # https://evmint.io
 
-# All crawlers — search engines, social preview bots, and AI assistants — are
-# welcome on every public page. They all fall under this single group, so the
-# Disallow rules below apply to them uniformly (a bot with its own group would
-# ignore these, which is why there are no longer per-bot groups here).
 User-agent: *
 Allow: /
+Crawl-delay: 1
 
-# PWA manifest must stay crawlable: browsers and crawlers read it for app
-# metadata (name, icons, theme). This Allow is more specific than the
-# "/*.json$" rule below and therefore wins.
+# PWA manifest
 Allow: /manifest.json
 
-# Build artefacts and internals. None of these paths should exist in the
-# deployed root, but the rules stay as defence in depth.
+# Allow AI crawlers explicitly
+User-agent: GPTBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: FacebookBot
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: cohere-ai
+Allow: /
+User-agent: Amazonbot
+Allow: /
+User-agent: Bytespider
+Allow: /
+User-agent: YouBot
+Allow: /
+
+# Build artefacts (defence in depth — not deployed)
 Disallow: /src/
 Disallow: /node_modules/
 Disallow: /dist/
@@ -23,9 +49,8 @@ Disallow: /*.config.*$
 Disallow: /*.map$
 Disallow: /api/internal/
 
-# Crawl-delay dropped: ignored by Googlebot, and the previous value was 0
-# (i.e. no delay), so removing it changes nothing for any crawler.
+# AI discoverability files
+Allow: /llms.txt
+Allow: /llms-full.txt
 
 Sitemap: https://evmint.io/sitemap.xml
-
-# Structured, AI-readable site summary: https://evmint.io/llms.txt

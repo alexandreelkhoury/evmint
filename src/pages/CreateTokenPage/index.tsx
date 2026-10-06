@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import SEO from '../../components/SEO'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
-import { trackPageView } from '../../utils/analytics'
+import { trackPageView, persistTrafficSource, trackFunnelStep } from '../../utils/analytics'
 import { layout } from '../../styles/designSystem'
 import { useTokenCreationLogic } from './hooks/useTokenCreationLogic'
 import StandardPageHeader from '../../components/StandardPageHeader'
@@ -13,12 +13,15 @@ import SuccessModal from './components/SuccessModal'
 import ErrorDisplay from './components/ErrorDisplay'
 import GettingStartedCTA from './components/GettingStartedCTA'
 import NetworkSelectorModal from '../../components/NetworkSelectorModal'
+import RiskDisclaimer from '../../components/RiskDisclaimer'
+import RelatedPages from '../../components/RelatedPages'
 
 export default function CreateTokenPage() {
   const analytics = useFirebaseAnalytics()
   const [isNetworkModalOpen, setIsNetworkModalOpen] = useState(false)
 
   useEffect(() => {
+    persistTrafficSource()
     trackPageView(analytics, 'create')
   }, [analytics])
   const {
@@ -299,6 +302,18 @@ export default function CreateTokenPage() {
               </div>
             </form>
           </motion.div>
+          <RiskDisclaimer />
+        </div>
+
+        {/* Related resources */}
+        <div className="max-w-4xl mx-auto">
+          <RelatedPages heading="Learn more" pages={[
+            { to: '/guides/create-base-token', title: 'Step-by-Step Guide', desc: 'Detailed walkthrough of the token creation process.' },
+            { to: '/faq', title: 'FAQ', desc: 'Common questions about token creation answered.' },
+            { to: '/blog/how-much-does-it-cost-to-create-erc20-token', title: 'Cost Breakdown', desc: 'Full pricing details for all 15+ chains.' },
+            { to: '/erc20-token-generator', title: 'About ERC-20 Tokens', desc: 'What gets deployed and how the standard works.' },
+            { to: '/guides/add-liquidity', title: 'Add Liquidity Guide', desc: 'Make your token tradable on DEXes.' },
+          ]} />
         </div>
 
         {/* Getting Started CTA */}

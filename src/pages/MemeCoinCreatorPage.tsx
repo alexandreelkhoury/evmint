@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import ChainIcon from '../components/ChainIcon'
 import { CHAIN_FEES, getChainById } from '../config/chains'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
-import { trackPageView, trackButtonClick } from '../utils/analytics'
+import { trackPageView, trackButtonClick, persistTrafficSource } from '../utils/analytics'
 
 /**
  * Single source of truth for this page's FAQ. The visible list and the FAQPage
@@ -118,6 +118,7 @@ export default function MemeCoinCreatorPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
   useEffect(() => {
+    persistTrafficSource()
     trackPageView(analytics, 'meme_coin_creator')
   }, [analytics])
 

@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom'
 import SEO from '../../components/SEO'
 import { layout } from '../../styles/designSystem'
 import { useFirebaseAnalytics } from '../../components/FirebaseProvider'
-import { trackPageView } from '../../utils/analytics'
+import { trackPageView, trackFunnelStep, persistTrafficSource } from '../../utils/analytics'
 import HeroSection from './components/HeroSection'
 import CTASection from './components/CTASection'
+import RiskDisclaimer from '../../components/RiskDisclaimer'
 import SocialProofSection from '../../components/SocialProofSection'
 import ProblemSolutionSection from './components/ProblemSolutionSection'
 import HowItWorksSection from './components/HowItWorksSection'
@@ -49,9 +50,11 @@ const useCasePages = [
 export default function HomePage() {
   const analytics = useFirebaseAnalytics()
 
-  // Track page view on mount
+  // Track page view + persist traffic source on mount
   useEffect(() => {
+    persistTrafficSource()
     trackPageView(analytics, 'home')
+    trackFunnelStep(analytics, 'landing_page_viewed')
   }, [analytics])
 
   // Structured data for SEO
@@ -161,6 +164,9 @@ export default function HomePage() {
 
         {/* 7. CTA — convert */}
         <CTASection />
+
+        {/* YMYL compliance disclaimer */}
+        <RiskDisclaimer />
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ import TransactionProgressModal from '../components/liquidity/TransactionProgres
 import NetworkSelectorModal from '../components/NetworkSelectorModal'
 import StandardPageHeader from '../components/StandardPageHeader'
 import CTACard from '../components/CTACard'
+import RiskDisclaimer from '../components/RiskDisclaimer'
 import { layout } from '../styles/designSystem'
 import { loggers } from '../utils/logger'
 import AddLiquidityForm from './LiquidityPage/components/AddLiquidityForm'
@@ -249,6 +250,7 @@ export default function LiquidityPage() {
               onSubmit={() => handleRemoveLiquidity('withdraw')}
             />
           )}
+          <RiskDisclaimer />
         </div>
 
         {/* Getting Started CTA */}

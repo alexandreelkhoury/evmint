@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom'
 import WalletButton from '../components/WalletButton'
 import { GlassCard } from '../components/GlassCard'
 import SEO from '../components/SEO'
+import RelatedPages from '../components/RelatedPages'
 import { CardSkeleton } from '../components/LoadingSkeleton'
 import { useOpenZeppelinTokenDeployment } from '../hooks/useOpenZeppelinTokenDeployment'
 import { useTokenDetails } from '../hooks/useTokenDetails'
@@ -620,6 +621,14 @@ export default function TokensPage() {
 
         </div>
       )}
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <RelatedPages pages={[
+          { to: '/create', title: 'Create Another Token', desc: 'Deploy a new ERC-20 on any chain in 60 seconds.' },
+          { to: '/liquidity', title: 'Add Liquidity', desc: 'Make your tokens tradable on DEXes.' },
+          { to: '/guides/token-security', title: 'Token Security', desc: 'Best practices for managing your tokens.' },
+        ]} />
       </div>
 
     </div>

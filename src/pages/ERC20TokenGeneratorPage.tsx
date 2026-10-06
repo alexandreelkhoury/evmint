@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import ChainIcon from '../components/ChainIcon'
 import { MAINNET_CHAINS, CHAIN_FEES, getDeploymentFeeUSD } from '../config/chains'
 import { useFirebaseAnalytics } from '../components/FirebaseProvider'
-import { trackPageView, trackButtonClick } from '../utils/analytics'
+import { trackPageView, trackButtonClick, persistTrafficSource } from '../utils/analytics'
 
 /**
  * Single source of truth for this page's FAQ. The visible list and the FAQPage
@@ -112,6 +112,7 @@ export default function ERC20TokenGeneratorPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
   useEffect(() => {
+    persistTrafficSource()
     trackPageView(analytics, 'erc20_token_generator')
   }, [analytics])
 

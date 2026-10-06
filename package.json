@@ -33,6 +33,7 @@
     "validator": "^13.15.15",
     "viem": "^2.37.12",
     "wagmi": "^2.16.9",
+    "web-vitals": "^6.1.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {

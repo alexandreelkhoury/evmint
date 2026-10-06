@@ -9,7 +9,8 @@ import {
   trackTokenResult,
   trackTokenCreation,
   trackTokenCreationError,
-  trackWalletError
+  trackWalletError,
+  trackFunnelStep
 } from '../../../utils/analytics'
 import { loggers } from '../../../utils/logger'
 
@@ -64,6 +65,9 @@ export function useTokenCreationLogic() {
       trackWalletError(analytics, 'Wallet not connected - user attempted token creation', 'create_token_attempt')
       return
     }
+
+    // Track payment initiation funnel step
+    trackFunnelStep(analytics, 'payment_initiated', { network: chainName })
 
     try {
       // Use sanitized form data for token creation

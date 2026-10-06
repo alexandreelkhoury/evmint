@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { usePrivy } from '@privy-io/react-auth'
 import { useAccount, useBalance, useChainId, useSwitchChain } from 'wagmi'
 import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
-import { trackPageView, trackLiquidityError } from '../../../utils/analytics'
+import { trackPageView, trackLiquidityError, persistTrafficSource } from '../../../utils/analytics'
 import { useTokenSelection } from '../../../hooks/useTokenSelection'
 import { useUniswapV2Liquidity } from '../../../features/liquidity'
 import { useGlobalToasts } from '../../../App'
@@ -42,6 +42,7 @@ export function useLiquidityPageLogic() {
   const currentChainId = useChainId()
 
   useEffect(() => {
+    persistTrafficSource()
     trackPageView(analytics, 'liquidity')
   }, [analytics])
 

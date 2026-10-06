@@ -68,18 +68,9 @@
     <meta name="apple-mobile-web-app-title" content="EVMint" />
     <meta name="msapplication-TileColor" content="#0052FF" />
     
-    <!-- Performance Optimizations -->
-    <link rel="dns-prefetch" href="//base.org" />
-    <link rel="dns-prefetch" href="//basescan.org" />
-    <link rel="dns-prefetch" href="//uniswap.org" />
-    <link rel="dns-prefetch" href="//coinbase.com" />
+    <!-- DNS prefetch for Web3 services used after user interaction -->
     <link rel="dns-prefetch" href="//privy.io" />
-    
-    <!-- Critical CSS Preload (add when you have critical CSS) -->
-    <!-- <link rel="preload" href="/critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'"> -->
-    
-    <!-- Logo is rendered by React, no need to preload -->
-    
+
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json" />
 
@@ -164,5 +155,33 @@
       setTimeout(function(){var s=document.getElementById('splash');if(s)s.remove()},8000)
     </script>
     <script type="module" src="/src/main.tsx"></script>
+    <noscript>
+      <div style="max-width:700px;margin:40px auto;padding:0 20px;font-family:system-ui,sans-serif;color:#e5e7eb;background:#111827;">
+        <h1 style="font-size:1.5rem;color:#fff;">EVMint — Multi-Chain EVM Token Launcher</h1>
+        <p>Create and deploy ERC-20 tokens on 15+ EVM blockchains in under 60 seconds. No coding required.</p>
+        <h2 style="font-size:1.1rem;color:#93c5fd;">Key Features</h2>
+        <ul>
+          <li>Deploy on Ethereum, Base, Arbitrum, Polygon, BSC, Optimism & 9 more chains</li>
+          <li>OpenZeppelin-audited smart contract templates</li>
+          <li>Automatic source code verification on block explorers</li>
+          <li>Built-in liquidity management via Uniswap V2 and compatible DEXes</li>
+          <li>Non-custodial — you own the contract</li>
+        </ul>
+        <h2 style="font-size:1.1rem;color:#93c5fd;">Pricing</h2>
+        <p>~$80 equivalent per deployment on any chain, paid in native token. No subscription.</p>
+        <h2 style="font-size:1.1rem;color:#93c5fd;">Pages</h2>
+        <ul>
+          <li><a href="/create" style="color:#60a5fa;">Create a Token</a></li>
+          <li><a href="/guides" style="color:#60a5fa;">Guides</a></li>
+          <li><a href="/faq" style="color:#60a5fa;">FAQ</a></li>
+          <li><a href="/blog" style="color:#60a5fa;">Blog</a></li>
+          <li><a href="/liquidity" style="color:#60a5fa;">Liquidity Management</a></li>
+          <li><a href="/erc20-token-generator" style="color:#60a5fa;">ERC20 Token Generator</a></li>
+          <li><a href="/meme-coin-creator" style="color:#60a5fa;">Meme Coin Creator</a></li>
+          <li><a href="/about" style="color:#60a5fa;">About EVMint</a></li>
+        </ul>
+        <p style="font-size:0.75rem;color:#6b7280;">This application requires JavaScript to function. Please enable JavaScript in your browser.</p>
+      </div>
+    </noscript>
   </body>
 </html>

@@ -120,12 +120,8 @@ export default function SEO({
       <meta name="theme-color" content="#1f2937" />
       <meta name="msapplication-TileColor" content="#1f2937" />
       
-      {/* Preconnect for Performance */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="//base.org" />
-      <link rel="dns-prefetch" href="//basescan.org" />
-      <link rel="dns-prefetch" href="//uniswap.org" />
+      {/* Preconnects are in index.html — duplicating them here wastes a slot
+          and the performance trace flags them as "unused preconnect". */}
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={resolvedOgType} />

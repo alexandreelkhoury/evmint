@@ -4,6 +4,8 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 import ChainIcon from '../../../components/ChainIcon'
 import { MAINNET_CHAINS } from '../../../config/chains'
 import OrbitingCircles from '../../../components/ui/OrbitingCircles'
+import { useFirebaseAnalytics } from '../../../components/FirebaseProvider'
+import { trackFunnelStep, trackButtonClick } from '../../../utils/analytics'
 
 const ORBIT_CHAINS = MAINNET_CHAINS.slice(0, 12)
 
@@ -220,6 +222,8 @@ function Stat({ value, label, delay }: { value: string; label: string; delay: nu
 
 // ─── Hero Section ────────────────────────────────────────────────────────────
 export default function HeroSection() {
+  const analytics = useFirebaseAnalytics()
+
   return (
     <section className="relative min-h-[80vh] flex flex-col justify-center">
       <HeroBackground />
@@ -278,6 +282,7 @@ export default function HeroSection() {
               >
                 <Link
                   to="/create"
+                  onClick={() => trackFunnelStep(analytics, 'create_token_clicked', { cta_location: 'hero' })}
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-xl shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-500/40 transition-[background-color,box-shadow] duration-200 focus-visible:ring-4 focus-visible:ring-blue-400/50 focus-visible:outline-none"
                 >
                   Create a Token
@@ -296,6 +301,7 @@ export default function HeroSection() {
                   href="#how-it-works"
                   onClick={(e) => {
                     e.preventDefault()
+                    trackButtonClick(analytics, 'how_it_works', 'hero')
                     document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })
                   }}
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-300 border border-white/[0.12] hover:border-white/25 rounded-xl hover:bg-white/[0.04] transition-[background-color,color,border-color,box-shadow,opacity] duration-200 focus-visible:ring-4 focus-visible:ring-white/30 focus-visible:outline-none"
